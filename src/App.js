@@ -1,23 +1,23 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from 'react';
 
 function App() {
+  let [ numBoards, setNumBoards ] = useState(5);
+
+  let renderGame = (numBoards) => {
+    let res = []
+    for (let i =0; i< numBoards; i++) {
+      res.push('a game board')
+    }
+    return res
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="game">
+       { renderGame(numBoards) }
+      </div>
+      <button onClick = {()=>setNumBoards(numBoards+1)}> more boards </button>
+      <button onClick = {()=>setNumBoards(numBoards-1)}> fewer boards </button>
     </div>
   );
 }
