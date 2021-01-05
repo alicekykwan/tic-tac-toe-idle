@@ -1,7 +1,11 @@
 import { useState } from 'react';
 
 function App() {
-  let [ numBoards, setNumBoards ] = useState(5);
+
+
+  setEffect(() => {
+    setInterval()
+  }, []);
 
   let renderGame = (numBoards) => {
     let res = []
