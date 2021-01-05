@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import Grid from "@material-ui/core/Grid";  
 import './SingleBoard.css'
 
+import _ from 'lodash';
+
 function SingleBoard(props) {
 
   let { gameSpeed, addCoins } = props;
   const TIE = "TIE";
-
+        
   let [ boardState, setBoardState ] = useState({
     board: [['','',''], ['','',''], ['','','']],
     currentPlayer: 'X',
@@ -55,7 +57,9 @@ let makeRandomMove = () => {
 
 let makeMove = (row, col, curr) => {
     if (boardState.winner === "" && boardState.board[row][col] === "") {
-        let newBoard = [ ...boardState.board.map(row => [...row])];
+        // let newBoard = boardState.board.map(row => [...row]);
+        let newBoard = _.cloneDeep(boardState.board);
+
         newBoard[row][col] = boardState.currentPlayer;
         let currwinner = getBoardWinner(newBoard);
         let currwinningCells = []

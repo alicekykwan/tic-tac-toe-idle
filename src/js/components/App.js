@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import List from "./List";
-import Form from "./Form";
 import index from '../index'
 import { addBasicBoard, doOneTickForAllBoards } from "../actions/index";
 import { connect } from "react-redux";
@@ -21,7 +19,7 @@ function mapDispatchToProps(dispatch) {
 function ConnectedApp({ addBasicBoard, doOneTickForAllBoards }) {
   useEffect(() => {
     console.log('hello');
-    setInterval(doOneTickForAllBoards, 20);
+    setInterval(doOneTickForAllBoards, 300);
   } ,[]);
 
   return (
