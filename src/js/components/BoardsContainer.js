@@ -13,6 +13,6 @@ const ConnectedBoardsContainer = ({ boards }) => (
   </div>
 );
 
-const BoardsContainer = connect(mapStateToProps)(ConnectedBoardsContainer);
+const BoardsContainer = connect(mapStateToProps, null)(ConnectedBoardsContainer);
 
 export default BoardsContainer;

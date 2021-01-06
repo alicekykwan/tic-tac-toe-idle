@@ -3,20 +3,21 @@ import '../../css/TicTacToeGrid.css';
 
 function TicTacToeGrid(props) {
     const TIE = "Tie"
-    let { setIsPlaying, isPlaying, board, setBoardState, mode, randomMoveTimerRef=null, stat, setStat } = props;
-    let { boardState, currentPlayer, winner, winningCells } = board;
+    let { board } = props;
+    let { boardState, winningCells } = board;
+    let boardDimension = 3;
 
     let renderGrid = () => {
         let result = [];
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < boardDimension; i++) {
             let newRow = [];
-            for (let j = 0; j < 3; j++) {
+            for (let j = 0; j < boardDimension; j++) {
                 newRow.push(
                     <div key={`row-${i}-col-${j}`} className="tic-tac-toe-cell">
-                        {boardState[i][j] === "X"
-                        ? (winningCells && winningCells.includes((i,j)) ? <div className="cell-text-Win"> {boardState[i][j]} </div>:<div className="cell-text-X"> {boardState[i][j]} </div>)   
-                        : (winningCells && winningCells.includes((i,j)) ? <div className="cell-text-Win"> {boardState[i][j]} </div>:<div className="cell-text-O"> {boardState[i][j]} </div>)   
+                        {boardState[i*boardDimension+j] === "X"
+                        ? (winningCells && winningCells.includes(i*boardDimension+j) ? <div className="cell-text-Win"> {boardState[i*boardDimension+j]} </div>:<div className="cell-text-X"> {boardState[i*boardDimension+j]} </div>)   
+                        : (winningCells && winningCells.includes(i*boardDimension+j) ? <div className="cell-text-Win"> {boardState[i*boardDimension+j]} </div>:<div className="cell-text-O"> {boardState[i*boardDimension+j]} </div>)   
                         }
                     </div>
                 );

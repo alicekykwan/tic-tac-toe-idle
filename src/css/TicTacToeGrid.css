@@ -26,14 +26,14 @@
 }
 
 .cell-text-X {
-  color: salmon;
+  color: darkgreen;
 }
 
 .cell-text-O {
-  color: lightseagreen;
+  color: purple;
 }
 
 .cell-text-Win {
-  color: yellow
+  color: orange
 }
 
