@@ -3,9 +3,9 @@ import '../../css/TicTacToeGrid.css';
 
 function TicTacToeGrid(props) {
     const TIE = "Tie"
-    let { board } = props;
+    let { board, boardDimension } = props;
     let { boardState, winningCells } = board;
-    let boardDimension = 3;
+    //let boardDimension = 3;
 
     let renderGrid = () => {
         let result = [];

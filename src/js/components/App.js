@@ -10,7 +10,8 @@ import BoardsContainer from "./BoardsContainer";
 
 const mapStateToProps = state => {
   return {
-    coins: state.coins
+    coins: state.coins,
+    boardDimension: state.boardDimension
   };
 };
 
@@ -21,7 +22,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-function ConnectedApp({ addBasicBoard, tick, coins }) {
+function ConnectedApp({ addBasicBoard, tick, coins, boardDimension }) {
   useEffect(() => {
     console.log('hello');
     setInterval(tick, 800);
@@ -33,7 +34,7 @@ function ConnectedApp({ addBasicBoard, tick, coins }) {
       <p>X Coins: {coins.amount_x} </p>
       <p>O Coins: {coins.amount_o} </p>
       <div className="game">
-       <BoardsContainer />
+       <BoardsContainer boardDimension={boardDimension}/>
       </div>
     </div>
   );

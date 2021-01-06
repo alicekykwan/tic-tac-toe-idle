@@ -25,7 +25,8 @@ const initialState = {
   coins: {
     amount_x: 0,
     amount_o: 0
-  }
+  },
+  boardDimension: boardDimension
 };
 
 
