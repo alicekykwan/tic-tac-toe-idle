@@ -1,69 +1,45 @@
-import React, { useEffect } from "react";
-import index from '../index'
-import { addBasicBoardAction, tickAction, updateBoardSettingsAction } from "../actions/index";
+import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
+import { tickAction } from "../actions/index";
 
-
+import ShopButton from './ShopButton';
+import BoardsContainer from "./BoardsContainer";
 import '../../css/App.css';
 
-import BoardsContainer from "./BoardsContainer";
 
 const mapStateToProps = state => {
   return {
-    coins: state.coins,
-    boardSettings: state.boardSettings,
+    coins: state.coins
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    addBasicBoard: () => dispatch(addBasicBoardAction()),
-    tick: () => dispatch(tickAction()),
-    updateBoardSettings: (boardSettings) => dispatch(updateBoardSettingsAction(boardSettings)),
+    tick: () => dispatch(tickAction())
   };
-}
+};
 
-function ConnectedApp({ coins, boardSettings, addBasicBoard, tick, updateBoardSettings }) {
+function ConnectedApp({ coins, tick }) {
   useEffect(() => {
     console.log('hello');
     setInterval(tick, 50);
   } ,[]);
 
-  let { numRows, numCols } = boardSettings;
-
-  const increaseBoardSize = () => {
-    numRows += 1;
-    numCols += 1;
-    updateBoardSettings({numRows, numCols});
-  };
-
-  const decreaseBoardSize = () => {
-    if (numRows === 1) {
-      return;
-    }
-    numRows -= 1;
-    numCols -= 1;
-    updateBoardSettings({numRows, numCols});
-  };
-
-  return (
-    <div className="App">
-      <button onClick={addBasicBoard}> Add board</button>
-      <button onClick={increaseBoardSize}> Increase Board Size</button>
-      <button onClick={decreaseBoardSize}> Decrease Board Size</button>
-      <p>Board Size: {numRows} by {numCols} (applies on board reset) </p>
-      <p>X Coins: {coins.amount_x} </p>
-      <p>O Coins: {coins.amount_o} </p>
-      <div className="game">
-       <BoardsContainer />
-      </div>
+  return [
+    <div class="App-header">
+      <ul>
+        <li>Tic-Tac-Toe Idle</li>
+        <li><ShopButton key="shop-button-x" coinType="x" /></li>
+        <li><ShopButton key="shop-button-o" coinType="o" /></li>
+        <li style={{float: "right"}}>Settings</li>
+      </ul>
+    </div>,
+    <div class="App">
+      <BoardsContainer />
     </div>
-  );
+  ];
 }
 
-const App = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ConnectedApp);
+const App = connect(mapStateToProps, mapDispatchToProps)(ConnectedApp);
 
 export default App;
