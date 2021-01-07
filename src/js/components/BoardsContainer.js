@@ -8,7 +8,7 @@ const mapStateToProps = state => {
 };
 
 const ConnectedBoardsContainer = ({ boards }) => (
-  <div className="connected-boards-container">
+  <div className="boards-container">
     {boards.map((board, i) => (<TicTacToeGrid key={i} board={board} /> ))}
   </div>
 );
