@@ -1,6 +1,7 @@
 import store from "./store/index";
-import { addBasicBoard, doOneTickForAllBoards } from "./actions/index";
+import { addBasicBoardAction, tickAction, updateBoardSettingsAction } from "./actions/index";
 
 window.store = store;
-window.addBasicBoard = addBasicBoard;
-window.doOneTickForAllBoards = doOneTickForAllBoards;
+window.addBasicBoardAction = addBasicBoardAction;
+window.tickAction = tickAction;
+window.updateBoardSettingsAction = updateBoardSettingsAction;

@@ -3,20 +3,30 @@ import '../../css/TicTacToeGrid.css';
 
 function TicTacToeGrid(props) {
     const TIE = "Tie"
-    let { setIsPlaying, isPlaying, board, setBoardState, mode, randomMoveTimerRef=null, stat, setStat } = props;
-    let { boardState, currentPlayer, winner, winningCells } = board;
+    let { board } = props;
+    let { boardState, winningCells, numRows, numCols } = board;
+    const gridSize = 240;
+    const gridMargin = 20;
+    let cellSize = gridSize / numRows;
+    //let boardDimension = 3;
 
     let renderGrid = () => {
         let result = [];
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < numRows; i++) {
             let newRow = [];
-            for (let j = 0; j < 3; j++) {
+            for (let j = 0; j < numCols; j++) {
+                let cell = i * numCols + j;
                 newRow.push(
-                    <div key={`row-${i}-col-${j}`} className="tic-tac-toe-cell">
-                        {boardState[i][j] === "X"
-                        ? (winningCells && winningCells.includes((i,j)) ? <div className="cell-text-Win"> {boardState[i][j]} </div>:<div className="cell-text-X"> {boardState[i][j]} </div>)   
-                        : (winningCells && winningCells.includes((i,j)) ? <div className="cell-text-Win"> {boardState[i][j]} </div>:<div className="cell-text-O"> {boardState[i][j]} </div>)   
+                    <div key={`row-${i}-col-${j}`} className="tic-tac-toe-cell"
+                        style={{
+                            width: cellSize,
+                            height: cellSize,
+                            "font-size": cellSize
+                        }}>
+                        {boardState[cell] === "X"
+                        ? (winningCells && winningCells.includes(cell) ? <div className="cell-text-Win"> {boardState[cell]} </div>:<div className="cell-text-X"> {boardState[cell]} </div>)   
+                        : (winningCells && winningCells.includes(cell) ? <div className="cell-text-Win"> {boardState[cell]} </div>:<div className="cell-text-O"> {boardState[cell]} </div>)   
                         }
                     </div>
                 );
@@ -31,8 +41,10 @@ function TicTacToeGrid(props) {
 
         return result;
     };
-  
-    return <div className="tic-tac-toe-grid">
+
+    return <div
+        className="tic-tac-toe-grid"
+        style={{width: gridSize, height: gridSize, margin: gridMargin}}>
         { renderGrid() }
     </div>;
 }

@@ -1,129 +1,138 @@
-import { ADD_BASIC_BOARD, DO_ONE_TICK_FOR_ALL_BOARDS } from "../constants/actionTypes";
+import { ADD_BASIC_BOARD, PERFORM_TICK, UPDATE_BOARD_SETTINGS } from "../constants/actionTypes";
+import React from "react";
+import _ from "lodash";
 
+// TODO: Memoize this
+const findWinningGroups = (boardSettings) => {
+  let winningGroups = [];
 
-
-const getStartingBasicBoard = () => {
-  return {
-    boardState: [['','',''], ['','',''], ['','','']],
-    currentPlayer: 'X',
-    winner: '',
-    winningCells: []
-  };
-};
-
-const initialState = {
-  boards: [getStartingBasicBoard(), getStartingBasicBoard(), getStartingBasicBoard(), getStartingBasicBoard(), getStartingBasicBoard()]
-};
-
-let getUnusedCells = (board) => {
-  let unusedCells = [];
-  for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-          if (board[i][j] === '') {
-            unusedCells.push(`${i},${j}`);
-          }
-      }
+  //check rows
+  for (let i = 0; i < boardSettings.numRows; i++) {
+    let currrow = _.range(i*boardSettings.numCols, (i+1)*boardSettings.numCols);
+    winningGroups.push(currrow);
   }
-  return unusedCells;
+
+  //check columns
+  let numCells = boardSettings.numRows * boardSettings.numCols;
+  for (let c = 0; c < boardSettings.numCols; c++) {
+    let currcolumn = _.range(c, numCells, boardSettings.numCols);
+    winningGroups.push(currcolumn);
+  }
+
+  //check diagonals
+  if (boardSettings.numRows === boardSettings.numCols) {
+    // TODO: Generalize
+    let antidiagonal = []
+    for (let r = 0; r < boardSettings.numRows; r++) {
+      antidiagonal.push(r*boardSettings.numRows + r)
+    }
+    winningGroups.push(antidiagonal);
+
+    let maindiagonal = []
+    for (let r = 0; r < boardSettings.numRows; r++) {
+      maindiagonal.push(r*boardSettings.numRows + (boardSettings.numRows-r-1))
+    }  
+    winningGroups.push(maindiagonal);
+  }
+
+  return winningGroups;
+};
+
+const resetBoard = (board, boardSettings) => {
+  board.numRows = boardSettings.numRows;
+  board.numCols = boardSettings.numCols;
+  board.numCells = boardSettings.numRows * boardSettings.numCols;
+  board.boardState = new Array(board.numCells).fill('');
+  board.currentPlayer = 'X';
+  board.winner = '';
+  board.winningCells = [];
+  board.allMoves = _.shuffle(_.range(board.numCells));
+  board.numMovesMade = 0;
+  board.winningGroups = findWinningGroups(boardSettings);
+};
+
+const createNewBoard = (boardSettings) => {
+  let board = {};
+  resetBoard(board, boardSettings);
+  return board;
+};
+
+const initialBoardSettings = {
+  numRows: 3,
+  numCols: 3
+};
+
+const initialCoins = {
+  amount_x: 0,
+  amount_o: 0
 }
 
+const initialState = {
+  boardSettings: initialBoardSettings,
+  boards: [
+    createNewBoard(initialBoardSettings),
+    createNewBoard(initialBoardSettings),
+    createNewBoard(initialBoardSettings)],
+  coins: initialCoins
+};
 
 
-let returnWinningCells = (board, player) => {
-  //check rows
-  for (let i = 0; i < 3; i++) {
-      let row = board[i];
-      if (row[0] === row[1] && row[1] === row[2] &&  row[2] === player) {
-          return [(i, 0), (i,1), (i,2)];
-      };
+let findWinningCells = (board) => {
+  let player = board.currentPlayer;
+  for (let winningGroup of board.winningGroups) {
+    if (winningGroup.every((x) => board.boardState[x] === player)) {
+      // TODO: append to a;
+      return winningGroup;
+    }
   }
-  //check columns
-  for (let c = 0; c < 3; c++) {
-      if (board[0][c] === board[1][c] && board[1][c] === board[2][c] && board[2][c] === player) {
-          return [(0, c), (1, c), (2, c)];
-      };
-  }
-  //check diagonals
-  if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[2][2] === player) {
-      return [(0,0), (1,1), (2,2)];
-  };
-  if (board[2][0] === board[1][1] && board[1][1] === board[0][2] && board[0][2] === player) {
-      return [(2,0), (1,1), (0,2)];
-  };
-
   return [];
 }
 
-const getBoardWinner = (board) => {
-  if (hasPlayerWon(board, 'O')) { return 'O'; }
-  if (hasPlayerWon(board, 'X')) { return 'X'; }
-  if (getUnusedCells(board) === 0) { return 'TIE'; }
-  return '';
-}
+const doOneMoveOnBoard = (board, mutableGameState) => {
+  let { coins, boardSettings } = mutableGameState;
+  let { currentPlayer, boardState, winner } = board;
 
-const hasPlayerWon = (board, player) => {
-  //check rows
-  for (let i = 0; i < 3; i++) {
-      let row = board[i];
-      if (row[0] === row[1] && row[1] === row[2] &&  row[2] === player) {
-          //setWinningCells([(i, 0), (i,1), (i,2)])
-          return true;
-      };
+  if (winner !== '') {
+    // Already has winner.
+    resetBoard(board, boardSettings);
+    return;
   }
-  //check columns
-  for (let c = 0; c < 3; c++) {
-      if (board[0][c] === board[1][c] && board[1][c] === board[2][c] && board[2][c] === player) {
-          //setWinningCells([(0, c), (1, c), (2, c)])
-          return true;
-      };
+
+  if (board.numMovesMade === board.allMoves.length) {
+    // Draw.
+    resetBoard(board, boardSettings);
+    return;
   }
-  //check diagonals
-  if (board[0][0] === board[1][1] && board[1][1] === board[2][2] && board[2][2] === player) {
-      //setWinningCells([(0,0), (1,1), (2,2)])
-      return true;
-  };
-  if (board[2][0] === board[1][1] && board[1][1] === board[0][2] && board[0][2] === player) {
-      //setWinningCells([(2,0), (1,1), (0,2)])
-      return true;
-  };
 
-  return false;
+  let nextMove = board.allMoves[board.numMovesMade++];
+  boardState[nextMove] = currentPlayer;
+  board.winningCells = findWinningCells(board);
+  if (board.winningCells.length > 0) {
+    board.winner = currentPlayer;
+    if (board.winner === 'X') {
+      coins.amount_x += 1;
+    } else if (board.winner === 'O') {
+      coins.amount_o += 1;
+    }
+  }
+  board.currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
 }
 
-const doOneMove = (board) => {
-  let { currentPlayer, boardState, winner, winningCells } = board;
-
-  if (winner !== '') { return getStartingBasicBoard(); }
-
-  let clonedBoardState = boardState.map(row => [...row]);
-  let unusedCells = getUnusedCells(boardState);
-
-  if (unusedCells.length === 0) { return getStartingBasicBoard(); }
-
-
-  let [randR, randC] = unusedCells[Math.floor(Math.random() * unusedCells.length)].split(',');
-  console.log('randR:', randR, ' randC:', randC);
-
-  clonedBoardState[randR][randC] = currentPlayer;
-
-  return {
-    boardState: clonedBoardState,
-    currentPlayer: currentPlayer === 'X' ? 'O' : 'X',
-    winner: getBoardWinner(clonedBoardState),
-    winningCells: getBoardWinner(clonedBoardState, currentPlayer)
-  };
-}
-
-const doOneTickForAllBoards = (boards) => {
-  return boards.map(doOneMove);
+const performTicks = (mutableState, numTicks) => {
+  // Step 1: Reconcile boardSettings and gameSettings with upgrades.
+  for (let i=0; i<numTicks; ++i) {
+    // Step 2: Perform moves on boards based on boardSettings and gameSettings.
+    mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
+    // Step 3: Propagate board wins to super-boards based on boardSettings and gameSettings.
+  }
 }
 
 function rootReducer(state = initialState, action) {
-  console.log('am ihere');
+  //console.log('reducing action: ', action);
   if (action.type === ADD_BASIC_BOARD) {
     console.log('yo:', state.boards.concat([ getStartingBasicBoard() ]));
     return Object.assign({}, state, {
-      boards: state.boards.concat([ getStartingBasicBoard() ])
+      boards: state.boards.concat([ createNewBoard(state.boardSettings) ])
     });
   }
 
@@ -132,6 +141,13 @@ function rootReducer(state = initialState, action) {
       boards: doOneTickForAllBoards(state.boards)
     });
   }
+
+  if (action.type === UPDATE_BOARD_SETTINGS) {
+    return Object.assign({}, state, {
+      boardSettings: Object.assign({}, state.boardSettings, action.payload)
+    });
+  }
+
   return state;
 }
 
