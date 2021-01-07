@@ -73,7 +73,8 @@ const initialState = {
     createNewBoard(initialBoardSettings),
     createNewBoard(initialBoardSettings),
     createNewBoard(initialBoardSettings)],
-  coins: initialCoins
+  coins: initialCoins,
+  version: 1
 };
 
 
@@ -128,18 +129,16 @@ const performTicks = (mutableState, numTicks) => {
 }
 
 function rootReducer(state = initialState, action) {
-  //console.log('reducing action: ', action);
   if (action.type === ADD_BASIC_BOARD) {
-    console.log('yo:', state.boards.concat([ getStartingBasicBoard() ]));
     return Object.assign({}, state, {
       boards: state.boards.concat([ createNewBoard(state.boardSettings) ])
     });
   }
 
-  if (action.type === DO_ONE_TICK_FOR_ALL_BOARDS) {
-    return Object.assign({}, state, {
-      boards: doOneTickForAllBoards(state.boards)
-    });
+  if (action.type === PERFORM_TICK) {
+    let mutableState = _.cloneDeep(state);
+    performTicks(mutableState, 1);
+    return mutableState;
   }
 
   if (action.type === UPDATE_BOARD_SETTINGS) {

@@ -1,6 +1,6 @@
 import { ADD_BASIC_BOARD, PERFORM_TICK, UPDATE_BOARD_SETTINGS } from "../constants/actionTypes";
 
-export function addBasicBoard(payload) {
+export function addBasicBoardAction(payload) {
   return { type: ADD_BASIC_BOARD, payload };
 }
 

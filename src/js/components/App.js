@@ -62,7 +62,7 @@ function ConnectedApp({ coins, boardSettings, addBasicBoard, tick, updateBoardSe
 }
 
 const App = connect(
-  null,
+  mapStateToProps,
   mapDispatchToProps
 )(ConnectedApp);
 
