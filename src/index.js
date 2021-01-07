@@ -8,7 +8,7 @@ import './index.css';
 
 render(
   <Provider store={store}>
-    <App />
+    <App class="App" />
   </Provider>,
   document.getElementById("root")
 );

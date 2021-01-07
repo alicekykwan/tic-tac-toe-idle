@@ -2,11 +2,8 @@
 .tic-tac-toe-grid {
   display: flex;
   flex-direction: column;
-  width: 240px;
-  height: 240px;
   align-items: center;
   justify-content: center;
-  margin: 20px;
 }
 
 .tic-tac-toe-row {
@@ -16,12 +13,9 @@
 
 .tic-tac-toe-cell {
   display: flex;
-  width: 80px;
-  height: 80px;
   border: 2px grey solid;
   align-items: center;
   justify-content: center;
-  font-size: 80px;
   text-align: center;
 }
 
