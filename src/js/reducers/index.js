@@ -72,7 +72,7 @@ const initialGameSettings = {
 
 const initialCoins = {
   amount_x: 1000000,
-  amount_o: 0
+  amount_o: 100000
 };
 
 const initialState = {
