@@ -1,4 +1,5 @@
-import { ADD_BASIC_BOARD, PERFORM_TICK, UPDATE_BOARD_SETTINGS } from "../constants/actionTypes";
+import { ACTION_PERFORM_TICK, ACTION_PURCHASE_UPGRADE } from "../constants/actionTypes";
+import { initialUpgrades, performUpgrade } from "../game/upgrades";
 import React from "react";
 import _ from "lodash";
 
@@ -62,18 +63,24 @@ const initialBoardSettings = {
   numCols: 3
 };
 
+const initialGameSettings = {
+  gameSpeed: 1,
+  boardCount: 1,
+  coinsPerWin: 1,
+  boardSettings: initialBoardSettings
+};
+
 const initialCoins = {
   amount_x: 0,
   amount_o: 0
-}
+};
 
 const initialState = {
-  boardSettings: initialBoardSettings,
-  boards: [
-    createNewBoard(initialBoardSettings),
-    createNewBoard(initialBoardSettings),
-    createNewBoard(initialBoardSettings)],
+  upgrades: initialUpgrades,
+  gameSettings: initialGameSettings,
+  boards: [createNewBoard(initialGameSettings.boardSettings)],
   coins: initialCoins,
+  lastTickTime: Date.now(),
   version: 1
 };
 
@@ -90,7 +97,8 @@ let findWinningCells = (board) => {
 }
 
 const doOneMoveOnBoard = (board, mutableGameState) => {
-  let { coins, boardSettings } = mutableGameState;
+  let { coins, gameSettings } = mutableGameState;
+  let { boardSettings } = gameSettings
   let { currentPlayer, boardState, winner } = board;
 
   if (winner !== '') {
@@ -111,40 +119,42 @@ const doOneMoveOnBoard = (board, mutableGameState) => {
   if (board.winningCells.length > 0) {
     board.winner = currentPlayer;
     if (board.winner === 'X') {
-      coins.amount_x += 1;
+      coins.amount_x += gameSettings.coinsPerWin;
     } else if (board.winner === 'O') {
-      coins.amount_o += 1;
+      coins.amount_o += gameSettings.coinsPerWin;
     }
   }
   board.currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
 }
 
-const performTicks = (mutableState, numTicks) => {
-  // Step 1: Reconcile boardSettings and gameSettings with upgrades.
-  for (let i=0; i<numTicks; ++i) {
-    // Step 2: Perform moves on boards based on boardSettings and gameSettings.
-    mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
-    // Step 3: Propagate board wins to super-boards based on boardSettings and gameSettings.
-  }
+const performOneMove = (mutableState) => {
+  mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
 }
 
 function rootReducer(state = initialState, action) {
-  if (action.type === ADD_BASIC_BOARD) {
-    return Object.assign({}, state, {
-      boards: state.boards.concat([ createNewBoard(state.boardSettings) ])
-    });
-  }
-
-  if (action.type === PERFORM_TICK) {
+  if (action.type === ACTION_PURCHASE_UPGRADE) {
+    let {upgradeType, upgradeLevel} = action.payload;
     let mutableState = _.cloneDeep(state);
-    performTicks(mutableState, 1);
+    performUpgrade(upgradeType, upgradeLevel, mutableState);
     return mutableState;
   }
 
-  if (action.type === UPDATE_BOARD_SETTINGS) {
-    return Object.assign({}, state, {
-      boardSettings: Object.assign({}, state.boardSettings, action.payload)
-    });
+  if (action.type === ACTION_PERFORM_TICK) {
+    let tickDuration = 2000 / state.gameSettings.gameSpeed;
+    let currTime = Date.now();
+    if (state.lastTickTime + tickDuration > currTime) {
+      return state;
+    }
+    let mutableState = _.cloneDeep(state);
+    while (mutableState.boards.length < mutableState.gameSettings.boardCount) {
+      mutableState.boards.push(createNewBoard(mutableState.gameSettings.boardSettings));
+    }
+    // TODO: Also add a cap.
+    while (mutableState.lastTickTime + tickDuration <= currTime) {
+      mutableState.lastTickTime += tickDuration;
+      performOneMove(mutableState);
+    }
+    return mutableState;
   }
 
   return state;

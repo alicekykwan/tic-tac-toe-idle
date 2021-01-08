@@ -5,7 +5,9 @@ import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
 
 import ShopX from './ShopX';
+import ShopO from './ShopO';
 import '../../css/App.css';
+
 
 
 const mapStateToProps = state => {
@@ -39,7 +41,7 @@ function ConnectedShopButton({ coins, coinType }) {
     if (coinType === 'x') {
       return <ShopX />;
     } else if (coinType === 'o') {
-      return <ShopX />;
+      return <ShopO />;
     }
   };
 
@@ -61,7 +63,7 @@ function ConnectedShopButton({ coins, coinType }) {
         horizontal: 'center',
       }}
     >
-      <ShopX />
+      {getContent()}
     </Popover>
   </div>);
 }
