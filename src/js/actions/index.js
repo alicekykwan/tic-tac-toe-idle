@@ -1,13 +1,9 @@
-import { ADD_BASIC_BOARD, PERFORM_TICK, UPDATE_BOARD_SETTINGS } from "../constants/actionTypes";
-
-export function addBasicBoardAction(payload) {
-  return { type: ADD_BASIC_BOARD, payload };
-}
+import { ACTION_PERFORM_TICK, ACTION_PURCHASE_UPGRADE } from "../constants/actionTypes";
 
 export function tickAction(payload) {
-  return { type: PERFORM_TICK, payload };
+  return { type: ACTION_PERFORM_TICK, payload };
 }
 
-export function updateBoardSettingsAction(payload) {
-  return { type: UPDATE_BOARD_SETTINGS, payload };
+export function purchaseUpgradeAction(payload){
+  return { type: ACTION_PURCHASE_UPGRADE, payload };
 }
