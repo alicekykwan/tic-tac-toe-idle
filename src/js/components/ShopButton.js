@@ -3,6 +3,8 @@ import { connect } from "react-redux";
 import { tickAction } from "../actions/index";
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
+import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
 import ShopX from './ShopX';
 import ShopO from './ShopO';
@@ -39,15 +41,16 @@ function ConnectedShopButton({ coins, coinType }) {
 
   const getContent = () => {
     if (coinType === 'x') {
-      return <ShopX />;
+      return <ShopX key="shop-x" />;
     } else if (coinType === 'o') {
-      return <ShopO />;
+      return <ShopO key="shop-o" />;
     }
   };
 
   return (<div>
-    <Button variant="contained" color="primary" onClick={handleClick}>
-      {getButtonText()}
+    <Button variant="contained" color="primary" onClick={handleClick}
+      startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
+      { getButtonText() }
     </Button>
     <Popover
       id={`shop-${coinType}`}

@@ -35,8 +35,8 @@ const deductBalance = (mutableCoins, cost) => {
 // TODO: Balance
 const SHOP_X_UPGRADE_COSTS = {
   [UPGRADE_SHOP_X_BOARD_COUNT]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
-  [UPGRADE_SHOP_X_GAME_SPEED]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
   [UPGRADE_SHOP_X_COINS_PER_WIN]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
+  [UPGRADE_SHOP_X_GAME_SPEED]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
 };
 
 export const getNextUpgradeCost = (upgradeType, upgradeLevel) => {
@@ -49,27 +49,27 @@ export const getNextUpgradeCost = (upgradeType, upgradeLevel) => {
   return null;
 }
 
+const UPGRADE_NAME = {
+  [UPGRADE_SHOP_X_BOARD_COUNT]: "Board Count",
+  [UPGRADE_SHOP_X_COINS_PER_WIN]: "Coins per Win",
+  [UPGRADE_SHOP_X_GAME_SPEED]: "Game Speed",
+};
+
 export const getUpgradeName = (upgradeType) => {
-  switch (upgradeType) {
-    case UPGRADE_SHOP_X_BOARD_COUNT:
-      return "Board Count";
-    case UPGRADE_SHOP_X_GAME_SPEED:
-      return "Game Speed";
-    case UPGRADE_SHOP_X_COINS_PER_WIN:
-      return "Coins per Win";
-    default:
-      return `Unknown upgrade type: ${upgradeType}`
+  if (UPGRADE_NAME[upgradeType]) {
+    return UPGRADE_NAME[upgradeType];
   }
+  return `Unknown upgrade type: ${upgradeType}`
 }
 
 export const getUpgradeDescription = (upgradeType, upgradeLevel) => {
   switch (upgradeType) {
     case UPGRADE_SHOP_X_BOARD_COUNT:
-      return `${ BASE_BOARD_COUNT + upgradeLevel } total game board.`;
+      return `${ BASE_BOARD_COUNT + upgradeLevel } total game board`;
+    case UPGRADE_SHOP_X_COINS_PER_WIN:
+      return `${ BASE_COINS_PER_WIN + upgradeLevel } coins per win`;
     case UPGRADE_SHOP_X_GAME_SPEED:
       return `${ BASE_GAME_SPEED + upgradeLevel }x game speed`;
-    case UPGRADE_SHOP_X_COINS_PER_WIN:
-      return `${ BASE_COINS_PER_WIN + upgradeLevel } coins per win.`;
     default:
       return `Unknown upgrade type: ${upgradeType}`
   }

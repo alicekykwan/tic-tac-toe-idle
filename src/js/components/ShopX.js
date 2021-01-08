@@ -3,6 +3,7 @@ import { UPGRADE_SHOP_X_GAME_SPEED, UPGRADE_SHOP_X_BOARD_COUNT, UPGRADE_SHOP_X_C
 import { purchaseUpgradeAction } from "../actions/index";
 import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from "../game/upgrades";
 import { connect } from "react-redux";
+import Button from '@material-ui/core/Button';
 import '../../css/Shop.css';
 
 const mapStateToProps = state => {
@@ -14,11 +15,11 @@ const mapStateToProps = state => {
 
 function mapDispatchToProps(dispatch) {
   return {
-    purchaseUpgradeAction: (payload) => dispatch(purchaseUpgradeAction(payload))
+    purchaseUpgrade: (payload) => dispatch(purchaseUpgradeAction(payload))
   };
 }
 
-function ConnectedShopX({ coins, upgrades, purchaseUpgradeAction }) {
+function ConnectedShopX({ coins, upgrades, purchaseUpgrade }) {
   const renderUpgrade = (upgradeType) => {
     let upgradeLevel = upgrades[upgradeType];
     let res = [
@@ -27,13 +28,14 @@ function ConnectedShopX({ coins, upgrades, purchaseUpgradeAction }) {
     ];
     let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
     if (cost === null) {
-      res.push(<button enabled="false">Upgrade (MAX)</button>);
+      res.push(<Button variant="contained" color="primary" disabled>Upgrade (MAX)</Button>);
     } else {
-      res.push(<button
-        enabled={ canPurchase(coins, cost) }
-        onClick={ ()=>{purchaseUpgradeAction({upgradeType, upgradeLevel})} }>
+      res.push(<Button
+        disabled={ !canPurchase(coins, cost) }
+        variant="contained" color="primary"
+        onClick={ ()=>{purchaseUpgrade({upgradeType, upgradeLevel})} }>
         Upgrade (cost: { cost.amount_x })
-      </button>)
+      </Button>)
       res.push(<p>Upgraded effect: { getUpgradeDescription(upgradeType, upgradeLevel+1) }</p>);
     }
     return res;
@@ -41,8 +43,6 @@ function ConnectedShopX({ coins, upgrades, purchaseUpgradeAction }) {
 
   return (
     <div className="Shop">
-      <h1> this is shop X </h1>
-      <p> You have {coins.amount_x} X coins. </p>
       { renderUpgrade(UPGRADE_SHOP_X_GAME_SPEED) }
       { renderUpgrade(UPGRADE_SHOP_X_COINS_PER_WIN) }
       { renderUpgrade(UPGRADE_SHOP_X_BOARD_COUNT) }
