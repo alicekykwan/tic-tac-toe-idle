@@ -4,6 +4,8 @@ import { tickAction } from "../actions/index";
 
 import ShopButton from './ShopButton';
 import BoardsContainer from "./BoardsContainer";
+import IconButton from '@material-ui/core/IconButton';
+import SettingsIcon from '@material-ui/icons/Settings';
 import '../../css/App.css';
 
 
@@ -20,10 +22,7 @@ function mapDispatchToProps(dispatch) {
 };
 
 function ConnectedApp({ coins, tick }) {
-  useEffect(() => {
-    console.log('hello');
-    setInterval(tick, 50);
-  } ,[]);
+  useEffect(() => { setInterval(tick, 50); } ,[]);
 
   return [
     <div class="App-header">
@@ -31,7 +30,9 @@ function ConnectedApp({ coins, tick }) {
         <li>Tic-Tac-Toe Idle</li>
         <li><ShopButton key="shop-button-x" coinType="x" /></li>
         <li><ShopButton key="shop-button-o" coinType="o" /></li>
-        <li style={{float: "right"}}>Settings</li>
+        <li style={{float: "right"}}>
+          <IconButton size="large" color="inherit" children={<SettingsIcon />}/>
+        </li>
       </ul>
     </div>,
     <div class="App">
