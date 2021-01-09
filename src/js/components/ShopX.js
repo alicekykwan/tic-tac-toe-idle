@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { UPGRADE_SHOP_X_GAME_SPEED, UPGRADE_SHOP_X_BOARD_COUNT, UPGRADE_SHOP_X_COINS_PER_WIN } from "../constants/upgradeTypes";
+import { UPGRADE_SHOP_X_GAME_SPEED, UPGRADE_SHOP_X_BOARD_COUNT, UPGRADE_SHOP_X_COINS_PER_WIN, UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER } from "../constants/upgradeTypes";
 import { purchaseUpgradeAction } from "../actions/index";
 import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from "../game/upgrades";
 import { connect } from "react-redux";
@@ -46,6 +46,7 @@ function ConnectedShopX({ coins, upgrades, purchaseUpgrade }) {
       { renderUpgrade(UPGRADE_SHOP_X_GAME_SPEED) }
       { renderUpgrade(UPGRADE_SHOP_X_COINS_PER_WIN) }
       { renderUpgrade(UPGRADE_SHOP_X_BOARD_COUNT) }
+      { renderUpgrade(UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER) }
     </div>
   );
 }
