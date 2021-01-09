@@ -25,17 +25,17 @@ function ConnectedApp({ coins, tick }) {
   useEffect(() => { setInterval(tick, 50); } ,[]);
 
   return [
-    <div class="App-header">
+    <div key="app-header" className="App-header">
       <ul>
-        <li>Tic-Tac-Toe Idle</li>
-        <li><ShopButton key="shop-button-x" coinType="x" /></li>
-        <li><ShopButton key="shop-button-o" coinType="o" /></li>
-        <li style={{float: "right"}}>
-          <IconButton size="large" color="inherit" children={<SettingsIcon />}/>
+        <li key="title">Tic-Tac-Toe Idle</li>
+        <li key="shop-button-x"><ShopButton key="shop-button-x" coinType="x" /></li>
+        <li key="shop-button-o"><ShopButton key="shop-button-o" coinType="o" /></li>
+        <li key="settings" style={{float: "right"}}>
+          <IconButton size="medium" color="inherit" children={<SettingsIcon />}/>
         </li>
       </ul>
     </div>,
-    <div class="App">
+    <div key="app" className="App">
       <BoardsContainer />
     </div>
   ];

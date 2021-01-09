@@ -38,7 +38,7 @@ function ConnectedShopX({ coins, upgrades, purchaseUpgrade }) {
       </Button>)
       res.push(<p>Upgraded effect: { getUpgradeDescription(upgradeType, upgradeLevel+1) }</p>);
     }
-    return res;
+    return <div key={`upgrade-${upgradeType}`}>{res}</div>;
   };
 
   return (
