@@ -6,7 +6,6 @@ function TicTacToeGrid(props) {
     const gridSize = 240;
     const gridMargin = 20;
     let cellSize = gridSize / numRows;
-    //let boardDimension = 3;
 
     let renderCell = (cell) => {
         if (winState[cell]) {
@@ -30,7 +29,7 @@ function TicTacToeGrid(props) {
                         style={{
                             width: cellSize,
                             height: cellSize,
-                            "font-size": cellSize
+                            fontSize: cellSize
                         }}>
                         {renderCell(cell)}
                     </div>

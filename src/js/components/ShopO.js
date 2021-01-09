@@ -1,29 +1,30 @@
 import React, { useState } from "react";
 import { UPGRADE_SHOP_O_BOARD_SIZE, UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
-import { purchaseUpgradeAction, setInitialMovesAction } from "../actions/index";
+import { purchaseUpgradeAction } from "../actions/index";
 import { connect } from "react-redux";
 import Button from '@material-ui/core/Button';
 import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from "../game/upgrades";
 import '../../css/Shop.css';
 import _ from "lodash";
+import SelectionGrid from './SelectionGrid';
 
 
 
 const mapStateToProps = state => {
   return {
     coins: state.coins,
-    upgrades: state.upgrades
+    upgrades: state.upgrades,
+    boardSettings: state.gameSettings.boardSettings
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
     purchaseUpgrade: (payload) => dispatch(purchaseUpgradeAction(payload)),
-    setInitialMoves: (payload) => dispatch(setInitialMovesAction(payload)),
   };
 }
 
-function ConnectedShopO({ coins, upgrades, purchaseUpgrade, setInitialMoves }) {
+function ConnectedShopO({ coins, upgrades, boardSettings, purchaseUpgrade, setInitialMoves }) {
 
   const renderUpgrade = (upgradeType) => {
     let upgradeLevel = upgrades[upgradeType];
@@ -43,26 +44,20 @@ function ConnectedShopO({ coins, upgrades, purchaseUpgrade, setInitialMoves }) {
       </Button>)
       res.push(<p>Upgraded effect: { getUpgradeDescription(upgradeType, upgradeLevel+1) }</p>);
     }
-    return res;
+    if (upgradeType === UPGRADE_SHOP_O_BOARD_SIZE) {
+      res.push(<p>Warning! This is not reversible.</p>);
+    }
+    return <div key={`upgrade-${upgradeType}`}>{res}</div>;
   };
-
-  const updateInitialMoves = () => {
-    setInitialMoves(_.range(upgrades[UPGRADE_SHOP_O_PICK_INITIAL_MOVES]));
-  }
 
   return (
     <div className="Shop">
       { renderUpgrade(UPGRADE_SHOP_O_BOARD_SIZE) }
-      <p>Warning! This is not reversible.</p>
       { renderUpgrade(UPGRADE_SHOP_O_PICK_INITIAL_MOVES) }
-      <Button 
-          variant="contained" color="primary"
-          onClick={ ()=>{updateInitialMoves()} }>
-        Set Starting Moves
-      </Button>
+      <SelectionGrid key="select-initial-moves" />
     </div>
   );
-}
+};
 
 const ShopO = connect(
   mapStateToProps,

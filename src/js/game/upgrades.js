@@ -71,7 +71,7 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: "Board Count",
   [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: "Coins per Win",
   [UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED]: "Game Speed",
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER]: "Critical Win Multiplier",
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER]: "Critical Win",
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: "Board Size",
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: "Pick Starting Moves"
 };
@@ -88,20 +88,20 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel) => {
     case UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT:
       return `${ BASE_BOARD_COUNT + upgradeLevel } total game board`;
     case UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN:
-      return `${ BASE_COINS_PER_WIN + upgradeLevel } coins per win`;
+      return `Gain ${ BASE_COINS_PER_WIN + upgradeLevel } coins per win`;
     case UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED:
       return `${ BASE_GAME_SPEED + upgradeLevel }x game speed`;
     case UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER:
-      if (upgradeLevel == 0) {
+      if (upgradeLevel === 0) {
         return 'No effect.'
       }
-      return `${ BASE_CRITICAL_WIN_MULTIPLIER + upgradeLevel }x more coins if win in more than one way.`;
+      return `Gain ${ BASE_CRITICAL_WIN_MULTIPLIER + upgradeLevel }x more coins when winning in more than one way`;
     case UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE:
       return `${ BASE_BOARD_SIZE + upgradeLevel } by ${ BASE_BOARD_SIZE + upgradeLevel } board size`; 
     case UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES:
-      if (upgradeLevel == 0) {
+      if (upgradeLevel === 0) {
         return 'No effect.'
-      } else if (upgradeLevel == 1) {
+      } else if (upgradeLevel === 1) {
         return `First move is no longer random.`;
       } else {
         return `First ${ upgradeLevel } moves are no longer random.`;
@@ -117,7 +117,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   mutableGameSettings.coinsPerWin = BASE_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN];
   mutableGameSettings.criticalWinMultiplier = BASE_CRITICAL_WIN_MULTIPLIER + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER];
   if (mutableGameSettings.boardSettings.numRows !== BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE] ||
-      mutableGameSettings.boardSettings.numCols !== BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]){
+      mutableGameSettings.boardSettings.numCols !== BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]) {
     mutableGameSettings.boardSettings.numRows = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
     mutableGameSettings.boardSettings.numCols = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
     mutableGameSettings.boardSettings.initialMoves = [];
