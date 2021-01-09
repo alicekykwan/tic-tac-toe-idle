@@ -1,14 +1,22 @@
-import { useState, useEffect, useRef } from 'react';
 import '../../css/TicTacToeGrid.css';
 
 function TicTacToeGrid(props) {
-    const TIE = "Tie"
     let { board } = props;
-    let { boardState, winningCells, numRows, numCols } = board;
+    let { boardState, winState, numRows, numCols } = board;
     const gridSize = 240;
     const gridMargin = 20;
     let cellSize = gridSize / numRows;
     //let boardDimension = 3;
+
+    let renderCell = (cell) => {
+        if (winState[cell]) {
+            return <div className="cell-text-Win"> {boardState[cell]} </div>;
+        } else if (boardState[cell] === "X") {
+            return <div className="cell-text-X">X</div>;
+        } else if (boardState[cell] === "O") {
+            return <div className="cell-text-O">O</div>;
+        }
+    }
 
     let renderGrid = () => {
         let result = [];
@@ -24,10 +32,7 @@ function TicTacToeGrid(props) {
                             height: cellSize,
                             "font-size": cellSize
                         }}>
-                        {boardState[cell] === "X"
-                        ? (winningCells && winningCells.includes(cell) ? <div className="cell-text-Win"> {boardState[cell]} </div>:<div className="cell-text-X"> {boardState[cell]} </div>)   
-                        : (winningCells && winningCells.includes(cell) ? <div className="cell-text-Win"> {boardState[cell]} </div>:<div className="cell-text-O"> {boardState[cell]} </div>)   
-                        }
+                        {renderCell(cell)}
                     </div>
                 );
             }
@@ -35,10 +40,6 @@ function TicTacToeGrid(props) {
                 { newRow }
             </div>);
         }
-
-        
-
-
         return result;
     };
 

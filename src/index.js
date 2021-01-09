@@ -5,7 +5,7 @@ import store from "./js/store/index";
 import App from "./js/components/App";
 import './index.css';
 
-// window.store = store;
+window.store = store;
 
 render(
   <Provider store={store}>

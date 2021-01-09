@@ -1,74 +1,13 @@
-import { ACTION_PERFORM_TICK, ACTION_PURCHASE_UPGRADE } from "../constants/actionTypes";
-import { initialUpgrades, performUpgrade } from "../game/upgrades";
-import React from "react";
+import * as ACTION_TYPE from "../constants/actionTypes";
+import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
+import { initialUpgrades, updateGameSettings, performUpgrade } from "../game/upgrades";
+import { createNewBoard, performOneMove } from "../game/boards";
 import _ from "lodash";
 
-// TODO: Memoize this
-const findWinningGroups = (boardSettings) => {
-  let winningGroups = [];
-
-  //check rows
-  for (let i = 0; i < boardSettings.numRows; i++) {
-    let currrow = _.range(i*boardSettings.numCols, (i+1)*boardSettings.numCols);
-    winningGroups.push(currrow);
-  }
-
-  //check columns
-  let numCells = boardSettings.numRows * boardSettings.numCols;
-  for (let c = 0; c < boardSettings.numCols; c++) {
-    let currcolumn = _.range(c, numCells, boardSettings.numCols);
-    winningGroups.push(currcolumn);
-  }
-
-  //check diagonals
-  if (boardSettings.numRows === boardSettings.numCols) {
-    // TODO: Generalize
-    let antidiagonal = []
-    for (let r = 0; r < boardSettings.numRows; r++) {
-      antidiagonal.push(r*boardSettings.numRows + r)
-    }
-    winningGroups.push(antidiagonal);
-
-    let maindiagonal = []
-    for (let r = 0; r < boardSettings.numRows; r++) {
-      maindiagonal.push(r*boardSettings.numRows + (boardSettings.numRows-r-1))
-    }  
-    winningGroups.push(maindiagonal);
-  }
-
-  return winningGroups;
-};
-
-const resetBoard = (board, boardSettings) => {
-  board.numRows = boardSettings.numRows;
-  board.numCols = boardSettings.numCols;
-  board.numCells = boardSettings.numRows * boardSettings.numCols;
-  board.boardState = new Array(board.numCells).fill('');
-  board.currentPlayer = 'X';
-  board.winner = '';
-  board.winningCells = [];
-  board.allMoves = _.shuffle(_.range(board.numCells));
-  board.numMovesMade = 0;
-  board.winningGroups = findWinningGroups(boardSettings);
-};
-
-const createNewBoard = (boardSettings) => {
-  let board = {};
-  resetBoard(board, boardSettings);
-  return board;
-};
-
-const initialBoardSettings = {
-  numRows: 3,
-  numCols: 3
-};
-
 const initialGameSettings = {
-  gameSpeed: 1,
-  boardCount: 1,
-  coinsPerWin: 1,
-  boardSettings: initialBoardSettings
+  boardSettings: {}
 };
+updateGameSettings(initialGameSettings, initialUpgrades);
 
 const initialCoins = {
   amount_x: 1000000,
@@ -84,63 +23,9 @@ const initialState = {
   version: 1
 };
 
-
-let findWinningCells = (board) => {
-  let player = board.currentPlayer;
-  for (let winningGroup of board.winningGroups) {
-    if (winningGroup.every((x) => board.boardState[x] === player)) {
-      // TODO: append to a;
-      return winningGroup;
-    }
-  }
-  return [];
-}
-
-const doOneMoveOnBoard = (board, mutableGameState) => {
-  let { coins, gameSettings } = mutableGameState;
-  let { boardSettings } = gameSettings
-  let { currentPlayer, boardState, winner } = board;
-
-  if (winner !== '') {
-    // Already has winner.
-    resetBoard(board, boardSettings);
-    return;
-  }
-
-  if (board.numMovesMade === board.allMoves.length) {
-    // Draw.
-    resetBoard(board, boardSettings);
-    return;
-  }
-
-  let nextMove = board.allMoves[board.numMovesMade++];
-  boardState[nextMove] = currentPlayer;
-  board.winningCells = findWinningCells(board);
-  if (board.winningCells.length > 0) {
-    board.winner = currentPlayer;
-    if (board.winner === 'X') {
-      coins.amount_x += gameSettings.coinsPerWin;
-    } else if (board.winner === 'O') {
-      coins.amount_o += gameSettings.coinsPerWin;
-    }
-  }
-  board.currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-}
-
-const performOneMove = (mutableState) => {
-  mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
-}
-
 function rootReducer(state = initialState, action) {
-  if (action.type === ACTION_PURCHASE_UPGRADE) {
-    let {upgradeType, upgradeLevel} = action.payload;
-    let mutableState = _.cloneDeep(state);
-    performUpgrade(upgradeType, upgradeLevel, mutableState);
-    return mutableState;
-  }
-
-  if (action.type === ACTION_PERFORM_TICK) {
-    let tickDuration = 2000 / state.gameSettings.gameSpeed;
+  if (action.type === ACTION_TYPE.ACTION_PERFORM_TICK) {
+    let tickDuration = 1000 / state.gameSettings.gameSpeed;
     let currTime = Date.now();
     if (state.lastTickTime + tickDuration > currTime) {
       return state;
@@ -149,12 +34,36 @@ function rootReducer(state = initialState, action) {
     while (mutableState.boards.length < mutableState.gameSettings.boardCount) {
       mutableState.boards.push(createNewBoard(mutableState.gameSettings.boardSettings));
     }
-    // TODO: Also add a cap.
+    let ticksProcessed = 0;
     while (mutableState.lastTickTime + tickDuration <= currTime) {
       mutableState.lastTickTime += tickDuration;
       performOneMove(mutableState);
+      if (++ticksProcessed >= 100) {
+        // Only attempt to perform 100 ticks at a time.
+        break;
+      }
     }
     return mutableState;
+  }
+
+  if (action.type === ACTION_TYPE.ACTION_PURCHASE_UPGRADE) {
+    let {upgradeType, upgradeLevel} = action.payload;
+    let mutableState = _.cloneDeep(state);
+    performUpgrade(upgradeType, upgradeLevel, mutableState);
+    return mutableState;
+  }
+
+  if (action.type === ACTION_TYPE.ACTION_SET_INITIAL_MOVES) {
+    let initialMoves = action.payload;
+    if (initialMoves.length > state.upgrades[UPGRADE_SHOP_O_PICK_INITIAL_MOVES]) {
+      // Player should not be able to do this normally.
+      console.log('Rejecting initial moves: ', initialMoves);
+      return state;
+    }
+    let newBoardSettings = Object.assign({}, state.gameSettings.boardSettings, {initialMoves: action.payload})
+    let newGameSettings = Object.assign({}, state.gameSettings, {boardSettings: newBoardSettings})
+    let newState = Object.assign({}, state, {gameSettings: newGameSettings})
+    return newState;
   }
 
   return state;
