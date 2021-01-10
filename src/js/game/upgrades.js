@@ -1,5 +1,6 @@
 import * as UPGRADE_TYPE from "../constants/upgradeTypes";
 import _ from "lodash";
+import { recomputeBoardSettingsCache } from '../game/boards'
 
 export const initialUpgrades = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -48,7 +49,7 @@ const SHOP_X_UPGRADE_COSTS = {
 };
 
 const SHOP_O_UPGRADE_COSTS = {
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: [100, 750],
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000]
 };
 
@@ -121,6 +122,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
     mutableGameSettings.boardSettings.numRows = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
     mutableGameSettings.boardSettings.numCols = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
     mutableGameSettings.boardSettings.initialMoves = [];
+    recomputeBoardSettingsCache(mutableGameSettings.boardSettings);
   }
 }
 

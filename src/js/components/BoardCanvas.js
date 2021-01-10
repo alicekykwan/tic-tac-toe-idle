@@ -4,8 +4,9 @@ import Box from '@material-ui/core/Box';
 
 function BoardCanvas(props) {
   const boardColor = '#303030';
-  const gridColor = '#525252';
+  const gridColor = '#575757';
   const playerColor = ['#b09ce4', '#ffab91'];
+  const winColor = '#ffd700';
   let { board, width, height, margin, padding } = props;
   let { numRows, numCols, numMovesMade, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
@@ -37,7 +38,9 @@ function BoardCanvas(props) {
     ctx.stroke();
   };
 
-  const drawPiece = (ctx, rowIdx, colIdx, player) => {
+  const drawPiece = (ctx, cellIdx, player) => {
+    let rowIdx = Math.floor(cellIdx / numCols);
+    let colIdx = cellIdx % numCols;
     let centerX = padding + cellWidth * (colIdx + 0.5);
     let centerY = padding + cellHeight * (rowIdx + 0.5);
     switch (player) {
@@ -63,6 +66,26 @@ function BoardCanvas(props) {
     }
   };
 
+  const drawWin = (ctx, winningGroup) => {
+    ctx.beginPath();
+    ctx.strokeStyle = winColor;
+    ctx.lineWidth = gridThickness;
+    let first = true;
+    for (let cellIdx of winningGroup) {
+      let rowIdx = Math.floor(cellIdx / numCols);
+      let colIdx = cellIdx % numCols;
+      let centerX = padding + cellWidth * (colIdx + 0.5);
+      let centerY = padding + cellHeight * (rowIdx + 0.5);
+      if (first) {
+        first = false;
+        ctx.moveTo(centerX, centerY);
+      } else {
+        ctx.lineTo(centerX, centerY);
+      }
+    }
+    ctx.stroke();
+  }
+
   useEffect(()=>{
     if (drawnBoard === board) return;
     const canvasObj = canvasRef.current;
@@ -78,12 +101,15 @@ function BoardCanvas(props) {
     }
     let numPlayers = 2;
     for (let move=lastPieceDrawn; move<numMovesMade; ++move) {
-      let cellIndex = allMoves[move];
       drawPiece(
         ctx,
-        Math.floor(cellIndex / numCols),
-        cellIndex % numCols,
+        allMoves[move],
         move % numPlayers);
+    }
+    if (numMovesMade === board.movesUntilWin) {
+      for (let winningGroup of board.winningGroups) {
+        drawWin(ctx, winningGroup);
+      }
     }
     setDrawnBoard(board);
   });
