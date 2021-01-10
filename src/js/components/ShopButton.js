@@ -3,9 +3,12 @@ import { connect } from "react-redux";
 import { tickAction } from "../actions/index";
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 
+import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
+import { ThemeProvider } from '@material-ui/core/styles';
 import ShopX from './ShopX';
 import ShopO from './ShopO';
 import '../../css/App.css';
@@ -33,9 +36,9 @@ function ConnectedShopButton({ coins, coinType }) {
 
   const getButtonText = () => {
     if (coinType === 'x') {
-      return `X coins: ${coins.amount_x}`;
+      return `${coins.amount_x} ✘`;
     } else if (coinType === 'o'){
-      return `O coins: ${coins.amount_o}`;
+      return `${coins.amount_o} O`;
     }
   };
 
@@ -47,7 +50,15 @@ function ConnectedShopButton({ coins, coinType }) {
     }
   };
 
-  return (<div>
+  const getThemeElement = (coinType) => {
+    if (coinType === 'x') {
+      return THEME_ELEMENT.SHOP_X;
+    } else if (coinType === 'o') {
+      return THEME_ELEMENT.SHOP_O;
+    }
+  }
+
+  return (<ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, getThemeElement(coinType))}>
     <Button variant="contained" color="primary" onClick={handleClick}
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
       { getButtonText() }
@@ -66,9 +77,11 @@ function ConnectedShopButton({ coins, coinType }) {
         horizontal: 'center',
       }}
     >
-      {getContent()}
+      <Box bgcolor="background.default" className="Shop">
+        {getContent()}
+      </Box>
     </Popover>
-  </div>);
+  </ThemeProvider>);
 }
 
 const ShopButton = connect(mapStateToProps)(ConnectedShopButton);

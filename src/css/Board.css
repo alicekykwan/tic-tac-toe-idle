@@ -18,16 +18,3 @@
   justify-content: center;
   text-align: center;
 }
-
-.cell-text-X {
-  color: salmon;
-}
-
-.cell-text-O {
-  color: lightseagreen;
-}
-
-.cell-text-Win {
-  color: yellow
-}
-

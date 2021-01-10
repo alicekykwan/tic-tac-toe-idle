@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { connect } from "react-redux";
 import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
 import { setInitialMovesAction } from "../actions/index";
+import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
+import { ThemeProvider } from '@material-ui/core/styles';
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import '../../css/TicTacToeGrid.css';
+import '../../css/Board.css';
 import '../../css/SelectionGrid.css';
 
 const mapStateToProps = state => {
@@ -72,41 +75,35 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
     }
   } ,[numRows, numCols]);
 
-  let getClassNameForCell = (cell) => {
-    if (boardState[cell] === "X") {
-      return "cell-text-X";
-    } else if (boardState[cell] === "O") {
-      return "cell-text-O";
+  let getCellColor = (cell) => {
+    if (boardState[cell] === 'X') {
+      return 'text.x';
+    } else if (boardState[cell] === 'O') {
+      return 'text.o';
     } else {
-      return "cell-text-empty";
+      return '';
     }
   }
-  let getTextForCell = (cell) => {
-    if (boardState[cell] === "X") {
-      return "X";
-    } else if (boardState[cell] === "O") {
-      return "O";
+
+  let getCellText = (cell) => {
+    if (boardState[cell] === 'X') {
+      return '✘';
+    } else if (boardState[cell] === 'O') {
+      return 'O';
     } else {
-      return "";
+      return '';
     }
-  }
-  let renderCell = (cell) => {
-    return <div
-        key={`selection-grid-${cell}`}
-        className={getClassNameForCell(cell)}>
-      {getTextForCell(cell)}
-    </div>;
   }
 
   let renderGrid = () => {
     let result = [];
-
     for (let i = 0; i < numRows; i++) {
       let newRow = [];
       for (let j = 0; j < numCols; j++) {
         let cell = i * numCols + j;
         newRow.push(
-          <div key={`row-${i}-col-${j}`} className="selection-cell"
+          <Box key={cell} className="selection-cell"
+              color={getCellColor(cell)}
               style={{
                   width: cellSize,
                   height: cellSize,
@@ -114,8 +111,8 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
               }}
               onClick = {() => makeSelection(cell)}
               disabled={moveOrder.length >= maxNumSelectedCells || boardState[cell] !== ""}>
-            {renderCell(cell)}
-          </div>
+            {getCellText(cell)}
+          </Box>
         );
       }
       result.push(<div key={`row-${i}`} className="selection-row">
@@ -130,11 +127,12 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
   }
 
   return <div key="selection-grid">
-    <div
-        className="selection-grid"
-        style={{width: gridSize, height: gridSize, margin: gridMargin}}>
-        { renderGrid() }
-    </div>
+    <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.BOARD)}>
+      <Box className="selection-grid" boxShadow={3} bgcolor="background.default"
+          style={{width: gridSize, height: gridSize, margin: gridMargin}}>
+          { renderGrid() }
+      </Box>
+    </ThemeProvider>
     <Button variant="contained" color="primary" onClick = {clearSelection}>Clear</Button>
     <Button variant="contained" color="primary" onClick = {saveAndApply}>Save and Apply</Button>
     <Button variant="contained" color="primary" onClick = {loadLastSaved}>Load Last Saved</Button>
