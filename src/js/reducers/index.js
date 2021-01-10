@@ -1,7 +1,7 @@
 import * as ACTION_TYPE from "../constants/actionTypes";
 import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
 import { initialUpgrades, updateGameSettings, performUpgrade } from "../game/upgrades";
-import { createNewBoard, performOneMove } from "../game/boards";
+import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from "../game/boards";
 import _ from "lodash";
 
 const initialGameSettings = {
@@ -57,12 +57,13 @@ function rootReducer(state = initialState, action) {
     let initialMoves = action.payload;
     if (initialMoves.length > state.upgrades[UPGRADE_SHOP_O_PICK_INITIAL_MOVES]) {
       // Player should not be able to do this normally.
-      console.log('Rejecting initial moves: ', initialMoves);
+      console.log('Cannot set initial moves to ', initialMoves);
       return state;
     }
-    let newBoardSettings = Object.assign({}, state.gameSettings.boardSettings, {initialMoves: action.payload})
-    let newGameSettings = Object.assign({}, state.gameSettings, {boardSettings: newBoardSettings})
-    let newState = Object.assign({}, state, {gameSettings: newGameSettings})
+    let newBoardSettings = Object.assign({}, state.gameSettings.boardSettings, {initialMoves: action.payload});
+    recomputeBoardSettingsCache(newBoardSettings);
+    let newGameSettings = Object.assign({}, state.gameSettings, {boardSettings: newBoardSettings});
+    let newState = Object.assign({}, state, {gameSettings: newGameSettings});
     return newState;
   }
 

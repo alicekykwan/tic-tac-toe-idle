@@ -1,6 +1,5 @@
 import _ from "lodash";
 
-// TODO: Memoize this
 const computeWinningGroups = (boardSettings) => {
   let winningGroups = [];
 
@@ -36,29 +35,73 @@ const computeWinningGroups = (boardSettings) => {
   return winningGroups;
 };
 
-const resetBoard = (board, boardSettings) => {
-  board.numRows = boardSettings.numRows;
-  board.numCols = boardSettings.numCols;
-  board.numCells = boardSettings.numRows * boardSettings.numCols;
-  board.boardState = new Array(board.numCells).fill('');
-  board.winState = new Array(board.numCells).fill(false);
-  board.currentPlayer = 'X';
-  board.winner = '';
-  //board.allMoves = _.shuffle(_.range(board.numCells));
-  board.numMovesMade = 0;
-  board.winningGroups = computeWinningGroups(boardSettings);
-
-  let used = new Array(board.numCells).fill(false);
-  for (let cell of boardSettings.initialMoves) {
+const computeRemainingMoves = (boardSettings) => {
+  let { numRows, numCols, initialMoves } = boardSettings;
+  let numCells = numRows * numCols;
+  let used = new Array(numCells).fill(false);
+  for (let cell of initialMoves) {
     used[cell] = true;
   }
   let remainingMoves = [];
-  for (let cell=0; cell<board.numCells; ++cell) {
+  for (let cell=0; cell<numCells; ++cell) {
     if (!used[cell]) {
       remainingMoves.push(cell);
     }
   }
-  board.allMoves = boardSettings.initialMoves.concat(_.shuffle(remainingMoves));
+  return remainingMoves;
+}
+
+export const recomputeBoardSettingsCache = (mutableBoardSettings) => {
+  mutableBoardSettings.cache = {
+    winningGroups: computeWinningGroups(mutableBoardSettings),
+    remainingMoves: computeRemainingMoves(mutableBoardSettings),
+  };
+};
+
+
+const resetBoard = (board, boardSettings) => {
+  board.numRows = boardSettings.numRows;
+  board.numCols = boardSettings.numCols;
+  let numPlayers = 2;
+  board.numPlayers = numPlayers;
+  board.numMovesMade = 0;
+
+  // Determine entire sequence of moves.
+  board.allMoves = boardSettings.initialMoves.concat(
+      _.shuffle(boardSettings.cache.remainingMoves));
+  let numCells = board.numRows * board.numCols;
+  let t = new Array(numCells).fill(-1);
+  for (let i=0; i<board.allMoves.length; ++i) {
+    t[board.allMoves[i]] = i;
+  }
+
+  // Determine the winner from sequence of moves.
+  board.movesUntilWin = numCells + 1;
+  board.winningGroups = [];
+  board.winner = -1;  // redundant, but helpful
+  for (let winningGroup of boardSettings.cache.winningGroups) {
+    let player = t[winningGroup[0]] % numPlayers;
+    let good = true;
+    let last = 0;
+    for (let move of winningGroup) {
+      if (t[move] < 0 || t[move] % numPlayers !== player) {
+        good = false;
+        break;
+      }
+      last = Math.max(last, t[move] + 1);
+    }
+    if (!good || last > board.movesUntilWin) {
+      continue;
+    }
+    if (last < board.movesUntilWin) {
+      board.movesUntilWin = last;
+      board.winningGroups = [];
+      board.winner = player;
+    }
+    if (last === board.movesUntilWin) {
+      board.winningGroups.push(winningGroup);
+    }
+  }
 };
 
 export const createNewBoard = (boardSettings) => {
@@ -67,24 +110,12 @@ export const createNewBoard = (boardSettings) => {
   return board;
 };
 
-let checkWinningGroups = (board) => {
-  let player = board.currentPlayer;
-  let res = []
-  for (let winningGroup of board.winningGroups) {
-    if (winningGroup.every((x) => board.boardState[x] === player)) {
-      res.push(winningGroup)
-    }
-  }
-  return res;
-}
-
 const doOneMoveOnBoard = (board, mutableGameState) => {
   let { coins, gameSettings } = mutableGameState;
   let { boardSettings } = gameSettings
-  let { currentPlayer, boardState, winner } = board;
 
-  if (winner !== '') {
-    // Already has winner.
+  if (board.numMovesMade === board.movesUntilWin) {
+    // Has winner.
     resetBoard(board, boardSettings);
     return;
   }
@@ -95,33 +126,25 @@ const doOneMoveOnBoard = (board, mutableGameState) => {
     return;
   }
 
-  // Place next move.
-  let nextMove = board.allMoves[board.numMovesMade++];
-  boardState[nextMove] = currentPlayer;
+  // Progress the next move.
+  board.numMovesMade += 1;
 
   // Check winner and award coins.
-  let winningGroups = checkWinningGroups(board);
-  if (winningGroups.length > 0) {
-    board.winner = currentPlayer;
-    for (let group of winningGroups) {
-      for (let cell of group) {
-        board.winState[cell] = true;
-      }
-    }
-    board.winner = currentPlayer;
+  if (board.numMovesMade === board.movesUntilWin) {
     let coinsWon = gameSettings.coinsPerWin;
-    for (let x = 1; x < winningGroups.length; ++x) {
+    for (let x = 1; x < board.winningGroups.length; ++x) {
       coinsWon *= gameSettings.criticalWinMultiplier;
     }
-    if (board.winner === 'X') {
-      coins.amount_x += coinsWon;
-    } else if (board.winner === 'O') {
-      coins.amount_o += coinsWon;
+    switch (board.winner) {
+      case 0:
+        coins.amount_x += coinsWon;
+        break;
+      case 1:
+        coins.amount_o += coinsWon;
+        break;
+      default:
     }
   }
-
-  // Switch players
-  board.currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
 }
 
 export const performOneMove = (mutableState) => {
