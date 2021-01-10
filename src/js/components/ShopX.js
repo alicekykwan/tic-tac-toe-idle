@@ -41,14 +41,12 @@ function ConnectedShopX({ coins, upgrades, purchaseUpgrade }) {
     return <div key={`upgrade-${upgradeType}`}>{res}</div>;
   };
 
-  return (
-    <div className="Shop">
-      { renderUpgrade(UPGRADE_SHOP_X_GAME_SPEED) }
-      { renderUpgrade(UPGRADE_SHOP_X_COINS_PER_WIN) }
-      { renderUpgrade(UPGRADE_SHOP_X_BOARD_COUNT) }
-      { renderUpgrade(UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER) }
-    </div>
-  );
+  return [
+    renderUpgrade(UPGRADE_SHOP_X_GAME_SPEED),
+    renderUpgrade(UPGRADE_SHOP_X_COINS_PER_WIN),
+    renderUpgrade(UPGRADE_SHOP_X_BOARD_COUNT),
+    renderUpgrade(UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER)
+  ];
 }
 
 const ShopX = connect(

@@ -8,8 +8,6 @@ import '../../css/Shop.css';
 import _ from "lodash";
 import SelectionGrid from './SelectionGrid';
 
-
-
 const mapStateToProps = state => {
   return {
     coins: state.coins,
@@ -50,13 +48,11 @@ function ConnectedShopO({ coins, upgrades, boardSettings, purchaseUpgrade, setIn
     return <div key={`upgrade-${upgradeType}`}>{res}</div>;
   };
 
-  return (
-    <div className="Shop">
-      { renderUpgrade(UPGRADE_SHOP_O_BOARD_SIZE) }
-      { renderUpgrade(UPGRADE_SHOP_O_PICK_INITIAL_MOVES) }
-      <SelectionGrid key="select-initial-moves" />
-    </div>
-  );
+  return [
+    renderUpgrade(UPGRADE_SHOP_O_BOARD_SIZE),
+    renderUpgrade(UPGRADE_SHOP_O_PICK_INITIAL_MOVES),
+    <SelectionGrid key="select-initial-moves" />
+  ];
 };
 
 const ShopO = connect(

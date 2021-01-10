@@ -12,7 +12,7 @@
 
 .selection-cell {
   display: flex;
-  border: 2px #777 solid;
+  border: 2px grey solid;
   align-items: center;
   justify-content: center;
   text-align: center;
