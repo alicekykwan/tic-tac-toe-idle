@@ -10,8 +10,8 @@ const initialGameSettings = {
 updateGameSettings(initialGameSettings, initialUpgrades);
 
 const initialCoins = {
-  amount_x: 1000000,
-  amount_o: 100000
+  amount_x: 100000000,
+  amount_o: 100000000
 };
 
 const initialState = {

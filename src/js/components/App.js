@@ -29,8 +29,8 @@ function ConnectedApp({ coins, tick }) {
   useEffect(() => { setInterval(tick, 50); } ,[]);
 
   return [
-    <CssBaseline />,
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.MAIN)}>
+      <CssBaseline />
       <Box bgcolor="background.default" key="app" className="App">
         <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.HEADER)}>
           <Box bgcolor="background.default" key="app-header" className="App-header" color="text.primary">

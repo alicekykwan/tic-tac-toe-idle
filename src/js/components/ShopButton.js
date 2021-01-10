@@ -36,7 +36,7 @@ function ConnectedShopButton({ coins, coinType }) {
 
   const getButtonText = () => {
     if (coinType === 'x') {
-      return `${coins.amount_x} ✘`;
+      return `${coins.amount_x} X`;
     } else if (coinType === 'o'){
       return `${coins.amount_o} O`;
     }
