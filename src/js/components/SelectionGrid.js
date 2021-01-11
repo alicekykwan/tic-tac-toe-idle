@@ -28,14 +28,17 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
 
   let clearSelection = () => {
     setSelectedMoves([]);
+    setInitialMoves([]);
   };
 
-  let saveAndApply = () => {
-    setInitialMoves(selectedMoves);
-  };
-
-  let loadLastSaved = () => {
-    setSelectedMoves(initialMoves);
+  let undoLastSelection = () => {
+    if (selectedMoves.length === 0) {
+      return;
+    }
+    let newSelectedMoves = [...selectedMoves];
+    newSelectedMoves.pop();
+    setSelectedMoves(newSelectedMoves);
+    setInitialMoves(newSelectedMoves);
   };
 
   let makeSelection = (cell) => {
@@ -47,13 +50,14 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
       // Don't allow selecting an already selected cell.
       return;
     }
-    setSelectedMoves([...selectedMoves, cell]);
-  }
+    let newSelectedMoves = [...selectedMoves, cell];
+    setSelectedMoves(newSelectedMoves);
+    setInitialMoves(newSelectedMoves);
+  };
 
   useEffect(() => {
     if (oldRows !== numRows || oldCols !== numCols) {
-      console.log('resize detected, clearing selection');
-      clearSelection();
+      setSelectedMoves([]);
       setOldRows(numRows);
       setOldCols(numCols);
     }
@@ -68,9 +72,14 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
         numRows={numRows} numCols={numCols} selectedMoves={selectedMoves}
         maxNumSelectedCells={maxNumSelectedCells}
         makeSelection={makeSelection}/>
-    <Button variant="contained" color="primary" onClick = {clearSelection}>Clear</Button>
-    <Button variant="contained" color="primary" onClick = {saveAndApply}>Save and Apply</Button>
-    <Button variant="contained" color="primary" onClick = {loadLastSaved}>Load Last Saved</Button>
+    <Button variant="contained" color="primary"
+        onClick = {clearSelection} disabled={selectedMoves.length===0}>
+      Clear
+    </Button>
+    <Button variant="contained" color="primary"
+        onClick = {undoLastSelection} disabled={selectedMoves.length===0}>
+      Undo
+    </Button>
   </div>;
 }
 

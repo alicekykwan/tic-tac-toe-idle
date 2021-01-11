@@ -70,6 +70,8 @@ const resetBoard = (board, boardSettings) => {
   // Determine entire sequence of moves.
   board.allMoves = boardSettings.initialMoves.concat(
       _.shuffle(boardSettings.cache.remainingMoves));
+
+  // t[x] is the move sequence number that fills cell x
   let numCells = board.numRows * board.numCols;
   let t = new Array(numCells).fill(-1);
   for (let i=0; i<board.allMoves.length; ++i) {
