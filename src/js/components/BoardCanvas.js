@@ -7,7 +7,7 @@ function BoardCanvas(props) {
   const gridColor = '#575757';
   const playerColor = ['#b09ce4', '#ffab91'];
   const winColor = '#ffd700';
-  let { board, width, height, margin, padding } = props;
+  let { board, lastTickTime, width, height, margin, padding } = props;
   let { numRows, numCols, numMovesMade, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
   let cellHeight = (height-2*padding) / numRows;
@@ -16,6 +16,7 @@ function BoardCanvas(props) {
   let pieceHeight = 0.5 * cellHeight;
   let pieceThickness = cellWidth / 5;
   let canvasRef = useRef(null);
+  let [ drawnTick, setDrawnTick ] = useState(null);
   let [ drawnBoard, setDrawnBoard ] = useState(null);
 
   const drawGrid = (ctx) => {
@@ -87,30 +88,33 @@ function BoardCanvas(props) {
   }
 
   useEffect(()=>{
-    if (drawnBoard === board) return;
+    if (drawnTick === lastTickTime) {
+      return;
+    }
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext('2d');
     let lastPieceDrawn = 0; // number of valid pieces already drawn
     if (drawnBoard === null ||
         board.numMovesMade < drawnBoard.numMovesMade ||
-        board.allMoves !== drawnBoard.allMoves) {
+        board.id !== drawnBoard.id) {
       drawGrid(ctx);
       lastPieceDrawn = 0;
     } else {
       lastPieceDrawn = drawnBoard.numMovesMade;
     }
     let numPlayers = 2;
-    for (let move=lastPieceDrawn; move<numMovesMade; ++move) {
+    for (let move=lastPieceDrawn; move<board.numMovesMade; ++move) {
       drawPiece(
         ctx,
         allMoves[move],
         move % numPlayers);
     }
-    if (numMovesMade === board.movesUntilWin) {
+    if (board.numMovesMade === board.movesUntilWin) {
       for (let winningGroup of board.winningGroups) {
         drawWin(ctx, winningGroup);
       }
     }
+    setDrawnTick(lastTickTime);
     setDrawnBoard(board);
   });
 

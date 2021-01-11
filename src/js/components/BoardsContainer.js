@@ -1,20 +1,21 @@
 import React from "react";
 import { connect } from "react-redux";
 import BoardCanvas from "./BoardCanvas";
-import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
-import { ThemeProvider } from '@material-ui/core/styles';
 import '../../css/App.css';
 
 const mapStateToProps = state => {
-  return { boards: state.boards };
+  return {
+    boards: state.boards,
+    lastTickTime: state.lastTickTime,
+  };
 };
 
-const ConnectedBoardsContainer = ({ boards }) => {
+const ConnectedBoardsContainer = ({ boards, lastTickTime }) => {
   return (
     <div className="boards-container">
       {boards.map((board, i) => (
-        <BoardCanvas key={i} board={board}
-        width={240} height={240} margin={20} padding={10} />
+        <BoardCanvas key={i} board={board} lastTickTime={lastTickTime}
+            width={240} height={240} margin={20} padding={10} />
       ))}
     </div>
   );
