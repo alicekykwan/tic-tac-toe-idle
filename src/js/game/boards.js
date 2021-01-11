@@ -65,6 +65,7 @@ const resetBoard = (board, boardSettings) => {
   let numPlayers = 2;
   board.numPlayers = numPlayers;
   board.numMovesMade = 0;
+  board.id = Math.random();
 
   // Determine entire sequence of moves.
   board.allMoves = boardSettings.initialMoves.concat(
