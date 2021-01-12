@@ -1,4 +1,5 @@
-import _ from "lodash";
+import * as COIN_TYPE from '../constants/coinTypes';
+import _ from 'lodash';
 
 const computeWinningGroups = (boardSettings) => {
   let winningGroups = [];
@@ -140,10 +141,10 @@ const doOneMoveOnBoard = (board, mutableGameState) => {
     }
     switch (board.winner) {
       case 0:
-        coins.amount_x += coinsWon;
+        coins[COIN_TYPE.COIN_TYPE_X] += coinsWon;
         break;
       case 1:
-        coins.amount_o += coinsWon;
+        coins[COIN_TYPE.COIN_TYPE_O] += coinsWon;
         break;
       default:
     }
@@ -152,4 +153,6 @@ const doOneMoveOnBoard = (board, mutableGameState) => {
 
 export const performOneMove = (mutableState) => {
   mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
+  // TODO: Check for super-wins among the superboards.
+  // Initially just assume max of one super-board at boards[0:9]
 }

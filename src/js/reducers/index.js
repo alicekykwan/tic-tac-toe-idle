@@ -1,21 +1,36 @@
 import * as ACTION_TYPE from "../constants/actionTypes";
+import * as COIN_TYPE from "../constants/coinTypes";
 import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
 import { initialUpgrades, updateGameSettings, performUpgrade } from "../game/upgrades";
 import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from "../game/boards";
 import _ from "lodash";
 
 const initialGameSettings = {
-  boardSettings: {}
+  boardSettings: {},
+  superBoardSettings: {},
 };
 updateGameSettings(initialGameSettings, initialUpgrades);
 
 const initialCoins = {
-  amount_x: 100000000,
-  amount_o: 100000000
+  [COIN_TYPE.COIN_TYPE_X]: 100000000,
+  [COIN_TYPE.COIN_TYPE_O]: 100000000,
+  [COIN_TYPE.COIN_TYPE_SUPER_X]: 100000000,
+  [COIN_TYPE.COIN_TYPE_SUPER_O]: 100000000,
+};
+
+const initialUnlocks = {
+  // progressLevel | super shops | star shop | triangle shops
+  // --------------+-------------+-----------+-----------------
+  // 0             | hidden      | hidden    | hidden
+  // 1             | shown       | hidden    | hidden
+  // 2             | shown       | shown     | hidden
+  // 3             | shown       | shown     | shown
+  progressLevel: 0,
 };
 
 const initialState = {
   upgrades: initialUpgrades,
+  unlocks: initialUnlocks,
   gameSettings: initialGameSettings,
   boards: [createNewBoard(initialGameSettings.boardSettings)],
   coins: initialCoins,
@@ -33,6 +48,9 @@ function rootReducer(state = initialState, action) {
     let mutableState = _.cloneDeep(state);
     while (mutableState.boards.length < mutableState.gameSettings.boardCount) {
       mutableState.boards.push(createNewBoard(mutableState.gameSettings.boardSettings));
+    }
+    if (mutableState.unlocks.progressLevel === 0 && mutableState.boards.length >= 9) {
+      mutableState.unlocks.progressLevel = 1;
     }
     let ticksProcessed = 0;
     while (mutableState.lastTickTime + tickDuration <= currTime) {
