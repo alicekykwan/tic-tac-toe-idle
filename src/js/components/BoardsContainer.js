@@ -15,7 +15,7 @@ const ConnectedBoardsContainer = ({ boards, lastTickTime }) => {
     <div className="boards-container">
       {boards.map((board, i) => (
         <BoardCanvas key={i} board={board} lastTickTime={lastTickTime}
-            width={240} height={240} margin={20} padding={10} />
+            width={240} height={240} margin={16} padding={16} />
       ))}
     </div>
   );

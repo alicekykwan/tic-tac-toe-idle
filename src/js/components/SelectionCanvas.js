@@ -1,18 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Box from '@material-ui/core/Box';
 
-// display already selected moves
-// 
-// listen for:
-  // on mouse move to hover and displays the correct color base on which cell user is hovering over
-  // on mouse up determine if click correspnds to a cell and notify the parent
-      // parents will update the boardstate and canvas will reflect the listened update accordingly
-
-// 
-
-
 function SelectionCanvas({
-    width, height, margin, padding, numRows, numCols,
+    width, height, padding, numRows, numCols,
     selectedMoves, maxNumSelectedCells, makeSelection }) {
   const boardColor = '#303030';
   const gridColor = '#575757';
@@ -138,7 +128,7 @@ function SelectionCanvas({
     setHoverCell(-1);
   };
 
-  return <Box boxShadow={10} style={{width, height, margin}}>
+  return <Box boxShadow={10} style={{width, height}}>
     <canvas ref={canvasRef} width={width} height={height}
         onMouseUp={onMouseUp} onMouseMove={onMouseMove} onMouseOut={onMouseOut} />
   </Box>;

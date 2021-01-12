@@ -8,7 +8,7 @@ function BoardCanvas(props) {
   const playerColor = ['#b09ce4', '#ffab91'];
   const winColor = '#ffd700';
   let { board, lastTickTime, width, height, margin, padding } = props;
-  let { numRows, numCols, numMovesMade, allMoves } = board;
+  let { numRows, numCols, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
   let cellHeight = (height-2*padding) / numRows;
   let gridThickness = cellWidth / 8;

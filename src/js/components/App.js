@@ -28,7 +28,7 @@ function mapDispatchToProps(dispatch) {
 function ConnectedApp({ coins, tick }) {
   useEffect(() => { setInterval(tick, 50); } ,[]);
 
-  return [
+  return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.MAIN)}>
       <CssBaseline />
       <Box bgcolor="background.default" key="app" className="App">
@@ -49,7 +49,7 @@ function ConnectedApp({ coins, tick }) {
         </Box>
       </Box>
     </ThemeProvider>
-  ];
+  );
 }
 
 const App = connect(mapStateToProps, mapDispatchToProps)(ConnectedApp);

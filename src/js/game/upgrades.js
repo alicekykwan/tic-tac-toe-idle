@@ -1,5 +1,4 @@
 import * as UPGRADE_TYPE from "../constants/upgradeTypes";
-import _ from "lodash";
 import { recomputeBoardSettingsCache } from '../game/boards'
 
 export const initialUpgrades = {
@@ -87,25 +86,35 @@ export const getUpgradeName = (upgradeType) => {
 export const getUpgradeDescription = (upgradeType, upgradeLevel) => {
   switch (upgradeType) {
     case UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT:
-      return `${ BASE_BOARD_COUNT + upgradeLevel } total game board`;
-    case UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN:
-      return `Gain ${ BASE_COINS_PER_WIN + upgradeLevel } coins per win`;
-    case UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED:
-      return `${ BASE_GAME_SPEED + upgradeLevel }x game speed`;
-    case UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER:
-      if (upgradeLevel === 0) {
-        return 'No effect.'
+      let gameBoards = BASE_BOARD_COUNT + upgradeLevel;
+      if (gameBoards === 1) {
+        return <span><b>{gameBoards}</b> game board</span>;
       }
-      return `Gain ${ BASE_CRITICAL_WIN_MULTIPLIER + upgradeLevel }x more coins when winning in more than one way`;
+      return <span><b>{gameBoards}</b> game boards</span>;
+    case UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN:
+      return <span>Gain <b>{BASE_COINS_PER_WIN + upgradeLevel}</b> coins per win</span>;
+    case UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED:
+      return <span><b>{BASE_GAME_SPEED + upgradeLevel}</b>x game speed</span>;
+    case UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER:
+      let criticalWinMultiplier = BASE_CRITICAL_WIN_MULTIPLIER + upgradeLevel;
+      if (criticalWinMultiplier === 1) {
+        return 'No effect'
+      }
+      return (
+        <span>
+          <b>{criticalWinMultiplier}</b>x more coins when winning in more than one way
+        </span>
+      );
     case UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE:
-      return `${ BASE_BOARD_SIZE + upgradeLevel } by ${ BASE_BOARD_SIZE + upgradeLevel } board size`; 
+      let boardSize = BASE_BOARD_SIZE + upgradeLevel;
+      return <span><b>{boardSize}</b> by <b>{boardSize}</b> board size</span>
     case UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES:
       if (upgradeLevel === 0) {
-        return 'No effect.'
+        return 'No effect';
       } else if (upgradeLevel === 1) {
-        return `First move is no longer random.`;
+        return 'First move is no longer random';
       } else {
-        return `First ${ upgradeLevel } moves are no longer random.`;
+        return <span>First <b>{upgradeLevel}</b> moves are no longer random</span>;
       }
     default:
       return `Unknown upgrade type: ${upgradeType}`

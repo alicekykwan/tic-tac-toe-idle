@@ -11,9 +11,6 @@ import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
 import { ThemeProvider } from '@material-ui/core/styles';
 import ShopX from './ShopX';
 import ShopO from './ShopO';
-import '../../css/App.css';
-
-
 
 const mapStateToProps = state => {
   return {
@@ -77,7 +74,7 @@ function ConnectedShopButton({ coins, coinType }) {
         horizontal: 'center',
       }}
     >
-      <Box bgcolor="background.default" className="Shop">
+      <Box bgcolor="background.default">
         {getContent()}
       </Box>
     </Popover>
