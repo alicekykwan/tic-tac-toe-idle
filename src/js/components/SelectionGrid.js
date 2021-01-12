@@ -3,8 +3,9 @@ import { connect } from "react-redux";
 import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
 import { setInitialMovesAction } from "../actions/index";
 import SelectionCanvas from "./SelectionCanvas";
-import Button from '@material-ui/core/Button';
-import '../../css/SelectionGrid.css';
+import { Box, IconButton } from '@material-ui/core';
+import DeleteIcon from '@material-ui/icons/Delete';
+import UndoIcon from '@material-ui/icons/Undo';
 
 const mapStateToProps = state => {
   return {
@@ -67,22 +68,19 @@ function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
     return <div key="selection-grid"></div>;
   }
 
-  return <div key="selection-grid">
-    <SelectionCanvas key={0} width={240} height={240} margin={20} padding={10}
-        numRows={numRows} numCols={numCols} selectedMoves={selectedMoves}
-        maxNumSelectedCells={maxNumSelectedCells}
-        makeSelection={makeSelection}/>
-    <Button variant="contained" color="primary"
-        onClick = {clearSelection} disabled={selectedMoves.length===0}>
-      Clear
-    </Button>
-    <Button variant="contained" color="primary"
-        onClick = {undoLastSelection} disabled={selectedMoves.length===0}>
-      Undo
-    </Button>
-  </div>;
+  return (
+    <Box display='flex' flexDirection='row' m={1} justifyContent='center' alignItems='center'>
+      <SelectionCanvas key={0} width={240} height={240} padding={10}
+          numRows={numRows} numCols={numCols} selectedMoves={selectedMoves}
+          maxNumSelectedCells={maxNumSelectedCells}
+          makeSelection={makeSelection}/>
+      <Box display='flex' flexDirection='column'>
+        <IconButton onClick={undoLastSelection} disabled={selectedMoves.length===0} children={<UndoIcon />} />
+        <IconButton onClick={clearSelection} disabled={selectedMoves.length===0} children={<DeleteIcon />} />
+      </Box>
+    </Box>
+  );
 }
-
 
 const SelectionGrid = connect(
   mapStateToProps,

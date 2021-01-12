@@ -61,13 +61,15 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
     [THEME_ELEMENT.SHOP_X]: createMuiTheme({
       palette: {
         text: {
-          primary: '#ddd'
+          primary: '#000',
+          secondary: '#333',
         },
         background: {
           default: '#504874',
+          paper: '#7d73a3',
         },
         primary: {
-          main: '#b09ce4',
+          main: COLOR_X,
           contrastText: '#000',
         },
       },
@@ -75,10 +77,12 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
     [THEME_ELEMENT.SHOP_O]: createMuiTheme({
       palette: {
         text: {
-          primary: '#ddd'
+          primary: '#000',
+          secondary: '#333',
         },
         background: {
-          default: '#8D6E63',
+          default: '#8d6e63',
+          paper: '#be9c91',
         },
         primary: {
           main: COLOR_O,
