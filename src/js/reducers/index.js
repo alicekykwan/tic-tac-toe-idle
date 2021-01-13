@@ -7,7 +7,10 @@ import _ from "lodash";
 
 const initialGameSettings = {
   boardSettings: {},
-  superBoardSettings: {},
+  superBoardSettings: {
+    numRows: 3,
+    numCols: 3,
+  },
 };
 updateGameSettings(initialGameSettings, initialUpgrades);
 
@@ -35,6 +38,7 @@ const initialState = {
   boards: [createNewBoard(initialGameSettings.boardSettings)],
   coins: initialCoins,
   lastTickTime: Date.now(),
+  paused: false,
   version: 1
 };
 
@@ -83,6 +87,11 @@ function rootReducer(state = initialState, action) {
     let newGameSettings = Object.assign({}, state.gameSettings, {boardSettings: newBoardSettings});
     let newState = Object.assign({}, state, {gameSettings: newGameSettings});
     return newState;
+  }
+
+  if (action.type === ACTION_TYPE.ACTION_SET_PAUSED) {
+    let { paused } = action.payload;
+    return Object.assign({}, state, {paused});
   }
 
   return state;
