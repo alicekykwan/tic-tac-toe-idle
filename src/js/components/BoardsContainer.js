@@ -6,23 +6,21 @@ import SuperBoardCanvas from "./SuperBoardCanvas";
 
 const mapStateToProps = state => {
   return {
-    superBoardSettings: state.gameSettings.superBoardSettings,
+    appliedSBSettings: state.appliedSBSettings,
     superBoards: state.superBoards,
     boards: state.boards,
     lastTickTime: state.lastTickTime,
   };
 };
 
-const ConnectedBoardsContainer = ({ superBoardSettings, superBoards, boards, lastTickTime }) => {
+const ConnectedBoardsContainer = ({ appliedSBSettings, superBoards, boards, lastTickTime }) => {
   let items = [];
-
-  let boardsPerSuperBoard = superBoardSettings.numRows * superBoardSettings.numCols;
-
+  let boardsPerSuperBoard = appliedSBSettings.numRows * appliedSBSettings.numCols;
   for (let i=0; i<superBoards.length; ++i) {
     items.push(
       <SuperBoardCanvas key={`super${i}`} lastTickTime={lastTickTime}
           boards={boards.slice(i*boardsPerSuperBoard, (i+1)*boardsPerSuperBoard)}
-          superBoardSettings={superBoardSettings}
+          appliedSBSettings={appliedSBSettings}
           superBoard={superBoards[i]}
           width={496} height={496} padding={16} />);
   }

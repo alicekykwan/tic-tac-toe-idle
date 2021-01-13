@@ -9,7 +9,7 @@ function BoardCanvas(props) {
   const playerColor = [COLOR_X, COLOR_O];
   const winColor = COLOR_WIN;
   let { board, lastTickTime, width, height, padding } = props;
-  let { numRows, numCols, allMoves } = board;
+  let { numRows, numCols, numPlayers, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
   let cellHeight = (height-2*padding) / numRows;
   let gridThickness = cellWidth / 8;
@@ -103,7 +103,6 @@ function BoardCanvas(props) {
     } else {
       lastPieceDrawn = drawnBoard.numMovesMade;
     }
-    let numPlayers = 2;
     for (let move=lastPieceDrawn; move<board.numMovesMade; ++move) {
       drawPiece(
         ctx,
