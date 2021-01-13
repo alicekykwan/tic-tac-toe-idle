@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import { tickAction } from "../actions/index";
 import Popover from '@material-ui/core/Popover';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';

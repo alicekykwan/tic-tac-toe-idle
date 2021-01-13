@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Box from '@material-ui/core/Box';
+import { COLOR_X, COLOR_O, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
 function SelectionCanvas({
     width, height, padding, numRows, numCols,
     selectedMoves, maxNumSelectedCells, makeSelection }) {
-  const boardColor = '#303030';
-  const gridColor = '#575757';
-  const playerColor = ['#b09ce4', '#ffab91'];
+  const boardColor = COLOR_BOARD;
+  const gridColor = COLOR_GRID;
+  const playerColor = [COLOR_X, COLOR_O];
   const hoverColor = ['#555555', '#ffff00'];
   let cellWidth = (width-2*padding) / numCols;
   let cellHeight = (height-2*padding) / numRows;

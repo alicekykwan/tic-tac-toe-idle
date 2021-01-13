@@ -1,6 +1,6 @@
 
 import { createMuiTheme } from '@material-ui/core/styles';
-
+import { COLOR_X, COLOR_O } from '../constants/colors';
 
 export const THEME_TYPE = {
   NORMAL: 'normal',
@@ -13,10 +13,6 @@ export const THEME_ELEMENT = {
   SHOP_O: 'shopo',
   BOARD: 'board',
 };
-
-const COLOR_X = '#b09ce4';
-const COLOR_O = '#ffab91';
-const COLOR_WIN = '#ffc107';
 
 const THEMES_BY_TYPE_THEN_ELEMENT = {
   [THEME_TYPE.NORMAL]: {
@@ -33,36 +29,23 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           default: '#424242',
         },
         text: {
-          primary: '#ccc',
+          primary: '#cccccc',
         },
         primary: {
           main: '#b2ebf2',
-          contrastText: '#000',
+          contrastText: '#000000',
         },
         secondary: {
-          main: '#888',
-          contrastText: '#000',
-        },
-      },
-    }),
-    [THEME_ELEMENT.BOARD]: createMuiTheme({
-      palette: {
-        text: {
-          win: COLOR_WIN,
-          x: COLOR_X,
-          o: COLOR_O,
-          empty: '#000'
-        },
-        background: {
-          default: '#303030',
+          main: '#888888',
+          contrastText: '#000000',
         },
       },
     }),
     [THEME_ELEMENT.SHOP_X]: createMuiTheme({
       palette: {
         text: {
-          primary: '#000',
-          secondary: '#333',
+          primary: '#000000',
+          secondary: '#333333',
         },
         background: {
           default: '#504874',
@@ -70,15 +53,15 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
         },
         primary: {
           main: COLOR_X,
-          contrastText: '#000',
+          contrastText: '#000000',
         },
       },
     }),
     [THEME_ELEMENT.SHOP_O]: createMuiTheme({
       palette: {
         text: {
-          primary: '#000',
-          secondary: '#333',
+          primary: '#000000',
+          secondary: '#333333',
         },
         background: {
           default: '#8d6e63',
@@ -86,7 +69,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
         },
         primary: {
           main: COLOR_O,
-          contrastText: '#000',
+          contrastText: '#000000',
         },
       },
     }),
