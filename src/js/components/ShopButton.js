@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { connect } from "react-redux";
-import Popover from '@material-ui/core/Popover';
+import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
+import Fade from '@material-ui/core/Fade';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import * as COIN_TYPE from "../constants/coinTypes";
@@ -20,17 +21,20 @@ const mapStateToProps = state => {
   };
 };
 
-function ConnectedShopButton({ coins, coinType }) {
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+function ConnectedShopButton({ menuType, menuOpened, setMenuOpened, anchorEl, setAnchorEl, coins, coinType }) {
+  const open = (menuOpened === menuType);
 
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
+    console.log(menuType, menuOpened, anchorEl);
+    if (menuOpened === menuType) {
+      setMenuOpened(null);
+      setAnchorEl(null);
+      console.log(null);
+    } else {
+      setMenuOpened(menuType);
+      setAnchorEl(event.currentTarget);
+      console.log(menuType);
+    }
   };
 
   const getButtonText = () => {
@@ -82,24 +86,15 @@ function ConnectedShopButton({ coins, coinType }) {
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
       { getButtonText() }
     </Button>
-    <Popover
-      id={`shop-${coinType}`}
-      open={open}
-      anchorEl={anchorEl}
-      onClose={handleClose}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'center',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'center',
-      }}
-    >
-      <Box bgcolor="background.default">
-        {getContent()}
-      </Box>
-    </Popover>
+    <Popper open={menuOpened===menuType} anchorEl={anchorEl} placement='bottom' transition>
+      {({ TransitionProps }) => (
+        <Fade {...TransitionProps} timeout={300}>
+          <Box bgcolor="background.default">
+            {getContent()}
+          </Box>
+        </Fade>
+      )}
+    </Popper>
   </ThemeProvider>);
 }
 

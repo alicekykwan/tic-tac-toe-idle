@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { setPausedAction } from '../actions/index';
 
@@ -31,15 +31,22 @@ function mapDispatchToProps(dispatch) {
 };
 
 function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
-  // TODO: use a shared Popper for better navigation.
+  const [ menuOpened, setMenuOpened ] = useState(null);
+  const [ anchorEl, setAnchorEl ] = useState(null);
 
   let getShops = () => {
     let items = [
-      <Box key='shop-button-x' mx={1}>
-        <ShopButton key='shop-button-x' coinType={COIN_TYPE.COIN_TYPE_X} />
+      <Box key='x' mx={1}>
+        <ShopButton menuType='x'
+            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
+            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            coinType={COIN_TYPE.COIN_TYPE_X} />
       </Box>,
-      <Box key='shop-button-o' mx={1}>
-        <ShopButton key='shop-button-o' coinType={COIN_TYPE.COIN_TYPE_O} />
+      <Box key='o' mx={1}>
+        <ShopButton menuType='o'
+            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
+            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            coinType={COIN_TYPE.COIN_TYPE_O} />
       </Box>,
     ];
     if (progressLevel === 0) {
@@ -50,12 +57,18 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
       return items;
     }
     items.push(
-      <Box key='shop-button-superx' mx={1}>
-        <ShopButton key='shop-button-superx' coinType={COIN_TYPE.COIN_TYPE_SUPER_X} />
+      <Box key='superx' mx={1}>
+        <ShopButton menuType='superx'
+            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
+            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            coinType={COIN_TYPE.COIN_TYPE_SUPER_X} />
       </Box>);
     items.push(
-      <Box key='shop-button-supero' mx={1}>
-        <ShopButton key='shop-button-supero' coinType={COIN_TYPE.COIN_TYPE_SUPER_O} />
+      <Box key='supero' mx={1}>
+        <ShopButton menuType='supero'
+            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
+            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            coinType={COIN_TYPE.COIN_TYPE_SUPER_O} />
       </Box>);
     if (progressLevel === 1) {
       items.push(
