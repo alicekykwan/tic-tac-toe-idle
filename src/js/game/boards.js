@@ -190,9 +190,11 @@ const checkSuperWins = (mutableState) => {
 
   if (superWins[0] > 0) {
     coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superWins[0];
+    mutableState.paused = true;
   }
   if (superWins[1] > 0) {
     coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superWins[1];
+    mutableState.paused = true;
   }
 };
 

@@ -1,12 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
 import Box from '@material-ui/core/Box';
+import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
 
 function BoardCanvas(props) {
-  const boardColor = '#303030';
-  const gridColor = '#575757';
-  const playerColor = ['#b09ce4', '#ffab91'];
-  const winColor = '#ffd700';
+  const boardColor = COLOR_BOARD;
+  const gridColor = COLOR_GRID;
+  const playerColor = [COLOR_X, COLOR_O];
+  const winColor = COLOR_WIN;
   let { board, lastTickTime, width, height, margin, padding } = props;
   let { numRows, numCols, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
