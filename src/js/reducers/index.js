@@ -36,6 +36,7 @@ const initialState = {
   unlocks: initialUnlocks,
   gameSettings: initialGameSettings,
   boards: [createNewBoard(initialGameSettings.boardSettings)],
+  superBoards: [],
   coins: initialCoins,
   lastTickTime: Date.now(),
   paused: false,

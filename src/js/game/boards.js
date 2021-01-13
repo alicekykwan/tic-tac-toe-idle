@@ -160,6 +160,7 @@ const checkSuperWins = (mutableState) => {
   let numSuperBoards = Math.min(
     maxNumSuperBoards, Math.floor(mutableState.boards.length / boardsPerSuperBoard));
   let superWins = new Array(numPlayers).fill(0);
+  let superBoards = [];
 
   // Iterate over all super boards.
   for (let superBoardIdx=0; superBoardIdx<numSuperBoards; ++superBoardIdx) {
@@ -174,6 +175,7 @@ const checkSuperWins = (mutableState) => {
 
     // Look for winners on the computed super board.
     // TODO: cache winning groups within superBoardSettings.cache
+    let winningGroups = [];
     let superBoardWinningGroups = computeWinningGroups(mutableState.gameSettings.superBoardSettings);
     for (let winningGroup of superBoardWinningGroups) {
       let winner = superBoardCellState[winningGroup[0]];
@@ -182,11 +184,16 @@ const checkSuperWins = (mutableState) => {
       }
       if (winningGroup.every((cell) => (superBoardCellState[cell] === winner))) {
         superWins[winner] += 1;
+        winningGroups.push(winningGroup);
         // TODO: Detect critical super-wins.
-        // TODO: Flag winning groups for render.
       }
     }
+
+    superBoards.push({
+      winningGroups: winningGroups,
+    });
   }
+  mutableState.superBoards = superBoards;
 
   if (superWins[0] > 0) {
     coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superWins[0];
