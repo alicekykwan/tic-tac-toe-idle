@@ -159,7 +159,7 @@ const doOneMoveOnBoard = (board, superBoardWon, mutableGameState) => {
   }
 };
 
-const checkSuperWins = (mutableState) => {
+const updateSuperBoards = (mutableState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = mutableState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin } = gameSettings;
   if (superBoardSettings.numRows !== appliedSBSettings.numRows ||
@@ -178,7 +178,7 @@ const checkSuperWins = (mutableState) => {
   for (let superBoardIdx=0; superBoardIdx<numSuperBoards; ++superBoardIdx) {
     // Compute current state of the super board.
     let superBoardCellState = new Array(boardsPerSuperBoard).fill(-1)
-    for (let i=0; i<9; i++) {
+    for (let i=0; i<boardsPerSuperBoard; i++) {
       let board = boards[superBoardIdx*boardsPerSuperBoard+i];
       if (board.numMovesMade === board.movesUntilWin) {
         superBoardCellState[i] = board.winner;
@@ -229,5 +229,5 @@ export const performOneMove = (mutableState) => {
                          superBoards[superBoardIdx].winningGroups.length > 0);
     doOneMoveOnBoard(boards[boardIdx], superBoardWon, mutableState);
   }
-  checkSuperWins(mutableState);
+  updateSuperBoards(mutableState);
 }

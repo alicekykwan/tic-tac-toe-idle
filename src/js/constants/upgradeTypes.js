@@ -6,5 +6,5 @@ export const UPGRADE_SHOP_O_BOARD_SIZE = 'obs';
 export const UPGRADE_SHOP_O_PICK_INITIAL_MOVES = 'opim';
 export const UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN = 'sxscpw';
 export const UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT = 'sxsbc';
-export const UPGRADE_SHOP_SUPER_O_DELAY_AFTER_WIN = 'sodaw';
+export const UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY = 'sowrd';
 export const UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE = 'sosbs';

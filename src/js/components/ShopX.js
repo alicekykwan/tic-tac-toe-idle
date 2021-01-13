@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { Box } from '@material-ui/core';
 import { UPGRADE_SHOP_X_GAME_SPEED, UPGRADE_SHOP_X_BOARD_COUNT, UPGRADE_SHOP_X_COINS_PER_WIN, UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER } from "../constants/upgradeTypes";
 import { COIN_TYPE_X } from '../constants/coinTypes'
