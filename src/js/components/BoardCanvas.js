@@ -8,7 +8,7 @@ function BoardCanvas(props) {
   const gridColor = COLOR_GRID;
   const playerColor = [COLOR_X, COLOR_O];
   const winColor = COLOR_WIN;
-  let { board, lastTickTime, width, height, margin, padding } = props;
+  let { board, lastTickTime, width, height, padding } = props;
   let { numRows, numCols, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
   let cellHeight = (height-2*padding) / numRows;
@@ -119,7 +119,7 @@ function BoardCanvas(props) {
     setDrawnBoard(board);
   });
 
-  return <Box boxShadow={10} style={{width, height, margin}}>
+  return <Box boxShadow={10} style={{width, height}} m={1}>
     <canvas ref={canvasRef} width={width} height={height}/>
   </Box>;
 }
