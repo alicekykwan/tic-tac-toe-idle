@@ -8,9 +8,9 @@ function SuperBoardCanvas(props) {
   const gridColor = COLOR_GRID;
   const playerColor = [COLOR_X, COLOR_O];
   const winColor = COLOR_WIN;
-  let { superBoardSettings, boards, superBoard, lastTickTime, width, height, padding } = props;
-  let numSuperRows = superBoardSettings.numRows;
-  let numSuperCols = superBoardSettings.numCols;
+  let { appliedSBSettings, boards, superBoard, lastTickTime, width, height, padding } = props;
+  let numSuperRows = appliedSBSettings.numRows;
+  let numSuperCols = appliedSBSettings.numCols;
   let superCellWidth = (width-2*padding) / numSuperCols;
   let superCellHeight = (height-2*padding) / numSuperRows;
   let superGridThickness = superCellWidth / 12;
@@ -119,8 +119,7 @@ function SuperBoardCanvas(props) {
   }
 
   const drawSubBoard = (ctx, board, startX, startY, width, height) => {
-    let { numRows, numCols } = board;
-    let numPlayers = 2;
+    let { numRows, numCols, numPlayers } = board;
     let cellWidth = width / numCols;
     let cellHeight = height / numRows;
     let pieceWidth = 0.5 * cellWidth;

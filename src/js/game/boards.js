@@ -66,6 +66,7 @@ const resetBoard = (board, boardSettings) => {
   let numPlayers = 2;
   board.numPlayers = numPlayers;
   board.numMovesMade = 0;
+  board.numMovesAfterWin = 0;
   board.id = Math.random();
 
   // Determine entire sequence of moves.
@@ -114,19 +115,26 @@ export const createNewBoard = (boardSettings) => {
   return board;
 };
 
-const doOneMoveOnBoard = (board, mutableGameState) => {
+const doOneMoveOnBoard = (board, superBoardWon, mutableGameState) => {
   let { coins, gameSettings } = mutableGameState;
-  let { boardSettings } = gameSettings
+  let { boardSettings, winResetDelay } = gameSettings;
 
+  // This board has already won.
   if (board.numMovesMade === board.movesUntilWin) {
-    // Has winner.
+    board.numMovesAfterWin += 1;
+  }
+
+  // This board resets when: 
+  //  1. This board draws/ties, or
+  //  2. The superboard containing this board super-wins, or
+  //  3. This board won at least winResetDelay moves ago.
+  let draw = (board.winner < 0 && board.numMovesMade === board.allMoves.length);
+  if (draw || superBoardWon || board.numMovesAfterWin >= winResetDelay) {
     resetBoard(board, boardSettings);
     return;
   }
 
-  if (board.numMovesMade === board.allMoves.length) {
-    // Draw.
-    resetBoard(board, boardSettings);
+  if (board.numMovesMade === board.movesUntilWin) {
     return;
   }
 
@@ -152,13 +160,17 @@ const doOneMoveOnBoard = (board, mutableGameState) => {
 };
 
 const checkSuperWins = (mutableState) => {
-  let { boards, gameSettings, coins } = mutableState;
-  let { superBoardSettings } = gameSettings;
+  let { boards, gameSettings, appliedSBSettings, coins } = mutableState;
+  let { superBoardSettings, superBoardMaxCount, superCoinsPerWin } = gameSettings;
+  if (superBoardSettings.numRows !== appliedSBSettings.numRows ||
+      superBoardSettings.numCols !== appliedSBSettings.numCols) {
+    appliedSBSettings.numRows = superBoardSettings.numRows;
+    appliedSBSettings.numCols = superBoardSettings.numCols;
+  }
   let numPlayers = 2;
   let boardsPerSuperBoard = superBoardSettings.numRows * superBoardSettings.numCols;
-  let maxNumSuperBoards = 1;
   let numSuperBoards = Math.min(
-    maxNumSuperBoards, Math.floor(mutableState.boards.length / boardsPerSuperBoard));
+    superBoardMaxCount, Math.floor(mutableState.boards.length / boardsPerSuperBoard));
   let superWins = new Array(numPlayers).fill(0);
   let superBoards = [];
 
@@ -196,11 +208,11 @@ const checkSuperWins = (mutableState) => {
   mutableState.superBoards = superBoards;
 
   if (superWins[0] > 0) {
-    coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superWins[0];
+    coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superCoinsPerWin * superWins[0];
     mutableState.paused = true;
   }
   if (superWins[1] > 0) {
-    coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superWins[1];
+    coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superCoinsPerWin * superWins[1];
     mutableState.paused = true;
   }
 };
@@ -209,7 +221,13 @@ export const performOneMove = (mutableState) => {
   if (mutableState.paused) {
     return;
   }
-  // TODO: flag all boards within a winning super-board for reset.
-  mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
+  let { boards, superBoards, appliedSBSettings } = mutableState;
+  let numBoardsPerSuperBoard = (appliedSBSettings.numRows * appliedSBSettings.numCols);
+  for (let boardIdx=0; boardIdx<boards.length; ++boardIdx) {
+    let superBoardIdx = Math.floor(boardIdx / numBoardsPerSuperBoard);
+    let superBoardWon = (superBoardIdx < superBoards.length &&
+                         superBoards[superBoardIdx].winningGroups.length > 0);
+    doOneMoveOnBoard(boards[boardIdx], superBoardWon, mutableState);
+  }
   checkSuperWins(mutableState);
 }

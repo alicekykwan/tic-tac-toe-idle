@@ -7,10 +7,7 @@ import _ from "lodash";
 
 const initialGameSettings = {
   boardSettings: {},
-  superBoardSettings: {
-    numRows: 3,
-    numCols: 3,
-  },
+  superBoardSettings: {},
 };
 updateGameSettings(initialGameSettings, initialUpgrades);
 
@@ -35,7 +32,9 @@ const initialState = {
   upgrades: initialUpgrades,
   unlocks: initialUnlocks,
   gameSettings: initialGameSettings,
-  boards: [createNewBoard(initialGameSettings.boardSettings)],
+  boards: _.range(initialGameSettings.boardCount).map(
+      () => createNewBoard(initialGameSettings.boardSettings)),
+  appliedSBSettings: _.cloneDeep(initialGameSettings.superBoardSettings),
   superBoards: [],
   coins: initialCoins,
   lastTickTime: Date.now(),
