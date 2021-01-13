@@ -149,10 +149,58 @@ const doOneMoveOnBoard = (board, mutableGameState) => {
       default:
     }
   }
-}
+};
+
+const checkSuperWins = (mutableState) => {
+  let { boards, gameSettings, coins } = mutableState;
+  let { superBoardSettings } = gameSettings;
+  let numPlayers = 2;
+  let boardsPerSuperBoard = superBoardSettings.numRows * superBoardSettings.numCols;
+  let maxNumSuperBoards = 1;
+  let numSuperBoards = Math.min(
+    maxNumSuperBoards, Math.floor(mutableState.boards.length / boardsPerSuperBoard));
+  let superWins = new Array(numPlayers).fill(0);
+
+  // Iterate over all super boards.
+  for (let superBoardIdx=0; superBoardIdx<numSuperBoards; ++superBoardIdx) {
+    // Compute current state of the super board.
+    let superBoardCellState = new Array(boardsPerSuperBoard).fill(-1)
+    for (let i=0; i<9; i++) {
+      let board = boards[superBoardIdx*boardsPerSuperBoard+i];
+      if (board.numMovesMade === board.movesUntilWin) {
+        superBoardCellState[i] = board.winner;
+      }
+    }
+
+    // Look for winners on the computed super board.
+    // TODO: cache winning groups within superBoardSettings.cache
+    let superBoardWinningGroups = computeWinningGroups(mutableState.gameSettings.superBoardSettings);
+    for (let winningGroup of superBoardWinningGroups) {
+      let winner = superBoardCellState[winningGroup[0]];
+      if (winner < 0) {
+        continue;
+      }
+      if (winningGroup.every((cell) => (superBoardCellState[cell] === winner))) {
+        superWins[winner] += 1;
+        // TODO: Detect critical super-wins.
+        // TODO: Flag winning groups for render.
+      }
+    }
+  }
+
+  if (superWins[0] > 0) {
+    coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superWins[0];
+  }
+  if (superWins[1] > 0) {
+    coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superWins[1];
+  }
+};
 
 export const performOneMove = (mutableState) => {
+  if (mutableState.paused) {
+    return;
+  }
+  // TODO: flag all boards within a winning super-board for reset.
   mutableState.boards.map((board) => doOneMoveOnBoard(board, mutableState));
-  // TODO: Check for super-wins among the superboards.
-  // Initially just assume max of one super-board at boards[0:9]
+  checkSuperWins(mutableState);
 }

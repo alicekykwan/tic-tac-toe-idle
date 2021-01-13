@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
+import Box from '@material-ui/core/Box';
 import BoardCanvas from "./BoardCanvas";
-import '../../css/App.css';
 
 const mapStateToProps = state => {
   return {
@@ -12,12 +12,12 @@ const mapStateToProps = state => {
 
 const ConnectedBoardsContainer = ({ boards, lastTickTime }) => {
   return (
-    <div className="boards-container">
+    <Box key='boards-container' width='100%' display='flex' flexDirection='row' flexWrap='wrap'>
       {boards.map((board, i) => (
         <BoardCanvas key={i} board={board} lastTickTime={lastTickTime}
             width={240} height={240} margin={16} padding={16} />
       ))}
-    </div>
+    </Box>
   );
 };
 

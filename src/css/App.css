@@ -15,24 +15,3 @@
   flex-direction: column;
 }
 
-.boards-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap:  wrap;
-  width: 100vw;
-}
-
-.App-header ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
-.App-header li {
-  float: left;
-  display: block;
-  text-align: center;
-  padding: 10px;
-  text-decoration: none;
-}

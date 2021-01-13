@@ -12,3 +12,7 @@ export function setInitialMovesAction(payload){
   return { type: ACTION_TYPE.ACTION_SET_INITIAL_MOVES, payload };
 }
 
+export function setPausedAction(payload){
+  return { type: ACTION_TYPE.ACTION_SET_PAUSED, payload };
+}
+
