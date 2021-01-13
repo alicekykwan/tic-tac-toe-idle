@@ -11,7 +11,7 @@ export const initialUpgrades = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 0,
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_DELAY_AFTER_WIN]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 0,
 };
 
@@ -63,7 +63,7 @@ const SHOP_SUPER_X_UPGRADE_COSTS = {
 };
 
 const SHOP_SUPER_O_UPGRADE_COSTS = {
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_DELAY_AFTER_WIN]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
 };
 
@@ -101,7 +101,7 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: "Pick Starting Moves",
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: "Super Coins per Win",
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: "Super Board Count",
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_DELAY_AFTER_WIN]: "Delay after Win",
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: "Delay after Win",
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: "Super Board Size",
 };
 
@@ -161,7 +161,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel) => {
           return <span>Maximum <b>{superBoardMaxCount}</b> super-board</span>;
         }
         return <span>Maximum <b>{superBoardMaxCount}</b> super-boards</span>;
-    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_DELAY_AFTER_WIN:
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY:
       let winResetDelay = BASE_WIN_RESET_DELAY + upgradeLevel;
       if (winResetDelay === 1) {
         return <span>A winning board resets after <b>{winResetDelay}</b> move</span>;
@@ -200,7 +200,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   // Super O Shop upgrades
   mutableGameSettings.superBoardSettings.numRows = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
   mutableGameSettings.superBoardSettings.numCols = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
-  mutableGameSettings.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_DELAY_AFTER_WIN];
+  mutableGameSettings.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
 }
 
 export const performUpgrade = (upgradeType, upgradeLevel, mutableState) => {
