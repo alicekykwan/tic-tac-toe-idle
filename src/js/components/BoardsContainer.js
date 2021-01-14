@@ -14,10 +14,10 @@ const mapStateToProps = state => {
 };
 
 const ConnectedBoardsContainer = ({ appliedSBSettings, superBoards, boards, lastTickTime }) => {
-  let items = [];
+  let superBoardCanvases = [];
   let boardsPerSuperBoard = appliedSBSettings.numRows * appliedSBSettings.numCols;
   for (let i=0; i<superBoards.length; ++i) {
-    items.push(
+    superBoardCanvases.push(
       <SuperBoardCanvas key={`super${i}`} lastTickTime={lastTickTime}
           boards={boards.slice(i*boardsPerSuperBoard, (i+1)*boardsPerSuperBoard)}
           appliedSBSettings={appliedSBSettings}
@@ -25,15 +25,21 @@ const ConnectedBoardsContainer = ({ appliedSBSettings, superBoards, boards, last
           width={496} height={496} padding={16} />);
   }
 
+  let boardCanvases = [];
   for (let i=superBoards.length * boardsPerSuperBoard; i<boards.length; ++i) {
-    items.push(
+    boardCanvases.push(
       <BoardCanvas key={i} board={boards[i]} lastTickTime={lastTickTime}
           width={240} height={240} padding={16} />);
   }
 
   return (
     <Box key='boards-container' width='100%' display='flex' flexDirection='row' flexWrap='wrap' p={1}>
-      {items}
+      <Box key='super-boards-container' display='flex' flexDirection='row' flexWrap='wrap' p={1}>
+        {superBoardCanvases}
+      </Box>
+      <Box key='regular-boards-container' display='flex' flexDirection='row' flexWrap='wrap' p={1}>
+        {boardCanvases}
+      </Box>
     </Box>
   );
 };

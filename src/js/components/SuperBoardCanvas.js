@@ -74,6 +74,7 @@ function SuperBoardCanvas(props) {
     ctx.stroke();
   };
 
+
   const drawPiece = (ctx, player, centerX, centerY, pieceWidth, pieceHeight, pieceThickness) => {
     switch (player) {
       case 0:  // X
@@ -138,6 +139,13 @@ function SuperBoardCanvas(props) {
     if (board.numMovesMade === board.movesUntilWin) {
       for (let winningGroup of board.winningGroups) {
         drawWin(ctx, winningGroup, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
+        ctx.beginPath();
+        ctx.globalAlpha = 0.75;
+        ctx.fillStyle = boardColor;
+        ctx.fillRect(startX-gridThickness, startY-gridThickness, width+2*gridThickness, height+2*gridThickness);
+        ctx.stroke();
+        ctx.globalAlpha = 1.0;
+        drawPiece(ctx, board.winner % 2, startX+width/2, startY+height/2, 0.5 * width, 0.5 * height, width/5)
       }
     }
   };
