@@ -25,15 +25,12 @@ function ConnectedShopButton({ menuType, menuOpened, setMenuOpened, anchorEl, se
   const open = (menuOpened === menuType);
 
   const handleClick = (event) => {
-    console.log(menuType, menuOpened, anchorEl);
     if (menuOpened === menuType) {
       setMenuOpened(null);
       setAnchorEl(null);
-      console.log(null);
     } else {
       setMenuOpened(menuType);
       setAnchorEl(event.currentTarget);
-      console.log(menuType);
     }
   };
 

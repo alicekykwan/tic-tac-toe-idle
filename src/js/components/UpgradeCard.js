@@ -4,7 +4,6 @@ import { purchaseUpgradeAction } from "../actions/index";
 import { connect } from "react-redux";
 import { Box, Button, Card, Typography } from '@material-ui/core';
 import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from "../game/upgrades";
-import _ from "lodash";
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import SelectionGrid from './SelectionGrid';
 
@@ -50,26 +49,38 @@ function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchase
             </Box>
           </Box>
 
-          <Box display='flex' flexDirection='row' m={1}>
-            <Box width='45%'>
-              <Typography>
-                Current:<br/>
-                { getUpgradeDescription(upgradeType, upgradeLevel) }
-              </Typography>
-            </Box>
-            <Box width='10%' textAlign='center'>
-              <Typography>
-                <br/>
-                <ArrowRightAltIcon/>
-              </Typography>
-            </Box>
-            <Box width='45%'>
-              <Typography color='textSecondary'>
-                Upgraded:<br/>
-                { getUpgradeDescription(upgradeType, upgradeLevel+1) }
-              </Typography>
-            </Box>
-          </Box>
+          {cost === null
+            ?
+              <Box display='flex' flexDirection='row' m={1}>
+                <Box width='100%'>
+                  <Typography>
+                    Current:<br/>
+                    { getUpgradeDescription(upgradeType, upgradeLevel) }
+                  </Typography>
+                </Box>
+              </Box>
+            :
+              <Box display='flex' flexDirection='row' m={1}>
+                <Box width='45%'>
+                  <Typography>
+                    Current:<br/>
+                    { getUpgradeDescription(upgradeType, upgradeLevel) }
+                  </Typography>
+                </Box>
+                <Box width='10%' textAlign='center'>
+                  <Typography>
+                    <br/>
+                    <ArrowRightAltIcon/>
+                  </Typography>
+                </Box>
+                <Box width='45%'>
+                  <Typography color='textSecondary'>
+                    Upgraded:<br/>
+                    { getUpgradeDescription(upgradeType, upgradeLevel+1) }
+                  </Typography>
+                </Box>
+              </Box>
+          }
 
           {upgradeType === UPGRADE_TYPES.UPGRADE_SHOP_O_PICK_INITIAL_MOVES
               ? <SelectionGrid key='selection-grid'/>
