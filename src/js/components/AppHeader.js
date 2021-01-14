@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { setPausedAction } from '../actions/index';
 
@@ -34,18 +34,40 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
   const [ menuOpened, setMenuOpened ] = useState(null);
   const [ anchorEl, setAnchorEl ] = useState(null);
 
+  const onKeyDown = useCallback((evt) => {
+    const { key, repeat } = evt;
+    if (repeat) return;
+    if (key === 'Escape') {
+      setMenuOpened(null);
+      setAnchorEl(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("keydown", onKeyDown, true);  
+    return () => window.removeEventListener("keydown", onKeyDown, true);
+  }, [onKeyDown]);
+
+  const toggleMenu = (menuType) => (evt) => {
+    if (menuOpened === menuType) {
+      setMenuOpened(null);
+      setAnchorEl(null);
+    } else {
+      setMenuOpened(menuType);
+      setAnchorEl(evt.currentTarget);
+    }
+  };
+
   let getShops = () => {
     let items = [
       <Box key='x' mx={1}>
         <ShopButton menuType='x'
-            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
-            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
             coinType={COIN_TYPE.COIN_TYPE_X} />
       </Box>,
       <Box key='o' mx={1}>
         <ShopButton menuType='o'
-            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
-            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
             coinType={COIN_TYPE.COIN_TYPE_O} />
       </Box>,
     ];
@@ -59,15 +81,13 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
     items.push(
       <Box key='superx' mx={1}>
         <ShopButton menuType='superx'
-            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
-            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
             coinType={COIN_TYPE.COIN_TYPE_SUPER_X} />
       </Box>);
     items.push(
       <Box key='supero' mx={1}>
         <ShopButton menuType='supero'
-            menuOpened={menuOpened} setMenuOpened={setMenuOpened}
-            anchorEl={anchorEl} setAnchorEl={setAnchorEl}
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
             coinType={COIN_TYPE.COIN_TYPE_SUPER_O} />
       </Box>);
     if (progressLevel === 1) {
