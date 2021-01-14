@@ -120,7 +120,10 @@ function SuperBoardCanvas(props) {
     ctx.stroke();
   }
 
-  const drawSubBoard = (ctx, board, startX, startY, width, height) => {
+  const drawSubBoard = (ctx, board, lastDrawnMove, startX, startY, width, height) => {
+    if (lastDrawnMove === board.numMovesMade) {
+      return;
+    }
     let { numRows, numCols, numPlayers } = board;
     let cellWidth = width / numCols;
     let cellHeight = height / numRows;
@@ -128,8 +131,15 @@ function SuperBoardCanvas(props) {
     let pieceHeight = 0.5 * cellHeight;
     let gridThickness = cellWidth / 8;
     let pieceThickness = cellWidth / 5;
-    drawSubGrid(ctx, numRows, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
-    for (let move=0; move<board.numMovesMade; ++move) {
+    if (lastDrawnMove < 0) {
+      lastDrawnMove = 0;
+      ctx.beginPath();
+      ctx.fillStyle = boardColor;
+      ctx.fillRect(startX-gridThickness, startY-gridThickness, width+2*gridThickness, height+2*gridThickness);
+      ctx.stroke();
+      drawSubGrid(ctx, numRows, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
+    }
+    for (let move=lastDrawnMove; move<board.numMovesMade; ++move) {
       let cellIdx = board.allMoves[move];
       let rowIdx = Math.floor(cellIdx / numCols);
       let colIdx = cellIdx % numCols;
@@ -155,24 +165,28 @@ function SuperBoardCanvas(props) {
     if (drawnTick.current === lastTickTime) {
       return;
     }
-    if (drawnSuperBoard.current === null || drawnSuperBoard.current.id !== superBoard.id) {
-      // TODO
-      drawnBoards.current = null;
-    }
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext('2d');
-    // TODO: improve with incremental drawing.
-    drawSuperGrid(ctx);
+    if (drawnSuperBoard.current === null ||
+        drawnSuperBoard.current.id !== superBoard.id ||
+        drawnBoards.current.length !== boards.length) {
+      drawSuperGrid(ctx);
+      drawnBoards.current = null;
+    }
     let boardWidth = superCellWidth - 2 * superGridThickness;
     let boardHeight = superCellWidth - 2 * superGridThickness;
     for (let i=0; i<boards.length; ++i) {
+      let lastDrawnMove = -1;
+      if (drawnBoards.current !== null && drawnBoards.current[i].id === boards[i].id) {
+        lastDrawnMove = drawnBoards.current[i].numMovesMade;
+      }
       let rowIdx = Math.floor(i / numSuperCols);
       let colIdx = i % numSuperCols;
       let centerX = padding + superCellWidth * (colIdx + 0.5);
       let centerY = padding + superCellHeight * (rowIdx + 0.5);
       let startX = centerX - boardWidth / 2;
       let startY = centerY - boardHeight / 2;
-      drawSubBoard(ctx, boards[i], startX, startY, boardWidth, boardHeight);
+      drawSubBoard(ctx, boards[i], lastDrawnMove, startX, startY, boardWidth, boardHeight);
     }
     for (let winningGroup of superBoard.winningGroups) {
       drawSuperWin(ctx, winningGroup);
