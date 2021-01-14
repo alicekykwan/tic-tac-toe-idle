@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Box from '@material-ui/core/Box';
 import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
@@ -15,8 +15,9 @@ function SuperBoardCanvas(props) {
   let superCellHeight = (height-2*padding) / numSuperRows;
   let superGridThickness = superCellWidth / 12;
   let canvasRef = useRef(null);
-  let [ drawnTick, setDrawnTick ] = useState(null);
-  let [ drawnBoards, setDrawnBoards ] = useState(null);
+  let drawnTick = useRef(null);
+  let drawnSuperBoard = useRef(null);
+  let drawnBoards = useRef(null);
 
   const drawSuperGrid = (ctx) => {
     ctx.beginPath();
@@ -151,8 +152,12 @@ function SuperBoardCanvas(props) {
   };
 
   useEffect(()=>{
-    if (drawnTick === lastTickTime) {
+    if (drawnTick.current === lastTickTime) {
       return;
+    }
+    if (drawnSuperBoard.current === null || drawnSuperBoard.current.id !== superBoard.id) {
+      // TODO
+      drawnBoards.current = null;
     }
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext('2d');
@@ -172,7 +177,9 @@ function SuperBoardCanvas(props) {
     for (let winningGroup of superBoard.winningGroups) {
       drawSuperWin(ctx, winningGroup);
     }
-    setDrawnBoards(boards);
+    drawnTick.current = lastTickTime;
+    drawnSuperBoard.current = superBoard;
+    drawnBoards.current = boards;
   });
 
   return <Box boxShadow={10} style={{width, height}} m={1}>

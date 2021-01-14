@@ -49,23 +49,25 @@ function rootReducer(state = initialState, action) {
     if (state.lastTickTime + tickDuration > currTime) {
       return state;
     }
-    let mutableState = _.cloneDeep(state);
-    while (mutableState.boards.length < mutableState.gameSettings.boardCount) {
-      mutableState.boards.push(createNewBoard(mutableState.gameSettings.boardSettings));
+    let newState = Object.assign({}, state);
+    newState.boards = [...newState.boards];
+    newState.coins = _.cloneDeep(newState.coins);
+    while (newState.boards.length < newState.gameSettings.boardCount) {
+      newState.boards.push(createNewBoard(newState.gameSettings.boardSettings));
     }
-    if (mutableState.unlocks.progressLevel === 0 && mutableState.boards.length >= 9) {
-      mutableState.unlocks.progressLevel = 1;
+    if (newState.unlocks.progressLevel === 0 && newState.boards.length >= 9) {
+      newState.unlocks = Object.assign({}, newState.unlocks, {progressLevel: 1});
     }
     let ticksProcessed = 0;
-    while (mutableState.lastTickTime + tickDuration <= currTime) {
-      mutableState.lastTickTime += tickDuration;
-      performOneMove(mutableState);
+    while (newState.lastTickTime + tickDuration <= currTime) {
+      newState.lastTickTime += tickDuration;
+      performOneMove(newState);
       if (++ticksProcessed >= 100) {
         // Only attempt to perform 100 ticks at a time.
         break;
       }
     }
-    return mutableState;
+    return newState;
   }
 
   if (action.type === ACTION_TYPE.ACTION_PURCHASE_UPGRADE) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Box from '@material-ui/core/Box';
 import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
@@ -17,8 +17,8 @@ function BoardCanvas(props) {
   let pieceHeight = 0.5 * cellHeight;
   let pieceThickness = cellWidth / 5;
   let canvasRef = useRef(null);
-  let [ drawnTick, setDrawnTick ] = useState(null);
-  let [ drawnBoard, setDrawnBoard ] = useState(null);
+  let drawnTick = useRef(null);
+  let drawnBoard = useRef(null);
 
   const drawGrid = (ctx) => {
     ctx.beginPath();
@@ -89,19 +89,19 @@ function BoardCanvas(props) {
   }
 
   useEffect(()=>{
-    if (drawnTick === lastTickTime) {
+    if (drawnTick.current === lastTickTime) {
       return;
     }
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext('2d');
     let lastPieceDrawn = 0; // number of valid pieces already drawn
-    if (drawnBoard === null ||
-        board.numMovesMade < drawnBoard.numMovesMade ||
-        board.id !== drawnBoard.id) {
+    if (drawnBoard.current === null ||
+        board.numMovesMade < drawnBoard.current.numMovesMade ||
+        board.id !== drawnBoard.current.id) {
       drawGrid(ctx);
       lastPieceDrawn = 0;
     } else {
-      lastPieceDrawn = drawnBoard.numMovesMade;
+      lastPieceDrawn = drawnBoard.current.numMovesMade;
     }
     for (let move=lastPieceDrawn; move<board.numMovesMade; ++move) {
       drawPiece(
@@ -114,8 +114,8 @@ function BoardCanvas(props) {
         drawWin(ctx, winningGroup);
       }
     }
-    setDrawnTick(lastTickTime);
-    setDrawnBoard(board);
+    drawnTick.current = lastTickTime;
+    drawnBoard.current = board;
   });
 
   return <Box boxShadow={10} style={{width, height}} m={1}>

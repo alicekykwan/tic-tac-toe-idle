@@ -115,9 +115,9 @@ export const createNewBoard = (boardSettings) => {
   return board;
 };
 
-const doOneMoveOnBoard = (board, superBoardWon, mutableGameState) => {
-  let { coins, gameSettings } = mutableGameState;
+const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
   let { boardSettings, winResetDelay } = gameSettings;
+  board = Object.assign({}, board);
 
   // This board has already won.
   if (board.numMovesMade === board.movesUntilWin) {
@@ -131,11 +131,11 @@ const doOneMoveOnBoard = (board, superBoardWon, mutableGameState) => {
   let draw = (board.winner < 0 && board.numMovesMade === board.allMoves.length);
   if (draw || superBoardWon || board.numMovesAfterWin >= winResetDelay) {
     resetBoard(board, boardSettings);
-    return;
+    return board;
   }
 
   if (board.numMovesMade === board.movesUntilWin) {
-    return;
+    return board;
   }
 
   // Progress the next move.
@@ -157,25 +157,47 @@ const doOneMoveOnBoard = (board, superBoardWon, mutableGameState) => {
       default:
     }
   }
+  return board;
 };
 
-const updateSuperBoards = (mutableState) => {
-  let { boards, gameSettings, appliedSBSettings, coins } = mutableState;
+const updateSuperBoards = (newState) => {
+  let { boards, gameSettings, appliedSBSettings, coins } = newState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin } = gameSettings;
-  if (superBoardSettings.numRows !== appliedSBSettings.numRows ||
-      superBoardSettings.numCols !== appliedSBSettings.numCols) {
-    appliedSBSettings.numRows = superBoardSettings.numRows;
-    appliedSBSettings.numCols = superBoardSettings.numCols;
-  }
+  let { numRows, numCols } = superBoardSettings;
   let numPlayers = 2;
+
+  // On resize we must reset all super-boards.
+  let superBoards = [];
+  if (numRows !== appliedSBSettings.numRows ||
+      numCols !== appliedSBSettings.numCols) {
+    newState.appliedSBSettings = Object.assign({}, appliedSBSettings, {numRows, numCols});
+  } else {
+    superBoards = [...newState.superBoards];
+  }
+
+  // Create missing super boards.
   let boardsPerSuperBoard = superBoardSettings.numRows * superBoardSettings.numCols;
   let numSuperBoards = Math.min(
-    superBoardMaxCount, Math.floor(mutableState.boards.length / boardsPerSuperBoard));
-  let superWins = new Array(numPlayers).fill(0);
-  let superBoards = [];
+    superBoardMaxCount, Math.floor(boards.length / boardsPerSuperBoard));
+  while (superBoards.length < numSuperBoards) {
+    superBoards.push({
+      winningGroups: [],
+      id: Math.random(),
+    });
+  }
 
-  // Iterate over all super boards.
+  // Update all super boards.
   for (let superBoardIdx=0; superBoardIdx<numSuperBoards; ++superBoardIdx) {
+    // If super-board has just won, we need to reset its ID to force full redraw.
+    if (superBoards[superBoardIdx].winningGroups.length > 0) {
+      superBoards[superBoardIdx] = {
+        winningGroups: [],
+        id: Math.random(),
+      }
+    }
+
+    let superWins = new Array(numPlayers).fill(0);
+
     // Compute current state of the super board.
     let superBoardCellState = new Array(boardsPerSuperBoard).fill(-1)
     for (let i=0; i<boardsPerSuperBoard; i++) {
@@ -188,7 +210,7 @@ const updateSuperBoards = (mutableState) => {
     // Look for winners on the computed super board.
     // TODO: cache winning groups within superBoardSettings.cache
     let winningGroups = [];
-    let superBoardWinningGroups = computeWinningGroups(mutableState.gameSettings.superBoardSettings);
+    let superBoardWinningGroups = computeWinningGroups(newState.gameSettings.superBoardSettings);
     for (let winningGroup of superBoardWinningGroups) {
       let winner = superBoardCellState[winningGroup[0]];
       if (winner < 0) {
@@ -197,37 +219,42 @@ const updateSuperBoards = (mutableState) => {
       if (winningGroup.every((cell) => (superBoardCellState[cell] === winner))) {
         superWins[winner] += 1;
         winningGroups.push(winningGroup);
-        // TODO: Detect critical super-wins.
       }
     }
 
-    superBoards.push({
-      winningGroups: winningGroups,
-    });
-  }
-  mutableState.superBoards = superBoards;
+    // Awards coins if won.
+    if (superWins[0] > 0) {
+      coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superCoinsPerWin * superWins[0];
+      newState.paused = true;
+    }
+    if (superWins[1] > 0) {
+      coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superCoinsPerWin * superWins[1];
+      newState.paused = true;
+    }
 
-  if (superWins[0] > 0) {
-    coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superCoinsPerWin * superWins[0];
-    mutableState.paused = true;
+    if (winningGroups.length > 0) {
+      superBoards[superBoardIdx] = Object.assign({}, superBoards[superBoardIdx], {winningGroups});
+    }
   }
-  if (superWins[1] > 0) {
-    coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superCoinsPerWin * superWins[1];
-    mutableState.paused = true;
-  }
+  newState.superBoards = superBoards;
 };
 
-export const performOneMove = (mutableState) => {
-  if (mutableState.paused) {
+
+// Assumes that newState has:
+//  - shallow copy of old state.
+//  - mutable coins
+//  - shallow copy of boards
+export const performOneMove = (newState) => {
+  if (newState.paused) {
     return;
   }
-  let { boards, superBoards, appliedSBSettings } = mutableState;
+  let { boards, superBoards, appliedSBSettings, gameSettings, coins } = newState;
   let numBoardsPerSuperBoard = (appliedSBSettings.numRows * appliedSBSettings.numCols);
   for (let boardIdx=0; boardIdx<boards.length; ++boardIdx) {
     let superBoardIdx = Math.floor(boardIdx / numBoardsPerSuperBoard);
     let superBoardWon = (superBoardIdx < superBoards.length &&
                          superBoards[superBoardIdx].winningGroups.length > 0);
-    doOneMoveOnBoard(boards[boardIdx], superBoardWon, mutableState);
+    boards[boardIdx] = computeNextBoard(boards[boardIdx], superBoardWon, gameSettings, coins);
   }
-  updateSuperBoards(mutableState);
+  updateSuperBoards(newState);
 }
