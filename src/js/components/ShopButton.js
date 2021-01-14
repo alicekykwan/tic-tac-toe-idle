@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { connect } from "react-redux";
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
@@ -21,18 +20,8 @@ const mapStateToProps = state => {
   };
 };
 
-function ConnectedShopButton({ menuType, menuOpened, setMenuOpened, anchorEl, setAnchorEl, coins, coinType }) {
+function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType }) {
   const open = (menuOpened === menuType);
-
-  const handleClick = (event) => {
-    if (menuOpened === menuType) {
-      setMenuOpened(null);
-      setAnchorEl(null);
-    } else {
-      setMenuOpened(menuType);
-      setAnchorEl(event.currentTarget);
-    }
-  };
 
   const getButtonText = () => {
     switch (coinType) {
@@ -79,11 +68,11 @@ function ConnectedShopButton({ menuType, menuOpened, setMenuOpened, anchorEl, se
   }
 
   return (<ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, getThemeElement(coinType))}>
-    <Button variant="contained" color="primary" onClick={handleClick}
+    <Button variant="contained" color="primary" onClick={toggleMenu(menuType)}
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
       { getButtonText() }
     </Button>
-    <Popper open={menuOpened===menuType} anchorEl={anchorEl} placement='bottom' transition>
+    <Popper open={open} anchorEl={anchorEl} placement='bottom' transition>
       {({ TransitionProps }) => (
         <Fade {...TransitionProps} timeout={300}>
           <Box bgcolor="background.default">
