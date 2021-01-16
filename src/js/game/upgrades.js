@@ -1,16 +1,17 @@
-import * as COIN_TYPE from "../constants/coinTypes";
-import * as UPGRADE_TYPE from "../constants/upgradeTypes";
+import * as COIN_TYPE from '../constants/coinTypes';
+import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache } from '../game/boards'
 
 export const initialUpgrades = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: 0,
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 0,
 };
@@ -18,16 +19,17 @@ export const initialUpgrades = {
 const BASE_BOARD_COUNT = 1;
 const BASE_GAME_SPEED = 1;
 const BASE_COINS_PER_WIN = 1;
-const BASE_CRITICAL_WIN_MULTIPLIER = 1;
+const BASE_CRITICAL_WIN_MULT = 1;
 const BASE_BOARD_SIZE = 3;
 const BASE_SUPER_COINS_PER_WIN = 1;
 const BASE_SUPER_BOARD_COUNT = 1;
+const BASE_CRITICAL_SUPER_WIN_MULT = 1;
 const BASE_WIN_RESET_DELAY = 1;
 const BASE_SUPER_BOARD_SIZE = 3;
  
 
 export const canPurchase = (coins, cost) => {
-  if (cost === null) {
+  if (cost === null || cost.locked) {
     return false;
   }
   for (let coinType in cost) {
@@ -49,7 +51,7 @@ const SHOP_X_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000],
   [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000],
   [UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000, 100000],
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000]
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000]
 };
 
 const SHOP_O_UPGRADE_COSTS = {
@@ -60,6 +62,7 @@ const SHOP_O_UPGRADE_COSTS = {
 const SHOP_SUPER_X_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
 };
 
 const SHOP_SUPER_O_UPGRADE_COSTS = {
@@ -93,16 +96,17 @@ export const getNextUpgradeCost = (upgradeType, upgradeLevel) => {
 }
 
 const UPGRADE_NAME = {
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: "Board Count",
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: "Coins per Win",
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED]: "Game Speed",
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER]: "Critical Win",
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: "Board Size",
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: "Pick Starting Moves",
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: "Super Coins per Win",
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: "Super Board Count",
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: "Delay after Win",
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: "Super Board Size",
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 'Board Count',
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: 'Coins per Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED]: 'Game Speed',
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: 'Critical Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 'Board Size',
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Super Coins per Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super Board Count',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Super Critical Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 'Delay after Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super Board Size',
 };
 
 export const getUpgradeName = (upgradeType) => {
@@ -128,14 +132,14 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel) => {
       return <span>Gain <b>{coinsPerWin}</b> coins per win</span>;
     case UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED:
       return <span><b>{BASE_GAME_SPEED + upgradeLevel}</b>x game speed</span>;
-    case UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER:
-      let criticalWinMultiplier = BASE_CRITICAL_WIN_MULTIPLIER + upgradeLevel;
-      if (criticalWinMultiplier === 1) {
+    case UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT:
+      let criticalWinMult = BASE_CRITICAL_WIN_MULT + upgradeLevel;
+      if (criticalWinMult === 1) {
         return 'No effect'
       }
       return (
         <span>
-          <b>{criticalWinMultiplier}</b>x more coins when winning in more than one way
+          <b>{criticalWinMult}</b>x more coins when winning in more than one way
         </span>
       );
     case UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE:
@@ -155,12 +159,22 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel) => {
         return <span>Gain <b>{superCoinsPerWin}</b> super-coin per super-win</span>;
       }
       return <span>Gain <b>{superCoinsPerWin}</b> super-coins per super-win</span>;
-      case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT:
-        let superBoardMaxCount = BASE_SUPER_COINS_PER_WIN + upgradeLevel;
-        if (superBoardMaxCount === 1) {
-          return <span>Maximum <b>{superBoardMaxCount}</b> super-board</span>;
-        }
-        return <span>Maximum <b>{superBoardMaxCount}</b> super-boards</span>;
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT:
+      let superBoardMaxCount = BASE_SUPER_COINS_PER_WIN + upgradeLevel;
+      if (superBoardMaxCount === 1) {
+        return <span>Maximum <b>{superBoardMaxCount}</b> super-board</span>;
+      }
+      return <span>Maximum <b>{superBoardMaxCount}</b> super-boards</span>;
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT:
+      let criticalSuperWinMult = BASE_CRITICAL_SUPER_WIN_MULT + upgradeLevel;
+      if (criticalSuperWinMult === 1) {
+        return 'No effect'
+      }
+      return (
+        <span>
+          <b>{criticalSuperWinMult}</b>x more super-coins when super-winning in more than one way
+        </span>
+      );
     case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY:
       let winResetDelay = BASE_WIN_RESET_DELAY + upgradeLevel;
       if (winResetDelay === 1) {
@@ -181,7 +195,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   mutableGameSettings.boardCount = BASE_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT];
   mutableGameSettings.gameSpeed = BASE_GAME_SPEED + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED];
   mutableGameSettings.coinsPerWin = BASE_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN];
-  mutableGameSettings.criticalWinMultiplier = BASE_CRITICAL_WIN_MULTIPLIER + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULTIPLIER];
+  mutableGameSettings.criticalWinMult = BASE_CRITICAL_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT];
 
   // O Shop upgrades
   if (mutableGameSettings.boardSettings.numRows !== BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE] ||
@@ -196,6 +210,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   // Super X Shop upgrades
   mutableGameSettings.superCoinsPerWin = BASE_SUPER_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN];
   mutableGameSettings.superBoardMaxCount = BASE_SUPER_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT];
+  mutableGameSettings.criticalSuperWinMult = BASE_CRITICAL_SUPER_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT];
 
   // Super O Shop upgrades
   mutableGameSettings.superBoardSettings.numRows = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];

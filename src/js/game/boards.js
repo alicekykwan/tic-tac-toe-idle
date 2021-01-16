@@ -117,7 +117,7 @@ export const createNewBoard = (boardSettings) => {
 
 const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
   let { boardSettings, winResetDelay } = gameSettings;
-  board = Object.assign({}, board);
+  board = {...board};
 
   // This board has already won.
   if (board.numMovesMade === board.movesUntilWin) {
@@ -143,9 +143,9 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 
   // Check winner and award coins.
   if (board.numMovesMade === board.movesUntilWin) {
-    let coinsWon = gameSettings.coinsPerWin;
-    for (let x = 1; x < board.winningGroups.length; ++x) {
-      coinsWon *= gameSettings.criticalWinMultiplier;
+    let coinsWon = gameSettings.coinsPerWin * board.winningGroups.length;
+    if (board.winningGroups.length > 1) {
+      coinsWon *= gameSettings.criticalWinMult;
     }
     switch (board.winner) {
       case 0:
@@ -162,7 +162,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
-  let { superBoardSettings, superBoardMaxCount, superCoinsPerWin } = gameSettings;
+  let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, criticalSuperWinMult } = gameSettings;
   let { numRows, numCols } = superBoardSettings;
   let numPlayers = 2;
 
@@ -170,7 +170,7 @@ const updateSuperBoards = (newState) => {
   let superBoards = [];
   if (numRows !== appliedSBSettings.numRows ||
       numCols !== appliedSBSettings.numCols) {
-    newState.appliedSBSettings = Object.assign({}, appliedSBSettings, {numRows, numCols});
+    newState.appliedSBSettings = {...appliedSBSettings, numRows, numCols};
   } else {
     superBoards = [...newState.superBoards];
   }
@@ -222,18 +222,25 @@ const updateSuperBoards = (newState) => {
       }
     }
 
-    // Awards coins if won.
+  // Check winner and award coins.
+    let critical = (superWins[0] + superWins[1] > 1);
     if (superWins[0] > 0) {
-      coins[COIN_TYPE.COIN_TYPE_SUPER_X] += superCoinsPerWin * superWins[0];
-      newState.paused = true;
+      let coinsWon = superCoinsPerWin * superWins[0];
+      if (critical) {
+        coinsWon *= criticalSuperWinMult;
+      }
+      coins[COIN_TYPE.COIN_TYPE_SUPER_X] += coinsWon;
     }
     if (superWins[1] > 0) {
-      coins[COIN_TYPE.COIN_TYPE_SUPER_O] += superCoinsPerWin * superWins[1];
-      newState.paused = true;
+      let coinsWon = superCoinsPerWin * superWins[1];
+      if (critical) {
+        coinsWon *= criticalSuperWinMult;
+      }
+      coins[COIN_TYPE.COIN_TYPE_SUPER_O] += coinsWon;
     }
 
     if (winningGroups.length > 0) {
-      superBoards[superBoardIdx] = Object.assign({}, superBoards[superBoardIdx], {winningGroups});
+      superBoards[superBoardIdx] = {...superBoards[superBoardIdx], winningGroups};
     }
   }
   newState.superBoards = superBoards;

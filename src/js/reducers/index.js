@@ -49,14 +49,14 @@ function rootReducer(state = initialState, action) {
     if (state.lastTickTime + tickDuration > currTime) {
       return state;
     }
-    let newState = Object.assign({}, state);
+    let newState = {...state};
     newState.boards = [...newState.boards];
     newState.coins = _.cloneDeep(newState.coins);
     while (newState.boards.length < newState.gameSettings.boardCount) {
       newState.boards.push(createNewBoard(newState.gameSettings.boardSettings));
     }
     if (newState.unlocks.progressLevel === 0 && newState.boards.length >= 9) {
-      newState.unlocks = Object.assign({}, newState.unlocks, {progressLevel: 1});
+      newState.unlocks = {...newState.unlocks, progressLevel: 1};
     }
     let ticksProcessed = 0;
     while (newState.lastTickTime + tickDuration <= currTime) {
@@ -84,16 +84,14 @@ function rootReducer(state = initialState, action) {
       console.log('Cannot set initial moves to ', initialMoves);
       return state;
     }
-    let newBoardSettings = Object.assign({}, state.gameSettings.boardSettings, {initialMoves: action.payload});
+    let newBoardSettings = {...state.gameSettings.boardSettings, initialMoves};
     recomputeBoardSettingsCache(newBoardSettings);
-    let newGameSettings = Object.assign({}, state.gameSettings, {boardSettings: newBoardSettings});
-    let newState = Object.assign({}, state, {gameSettings: newGameSettings});
-    return newState;
+    return {...state, gameSettings: {...state.gameSettings, boardSettings: newBoardSettings}};
   }
 
   if (action.type === ACTION_TYPE.ACTION_SET_PAUSED) {
     let { paused } = action.payload;
-    return Object.assign({}, state, {paused});
+    return {...state, paused};
   }
 
   return state;
