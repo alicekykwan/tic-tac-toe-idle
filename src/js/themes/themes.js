@@ -1,6 +1,6 @@
 
 import { createMuiTheme } from '@material-ui/core/styles';
-import { COLOR_X, COLOR_O } from '../constants/colors';
+import { COLOR_X, COLOR_O, COLOR_STAR } from '../constants/colors';
 
 export const THEME_TYPE = {
   NORMAL: 'normal',
@@ -69,6 +69,22 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
         },
         primary: {
           main: COLOR_O,
+          contrastText: '#000000',
+        },
+      },
+    }),
+    [THEME_ELEMENT.SHOP_STAR]: createMuiTheme({
+      palette: {
+        text: {
+          primary: '#000000',
+          secondary: '#333333',
+        },
+        background: {
+          default: '#cabf45',
+          paper: '#ffffa8',
+        },
+        primary: {
+          main: COLOR_STAR,
           contrastText: '#000000',
         },
       },

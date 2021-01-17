@@ -9,3 +9,5 @@ export const UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT = 'sxsbc';
 export const UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT = 'sxcswm';
 export const UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY = 'sowrd';
 export const UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE = 'sosbs';
+export const UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE = 'soup';
+export const UPGRADE_SHOP_STAR_GAME_SPEED = 'stgs';

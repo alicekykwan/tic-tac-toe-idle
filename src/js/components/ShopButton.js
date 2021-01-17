@@ -1,11 +1,11 @@
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
 import Fade from '@material-ui/core/Fade';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
-import * as COIN_TYPE from "../constants/coinTypes";
+import * as COIN_TYPE from '../constants/coinTypes';
 
 import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -13,6 +13,7 @@ import ShopX from './ShopX';
 import ShopO from './ShopO';
 import ShopSuperX from './ShopSuperX';
 import ShopSuperO from './ShopSuperO';
+import ShopStar from './ShopStar';
 
 const mapStateToProps = state => {
   return {
@@ -33,6 +34,8 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
         return `${coins[coinType]} Super X`;
       case COIN_TYPE.COIN_TYPE_SUPER_O:
         return `${coins[coinType]} Super O`;
+      case COIN_TYPE.COIN_TYPE_STAR:
+        return `${coins[coinType]} star`;
       default:
     }
   };
@@ -47,6 +50,8 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
         return <ShopSuperX key={coinType} />;
       case COIN_TYPE.COIN_TYPE_SUPER_O:
         return <ShopSuperO key={coinType} />;
+      case COIN_TYPE.COIN_TYPE_STAR:
+        return <ShopStar key={coinType} />;
       default:
     }
   };
@@ -63,19 +68,21 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
       case COIN_TYPE.COIN_TYPE_SUPER_O:
         // might want to change in the future but same color as O for now
         return THEME_ELEMENT.SHOP_O;
+      case COIN_TYPE.COIN_TYPE_STAR:
+        return THEME_ELEMENT.SHOP_STAR;
       default:
     }
   }
 
   return (<ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, getThemeElement(coinType))}>
-    <Button variant="contained" color="primary" onClick={toggleMenu(menuType)}
+    <Button variant='contained' color='primary' onClick={toggleMenu(menuType)}
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
       { getButtonText() }
     </Button>
     <Popper open={open} anchorEl={anchorEl} placement='bottom' transition>
       {({ TransitionProps }) => (
         <Fade {...TransitionProps} timeout={300}>
-          <Box bgcolor="background.default">
+          <Box bgcolor='background.default' maxHeight='85vh' overflow='scroll'>
             {getContent()}
           </Box>
         </Fade>
