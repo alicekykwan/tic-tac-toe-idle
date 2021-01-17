@@ -97,6 +97,19 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
         </Box>);
       return items;
     }
+    items.push(
+      <Box key='star' mx={1}>
+        <ShopButton menuType='star'
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
+            coinType={COIN_TYPE.COIN_TYPE_STAR} />
+      </Box>);
+    if (progressLevel === 2) {
+      items.push(
+        <Box key='locked' mx={1}>
+          <LockedButton message='unlock challenges' />
+        </Box>);
+      return items;
+    }
     return items;
   };
 

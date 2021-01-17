@@ -16,3 +16,7 @@ export function setPausedAction(payload){
   return { type: ACTION_TYPE.ACTION_SET_PAUSED, payload };
 }
 
+export function prestigeAction(payload){
+  return { type: ACTION_TYPE.ACTION_PRESTIGE, payload };
+}
+
