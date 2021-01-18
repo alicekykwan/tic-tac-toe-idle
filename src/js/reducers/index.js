@@ -1,15 +1,13 @@
-import * as ACTION_TYPE from "../constants/actionTypes";
-import * as COIN_TYPE from "../constants/coinTypes";
-import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
-import { initialUpgrades, updateGameSettings, performUpgrade } from "../game/upgrades";
-import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from "../game/boards";
-import _ from "lodash";
+import * as ACTION_TYPE from '../constants/actionTypes';
+import * as COIN_TYPE from '../constants/coinTypes';
+import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from '../constants/upgradeTypes';
+import { INITIAL_UPGRADES, updateGameSettings, performUpgrade } from '../game/upgrades';
+import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from '../game/boards';
+import { performPrestige } from '../game/prestige';
+import _ from 'lodash';
 
-const initialGameSettings = {
-  boardSettings: {},
-  superBoardSettings: {},
-};
-updateGameSettings(initialGameSettings, initialUpgrades);
+const initialGameSettings = {};
+updateGameSettings(initialGameSettings, INITIAL_UPGRADES);
 
 const initialCoins = {
   [COIN_TYPE.COIN_TYPE_X]: 100000000,
@@ -38,7 +36,7 @@ const initialUnlocks = {
 };
 
 const initialState = {
-  upgrades: initialUpgrades,
+  upgrades: INITIAL_UPGRADES,
   unlocks: initialUnlocks,
   gameSettings: initialGameSettings,
   boards: _.range(initialGameSettings.boardCount).map(
@@ -54,7 +52,7 @@ const initialState = {
 
 function rootReducer(state = initialState, action) {
   switch (action.type) {
-    case ACTION_TYPE.ACTION_PERFORM_TICK:
+    case ACTION_TYPE.ACTION_PERFORM_TICK: {
       let tickDuration = 1000 / state.gameSettings.gameSpeed;
       let currTime = Date.now();
       if (state.lastTickTime + tickDuration > currTime) {
@@ -79,8 +77,9 @@ function rootReducer(state = initialState, action) {
         }
       }
       return newState;
+    }
 
-    case ACTION_TYPE.ACTION_PURCHASE_UPGRADE:
+    case ACTION_TYPE.ACTION_PURCHASE_UPGRADE: {
       let {upgradeType, upgradeLevel} = action.payload;
       let mutableState = _.cloneDeep(state);
       performUpgrade(upgradeType, upgradeLevel, mutableState);
@@ -88,10 +87,11 @@ function rootReducer(state = initialState, action) {
         mutableState.unlocks.progressLevel = 2;
       }
       return mutableState;
+    }
 
-    case ACTION_TYPE.ACTION_SET_INITIAL_MOVES:
+    case ACTION_TYPE.ACTION_SET_INITIAL_MOVES: {
       let initialMoves = action.payload;
-      if (initialMoves.length > state.upgrades[UPGRADE_SHOP_O_PICK_INITIAL_MOVES]) {
+      if (initialMoves.length > state.gameSettings.maxInitialMoves) {
         // Player should not be able to do this normally.
         console.log('Cannot set initial moves to ', initialMoves);
         return state;
@@ -99,14 +99,18 @@ function rootReducer(state = initialState, action) {
       let newBoardSettings = {...state.gameSettings.boardSettings, initialMoves};
       recomputeBoardSettingsCache(newBoardSettings);
       return {...state, gameSettings: {...state.gameSettings, boardSettings: newBoardSettings}};
+    }
   
-    case ACTION_TYPE.ACTION_SET_PAUSED:
+    case ACTION_TYPE.ACTION_SET_PAUSED: {
       let { paused } = action.payload;
       return {...state, paused};
+    }
   
-    case ACTION_TYPE.ACTION_PRESTIGE:
-      console.log('Prestige not implemented.', action);
-      return state;
+    case ACTION_TYPE.ACTION_PRESTIGE: {
+      let mutableState = _.cloneDeep(state);
+      performPrestige(mutableState);
+      return mutableState;
+    }
 
     default:
       console.log('Unknown action type:', action.type);

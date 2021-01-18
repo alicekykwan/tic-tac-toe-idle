@@ -3,6 +3,7 @@ import { prestigeAction } from "../actions/index";
 import { connect } from "react-redux";
 import { Box, Button, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import { COIN_TYPE_O, COIN_TYPE_SUPER_O, COIN_TYPE_SUPER_X, COIN_TYPE_X } from "../constants/coinTypes";
+import { convertCoinsToStars } from '../game/prestige';
 
 const mapStateToProps = state => {
   return {
@@ -18,18 +19,32 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
+const COIN_TYPES_AND_NAMES = [
+  [COIN_TYPE_X, 'X'],
+  [COIN_TYPE_O, 'O'],
+  [COIN_TYPE_SUPER_X, 'Super X'],
+  [COIN_TYPE_SUPER_O, 'Super O'],
+];
+
 function ConnectedPrestigeCard({ coins, spent, canPrestige, prestige }) {
   const doPrestige = () => {
+    // TODO: add confirmation modal that can be disabled in settings
     prestige();
   };
 
-  let prestigeButton = (
-    <Button
-      disabled={ !canPrestige }
-      variant='contained' color='primary'
-      onClick={ doPrestige }>
-      Prestige
-    </Button>);
+  let totalStars = 0;
+  let tableRows = [];
+  for (let [coinType, coinName] of COIN_TYPES_AND_NAMES) {
+    let amt = spent[coinType] + coins[coinType];
+    let stars = convertCoinsToStars(coinType, amt);
+    totalStars += stars;
+    tableRows.push(
+      <TableRow key={coinType}>
+        <TableCell><b>{coinName}</b></TableCell>
+        <TableCell align='right'>{amt}</TableCell>
+        <TableCell align='right'>{stars}</TableCell>
+      </TableRow>);
+  }
 
   return (
     <Box key='prestige' m={1}>
@@ -42,7 +57,12 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, prestige }) {
               </Typography>
             </Box>
             <Box width='45%' textAlign='right'>
-              {prestigeButton}
+              <Button
+                disabled={ !canPrestige }
+                variant='contained' color='primary'
+                onClick={ doPrestige }>
+                Reset game for {totalStars} stars
+              </Button>
             </Box>
           </Box>
           <Box display='flex' flexDirection='row' m={1}>
@@ -56,29 +76,10 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, prestige }) {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  <TableRow>
-                    <TableCell><b>X</b></TableCell>
-                    <TableCell align='right'>{spent[COIN_TYPE_X] + coins[COIN_TYPE_X]}</TableCell>
-                    <TableCell align='right'>1</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell><b>O</b></TableCell>
-                    <TableCell align='right'>{spent[COIN_TYPE_O] + coins[COIN_TYPE_O]}</TableCell>
-                    <TableCell align='right'>2</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell><b>Super X</b></TableCell>
-                    <TableCell align='right'>{spent[COIN_TYPE_SUPER_X] + coins[COIN_TYPE_SUPER_X]}</TableCell>
-                    <TableCell align='right'>3</TableCell>
-                  </TableRow>
-                  <TableRow>
-                    <TableCell><b>Super O</b></TableCell>
-                    <TableCell align='right'>{spent[COIN_TYPE_SUPER_O] + coins[COIN_TYPE_SUPER_O]}</TableCell>
-                    <TableCell align='right'>4</TableCell>
-                  </TableRow>
+                  {tableRows}
                   <TableRow>
                     <TableCell colSpan={2} align='right'><b>Total Stars on Prestige</b></TableCell>
-                    <TableCell align='right'>10</TableCell>
+                    <TableCell align='right'>{totalStars}</TableCell>
                   </TableRow>
                 </TableBody>
               </Table>

@@ -54,8 +54,8 @@ function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchase
               <Box display='flex' flexDirection='row' m={1}>
                 <Box width='100%'>
                   <Typography>
-                    Current:<br/>
-                    { getUpgradeDescription(upgradeType, upgradeLevel) }
+                    Current (level {upgradeLevel}):<br/>
+                    { getUpgradeDescription(upgradeType, upgradeLevel, upgrades) }
                   </Typography>
                 </Box>
               </Box>
@@ -63,8 +63,8 @@ function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchase
               <Box display='flex' flexDirection='row' m={1}>
                 <Box width='45%'>
                   <Typography>
-                    Current:<br/>
-                    { getUpgradeDescription(upgradeType, upgradeLevel) }
+                    Current (level {upgradeLevel}):<br/>
+                    { getUpgradeDescription(upgradeType, upgradeLevel, upgrades) }
                   </Typography>
                 </Box>
                 <Box width='10%' textAlign='center'>
@@ -75,8 +75,8 @@ function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchase
                 </Box>
                 <Box width='45%'>
                   <Typography color='textSecondary'>
-                    Upgraded:<br/>
-                    { getUpgradeDescription(upgradeType, upgradeLevel+1) }
+                    Upgraded (level {upgradeLevel+1}):<br/>
+                    { getUpgradeDescription(upgradeType, upgradeLevel+1, upgrades) }
                   </Typography>
                 </Box>
               </Box>
