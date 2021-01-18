@@ -63,5 +63,4 @@ const resetForPrestige = (mutableState) => {
 
 export const performPrestige = (mutableState) => {
   resetForPrestige(mutableState);
-  console.log('PRESTIGE!', mutableState);
 };
