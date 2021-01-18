@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from "react-redux";
-import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from "../constants/upgradeTypes";
 import { setInitialMovesAction } from "../actions/index";
 import SelectionCanvas from "./SelectionCanvas";
 import { Box, IconButton } from '@material-ui/core';
@@ -9,8 +8,8 @@ import UndoIcon from '@material-ui/icons/Undo';
 
 const mapStateToProps = state => {
   return {
-    upgrades: state.upgrades,
-    boardSettings: state.gameSettings.boardSettings
+    maxNumSelectedCells: state.gameSettings.maxInitialMoves,
+    boardSettings: state.gameSettings.boardSettings,
   };
 };
 
@@ -20,8 +19,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-function ConnectedSelectionGrid({ upgrades, boardSettings, setInitialMoves }) {
-  let maxNumSelectedCells = upgrades[UPGRADE_SHOP_O_PICK_INITIAL_MOVES];
+function ConnectedSelectionGrid({ maxNumSelectedCells, boardSettings, setInitialMoves }) {
   let { numRows, numCols, initialMoves } = boardSettings;
   let [ oldRows, setOldRows ] = useState(numRows);
   let [ oldCols, setOldCols ] = useState(numCols);
