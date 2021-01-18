@@ -66,7 +66,7 @@ export const deserializeGameState = (encoded) => {
     if (!isValidGameState(state)) {
       console.log('Invalid game state:', state);
       return null;
-    }b
+    }
     return state;
   } catch (e) {
     console.log(e);
