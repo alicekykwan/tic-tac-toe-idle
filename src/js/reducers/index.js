@@ -1,61 +1,29 @@
 import * as ACTION_TYPE from '../constants/actionTypes';
-import * as COIN_TYPE from '../constants/coinTypes';
-import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES } from '../constants/upgradeTypes';
-import { INITIAL_UPGRADES, updateGameSettings, performUpgrade } from '../game/upgrades';
+import { performUpgrade } from '../game/upgrades';
 import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from '../game/boards';
 import { performPrestige } from '../game/prestige';
+import { getStateFromLocalStorage, initialState } from '../game/save';
 import _ from 'lodash';
 
-const initialGameSettings = {};
-updateGameSettings(initialGameSettings, INITIAL_UPGRADES);
+function rootReducer(state, action) {
+  if (state === undefined || state === null) {
+    let loadedState = getStateFromLocalStorage();
+    if (loadedState) {
+      let secondsAgo = Math.floor((Date.now() - loadedState.lastTickTime) / 1000);
+      console.log(`successfully loaded save data from ${secondsAgo} seconds ago`);
+      return loadedState;
+    }
+    return initialState;
+  }
 
-const initialCoins = {
-  [COIN_TYPE.COIN_TYPE_X]: 100000000,
-  [COIN_TYPE.COIN_TYPE_O]: 100000000,
-  [COIN_TYPE.COIN_TYPE_SUPER_X]: 100000000,
-  [COIN_TYPE.COIN_TYPE_SUPER_O]: 100000000,
-  [COIN_TYPE.COIN_TYPE_STAR]: 0,
-};
-
-const initialSpent = {
-  [COIN_TYPE.COIN_TYPE_X]: 0,
-  [COIN_TYPE.COIN_TYPE_O]: 0,
-  [COIN_TYPE.COIN_TYPE_SUPER_X]: 0,
-  [COIN_TYPE.COIN_TYPE_SUPER_O]: 0,
-  [COIN_TYPE.COIN_TYPE_STAR]: 0,
-};
-
-const initialUnlocks = {
-  // progressLevel | super shops | star shop | challenges | triangle shop
-  // --------------+-------------+-----------+------------+---------------
-  // 0             | hidden      | hidden    | hidden     | hidden
-  // 1             | shown       | hidden    | hidden     | hidden
-  // 2             | shown       | shown     | hidden     | hidden
-  // 3             | shown       | shown     | shown      | shown
-  progressLevel: 0,
-};
-
-const initialState = {
-  upgrades: INITIAL_UPGRADES,
-  unlocks: initialUnlocks,
-  gameSettings: initialGameSettings,
-  boards: _.range(initialGameSettings.boardCount).map(
-      () => createNewBoard(initialGameSettings.boardSettings)),
-  appliedSBSettings: _.cloneDeep(initialGameSettings.superBoardSettings),
-  superBoards: [],
-  coins: initialCoins,
-  spent: initialSpent,
-  lastTickTime: Date.now(),
-  paused: false,
-  version: 1
-};
-
-function rootReducer(state = initialState, action) {
   switch (action.type) {
     case ACTION_TYPE.ACTION_PROCESS_TICKS: {
       let tickDuration = 1000 / state.gameSettings.gameSpeed;
       let currTime = Date.now();
-      if (state.lastTickTime + tickDuration > currTime || state.paused) {
+      if (state.lastTickTime + tickDuration > currTime) {
+        return state;
+      }
+      if (state.paused && state.boards.length === state.gameSettings.boardCount) {
         return state;
       }
       let newState = {...state};
