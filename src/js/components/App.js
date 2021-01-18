@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import { tickAction } from '../actions/index';
+import { processTicksAction } from '../actions/index';
 
 import BoardsContainer from './BoardsContainer';
 import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
@@ -12,14 +12,14 @@ import AppHeader from './AppHeader';
 
 function mapDispatchToProps(dispatch) {
   return {
-    tick: () => dispatch(tickAction()),
+    processTicks: () => dispatch(processTicksAction()),
   };
 };
 
-function ConnectedApp({ tick }) {
+function ConnectedApp({ processTicks }) {
   useEffect(() => {
     document.title = 'Tic-Tac-Toe Idle';
-    let interval = setInterval(tick, 20);
+    let interval = setInterval(processTicks, 20);
     return () => clearInterval(interval);
   }, []);
 

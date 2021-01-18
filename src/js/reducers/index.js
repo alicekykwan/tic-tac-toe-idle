@@ -52,10 +52,10 @@ const initialState = {
 
 function rootReducer(state = initialState, action) {
   switch (action.type) {
-    case ACTION_TYPE.ACTION_PERFORM_TICK: {
+    case ACTION_TYPE.ACTION_PROCESS_TICKS: {
       let tickDuration = 1000 / state.gameSettings.gameSpeed;
       let currTime = Date.now();
-      if (state.lastTickTime + tickDuration > currTime) {
+      if (state.lastTickTime + tickDuration > currTime || state.paused) {
         return state;
       }
       let newState = {...state};
@@ -110,6 +110,11 @@ function rootReducer(state = initialState, action) {
       let mutableState = _.cloneDeep(state);
       performPrestige(mutableState);
       return mutableState;
+    }
+  
+    case ACTION_TYPE.ACTION_TIME_TRAVEL: {
+      let {seconds} = action.payload;
+      return {...state, lastTickTime: state.lastTickTime - 1000*seconds};
     }
 
     default:

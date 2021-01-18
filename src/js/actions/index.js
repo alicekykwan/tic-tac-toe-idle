@@ -1,7 +1,7 @@
 import * as ACTION_TYPE from "../constants/actionTypes";
 
-export function tickAction(payload) {
-  return { type: ACTION_TYPE.ACTION_PERFORM_TICK, payload };
+export function processTicksAction(payload) {
+  return { type: ACTION_TYPE.ACTION_PROCESS_TICKS, payload };
 }
 
 export function purchaseUpgradeAction(payload){
@@ -20,3 +20,6 @@ export function prestigeAction(payload){
   return { type: ACTION_TYPE.ACTION_PRESTIGE, payload };
 }
 
+export function timeTravelAction(payload){
+  return { type: ACTION_TYPE.ACTION_TIME_TRAVEL, payload };
+}
