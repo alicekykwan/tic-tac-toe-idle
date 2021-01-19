@@ -2,7 +2,7 @@ import * as ACTION_TYPE from '../constants/actionTypes';
 import { performUpgrade } from '../game/upgrades';
 import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from '../game/boards';
 import { performPrestige } from '../game/prestige';
-import { getStateFromLocalStorage, initialState } from '../game/save';
+import { deserializeGameState, getStateFromLocalStorage, initialState } from '../game/save';
 import _ from 'lodash';
 
 function rootReducer(state, action) {
@@ -83,6 +83,11 @@ function rootReducer(state, action) {
     case ACTION_TYPE.ACTION_TIME_TRAVEL: {
       let {seconds} = action.payload;
       return {...state, lastTickTime: state.lastTickTime - 1000*seconds};
+    }
+
+    case ACTION_TYPE.ACTION_IMPORT_SAVE: {
+      let loadedState = deserializeGameState(action.payload);
+      return loadedState ? loadedState : state;
     }
 
     default:

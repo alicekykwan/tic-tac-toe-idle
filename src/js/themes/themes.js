@@ -12,6 +12,7 @@ export const THEME_ELEMENT = {
   SHOP_X: 'shopx',
   SHOP_O: 'shopo',
   BOARD: 'board',
+  SETTINGS: 'settings',
 };
 
 const THEMES_BY_TYPE_THEN_ELEMENT = {
@@ -37,6 +38,22 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
         },
         secondary: {
           main: '#888888',
+          contrastText: '#000000',
+        },
+      },
+    }),
+    [THEME_ELEMENT.SETTINGS]: createMuiTheme({
+      palette: {
+        text: {
+          primary: '#000000',
+          secondary: '#333333',
+        },
+        background: {
+          default: '#bbdefb',
+          paper: '#e3f2fd',
+        },
+        primary: {
+          main: '#bbdefb',
           contrastText: '#000000',
         },
       },
