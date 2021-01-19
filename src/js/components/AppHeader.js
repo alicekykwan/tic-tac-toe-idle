@@ -4,13 +4,13 @@ import { setPausedAction } from '../actions/index';
 
 import LockedButton from './LockedButton';
 import ShopButton from './ShopButton';
+import SettingsButton from './SettingsButton';
 import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
 import * as COIN_TYPE from '../constants/coinTypes';
 import IconButton from '@material-ui/core/IconButton';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SettingsIcon from '@material-ui/icons/Settings';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import '../../css/App.css';
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -134,7 +134,8 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
             <IconButton size='medium' color='secondary' children={<TimelineIcon />}/>
           </Box>
           <Box key='settings' mx={1}>
-            <IconButton size='medium' color='secondary' children={<SettingsIcon />}/>
+            <SettingsButton menuType='settings'
+                menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
           </Box>
           <Box key='help' mx={1}>
             <IconButton size='medium' color='secondary' children={<HelpOutlineIcon />}/>

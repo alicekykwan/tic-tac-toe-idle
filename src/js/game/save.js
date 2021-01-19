@@ -34,6 +34,7 @@ const initialUnlocks = {
 };
 
 export const initialState = {
+  userSettings: {},
   upgrades: INITIAL_UPGRADES,
   unlocks: initialUnlocks,
   gameSettings: initialGameSettings,
@@ -69,7 +70,7 @@ export const deserializeGameState = (encoded) => {
     }
     return state;
   } catch (e) {
-    console.log(e);
+    console.log('Failed to decode:', encoded);
     return null;
   }
 };
