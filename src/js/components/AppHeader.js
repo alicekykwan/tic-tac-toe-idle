@@ -15,6 +15,10 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import '../../css/App.css';
 import { ThemeProvider } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
+import Tooltip from '@material-ui/core/Tooltip';
+import Snackbar from '@material-ui/core/Snackbar';
+import SnackbarContent from '@material-ui/core/SnackbarContent';
+import { Typography } from '@material-ui/core';
 
 
 const mapStateToProps = state => {
@@ -31,10 +35,40 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
+const renderDuration = (durationMillis) => {
+  let seconds = Math.floor(durationMillis / 1000);
+  if (seconds <= 0) {
+    return '';
+  }
+  let minutes = Math.floor(seconds / 60); seconds %= 60;
+  let hours = Math.floor(minutes / 60); minutes %= 60;
+  let days = Math.floor(hours / 24); hours %= 24;
+  let parts = [];
+  if (days) parts.push(days + 'd');
+  if (days || hours) parts.push(hours + 'h');
+  if (days || hours || minutes) parts.push(minutes + 'm');
+  parts.push(seconds + 's');
+  return parts.join(' ');
+};
+
 function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) {
+  // Remaining offline progress.
+  const [ heartbeat, setHeartbeat ] = useState(Date.now());
+  const [ offlineDurationMillis, setOfflineDurationMillis ] = useState(Date.now()-lastTickTime);
+  const updateTime = useCallback(() => setHeartbeat(Date.now()), []);
+  useEffect(() => {
+    let interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, [updateTime]);
+  useEffect(() => {
+    // Note: need fresh timestamp because heartbeat is stale.
+    setOfflineDurationMillis(Date.now()-lastTickTime)
+  }, [heartbeat, lastTickTime]);
+
+
+  // Shared state for poppers.
   const [ menuOpened, setMenuOpened ] = useState(null);
   const [ anchorEl, setAnchorEl ] = useState(null);
-
   const onKeyDown = useCallback((evt) => {
     const { key, repeat } = evt;
     if (repeat) return;
@@ -43,10 +77,9 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
       setAnchorEl(null);
     }
   }, []);
-
   useEffect(() => {
-    window.addEventListener("keydown", onKeyDown, true);  
-    return () => window.removeEventListener("keydown", onKeyDown, true);
+    window.addEventListener('keydown', onKeyDown, true);
+    return () => window.removeEventListener('keydown', onKeyDown, true);
   }, [onKeyDown]);
 
   const toggleMenu = (menuType) => (evt) => {
@@ -59,7 +92,8 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
     }
   };
 
-  let getShops = () => {
+  // TODO: Provide menuOpened, anchorEl, toggleMenu via Context
+  const getShops = () => {
     let items = [
       <Box key='x' mx={1}>
         <ShopButton menuType='x'
@@ -114,14 +148,6 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
     return items;
   };
 
-  let offlineProgressRemaining = () => {
-    let timeRemaining = (Date.now()-lastTickTime)/1000;
-    if (timeRemaining > 10) {
-      return `Offline Progress Remaining: ${timeRemaining} seconds`
-    }
-    return null
-  } 
-
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.HEADER)}>
       <Box key='app-header' bgcolor='background.default' className='App-header' color='text.primary'
@@ -133,15 +159,15 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
           {getShops()}
         </Box>
 
-        <Box>{offlineProgressRemaining}</Box>
-
         <Box display='flex' flexDirection='row'>
-          <Box key='pause' mx={1}>
-            <IconButton size='medium'
-              color={ paused ? 'primary' : 'secondary' }
-              children={ paused ? <PlayArrowIcon /> : <PauseIcon /> }
-              onClick={ () => setPaused(!paused)} />
-          </Box>
+          <Tooltip title={(paused ? 'Resume Game' : 'Pause Game')}>
+            <Box key='pause' mx={1}>
+              <IconButton size='medium'
+                color={ paused ? 'primary' : 'secondary' }
+                children={ paused ? <PlayArrowIcon /> : <PauseIcon /> }
+                onClick={ () => setPaused(!paused)} />
+            </Box>
+          </Tooltip>
           <Box key='stats' mx={1}>
             <IconButton size='medium' color='secondary' children={<TimelineIcon />}/>
           </Box>
@@ -154,6 +180,9 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
           </Box>
         </Box>
       </Box>
+      <Snackbar open={offlineDurationMillis>=1000} autoHideDuration={6000} onClose={()=>{}}>
+        <SnackbarContent message={<Typography>Offline progress remaining: {renderDuration(offlineDurationMillis)}</Typography>} />
+      </Snackbar>
     </ThemeProvider>
   );
 }

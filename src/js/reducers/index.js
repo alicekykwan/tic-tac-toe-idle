@@ -38,6 +38,7 @@ function rootReducer(state, action) {
         return state;
       }
       if (state.paused && state.boards.length === state.gameSettings.boardCount) {
+        lastOffTime = currTime;
         return state;
       }
       let newState = {...state};
@@ -103,7 +104,7 @@ function rootReducer(state, action) {
     }
 
     case ACTION_TYPE.ACTION_CLEAR_GAME: {
-      return initialState;
+      return {...initialState, lastTickTime: Date.now()};
     }
 
     case ACTION_TYPE.ACTION_CHANGE_USER_SETTINGS: {

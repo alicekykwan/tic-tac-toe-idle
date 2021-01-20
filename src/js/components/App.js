@@ -19,8 +19,8 @@ function mapDispatchToProps(dispatch) {
 function ConnectedApp({ processTicks }) {
   useEffect(() => {
     document.title = 'Tic-Tac-Toe Idle';
-    let interval = setInterval(processTicks, 20);
-    return () => clearInterval(interval);
+    let interval = window.setInterval(processTicks, 20);
+    return () => window.clearInterval(interval);
   }, []);
 
   return (
