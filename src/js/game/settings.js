@@ -1,10 +1,17 @@
 export const initialUserSettings = {
   pauseOnLoad: false,
-  maxOfflineProgressSpeed: 10,
+  maxOfflineSpeed: 10,
+  autoSaveSeconds: 15,
 };
 
 export const isValidUserSettings = (userSettings) => {
   if (!userSettings.hasOwnProperty('pauseOnLoad')) {
+    return false;
+  }
+  if (userSettings.maxOfflineSpeed < 1 || userSettings.maxOfflineSpeed > 20) {
+    return false;
+  }
+  if (userSettings.autoSaveSeconds < 0) {
     return false;
   }
   return true;

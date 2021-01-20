@@ -33,7 +33,7 @@ function rootReducer(state, action) {
       // Force the fake offline game clock to always be within 2 seconds.
       // Note: this will freeze the game if offlineTickDuration > 2000.
       lastOffTime = Math.max(lastOffTime, currTime - 2000);
-      let offlineTickDuration = tickDuration / state.userSettings.maxOfflineProgressSpeed;
+      let offlineTickDuration = tickDuration / state.userSettings.maxOfflineSpeed;
       if (lastOffTime + offlineTickDuration > currTime) {
         return state;
       }

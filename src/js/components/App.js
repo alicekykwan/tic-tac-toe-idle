@@ -9,6 +9,13 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
 import AppHeader from './AppHeader';
+import { saveCurrentStateToLocalStorage } from '../game/save';
+
+function mapStateToProps(state) {
+  return {
+    autoSaveSeconds: state.userSettings.autoSaveSeconds,
+  }
+};
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -16,12 +23,21 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
-function ConnectedApp({ processTicks }) {
+function ConnectedApp({ autoSaveSeconds, processTicks }) {
+  // Main game loop.
   useEffect(() => {
     document.title = 'Tic-Tac-Toe Idle';
     let interval = window.setInterval(processTicks, 20);
     return () => window.clearInterval(interval);
-  }, []);
+  }, [processTicks]);
+
+  // Autosave loop.
+  useEffect(() => {
+    if (autoSaveSeconds > 0) {
+      let interval = window.setInterval(saveCurrentStateToLocalStorage, autoSaveSeconds*1000);
+      return () => window.clearInterval(interval);
+    }
+  }, [autoSaveSeconds]);
 
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.MAIN)}>
@@ -36,6 +52,6 @@ function ConnectedApp({ processTicks }) {
   );
 }
 
-const App = connect(null, mapDispatchToProps)(ConnectedApp);
+const App = connect(mapStateToProps, mapDispatchToProps)(ConnectedApp);
 
 export default App;
