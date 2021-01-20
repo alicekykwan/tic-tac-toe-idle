@@ -21,7 +21,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { Typography } from '@material-ui/core';
 
 
-const mapStateToProps = state => {
+function mapStateToProps(state) {
   return {
     paused: state.paused,
     progressLevel: state.unlocks.progressLevel,
@@ -55,14 +55,14 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
   // Remaining offline progress.
   const [ heartbeat, setHeartbeat ] = useState(Date.now());
   const [ offlineDurationMillis, setOfflineDurationMillis ] = useState(Date.now()-lastTickTime);
-  const updateTime = useCallback(() => setHeartbeat(Date.now()), []);
+  const updateHeartbeat = useCallback(() => setHeartbeat(Date.now()), []);
   useEffect(() => {
-    let interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, [updateTime]);
+    let interval = window.setInterval(updateHeartbeat, 1000);
+    return () => window.clearInterval(interval);
+  }, [updateHeartbeat]);
   useEffect(() => {
     // Note: need fresh timestamp because heartbeat is stale.
-    setOfflineDurationMillis(Date.now()-lastTickTime)
+    setOfflineDurationMillis(Date.now()-lastTickTime);
   }, [heartbeat, lastTickTime]);
 
 
@@ -180,7 +180,7 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
           </Box>
         </Box>
       </Box>
-      <Snackbar open={offlineDurationMillis>=1000} autoHideDuration={6000} onClose={()=>{}}>
+      <Snackbar open={offlineDurationMillis>=1000}>
         <SnackbarContent message={<Typography>Offline progress remaining: {renderDuration(offlineDurationMillis)}</Typography>} />
       </Snackbar>
     </ThemeProvider>
