@@ -2,6 +2,9 @@ export const initialUserSettings = {
   pauseOnLoad: false,
   maxOfflineSpeed: 10,
   autoSaveSeconds: 15,
+  confirmBoardSize: true,
+  confirmSuperBoardSize: true,
+  confirmPrestige: true,
 };
 
 export const isValidUserSettings = (userSettings) => {

@@ -116,6 +116,15 @@ function rootReducer(state, action) {
       return state;
     }
 
+    case ACTION_TYPE.ACTION_ADD_COINS: {
+      let amt = action.payload || 1000000;
+      let newCoins = {...state.coins};
+      for (let key in newCoins) {
+        newCoins[key] += amt;
+      }
+      return {...state, coins: newCoins};
+    }
+
     default:
       console.log('Unknown action type:', action.type);
   }

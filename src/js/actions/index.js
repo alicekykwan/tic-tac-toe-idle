@@ -35,3 +35,7 @@ export function clearGameAction(payload) {
 export function changeUserSettingsAction(payload) {
   return { type: ACTION_TYPE.ACTION_CHANGE_USER_SETTINGS, payload };
 }
+
+export function addCoinsAction(payload) {
+  return { type: ACTION_TYPE.ACTION_ADD_COINS, payload };
+}
