@@ -53,25 +53,31 @@ function ConnectedExportImportButton({importSave}) {
 
   return (
     <Box display='flex' flexDirection='row' m={1}>
-      <ButtonGroup>
-        <Button variant='contained' color='primary' onClick={exportSaveData}>
-          Export Save
-        </Button>
-        <Button variant='contained' color='primary' onClick={importSaveData(false)}
-            startIcon={<WarningIcon color={error?'error':'inherit'} />}
-            disabled={error || empty} >
-          Import Save
-        </Button>
-      </ButtonGroup>
-      <input
-          type='text'
-          ref={textAreaRef}
-          defaultValue=''
-          placeholder='save data'
-          onFocus={(evt)=>evt.target.select()}
-          onClick={(evt)=>evt.target.select()}
-          onChange={validate}
-        />
+      <Box>
+        <ButtonGroup>
+          <Button variant='contained' color='primary' onClick={exportSaveData}>
+            Export Save
+          </Button>
+          <Button variant='contained' color='primary' onClick={importSaveData(false)}
+              startIcon={<WarningIcon color={error?'error':'inherit'} />}
+              disabled={error || empty} >
+            Import Save
+          </Button>
+        </ButtonGroup>
+      </Box>
+      <Box display='flex' ml={1} flexGrow={1}>
+        <input
+            type='text'
+            style={{width:'100%'}}
+            ref={textAreaRef}
+            defaultValue=''
+            placeholder='save data'
+            onFocus={(evt)=>evt.target.select()}
+            onClick={(evt)=>evt.target.select()}
+            onChange={validate}
+          />
+      </Box>
+      
       <Dialog open={dialogOpen} onClose={handleClose}>
         <DialogTitle>Import Save Data?</DialogTitle>
         <DialogContent>
