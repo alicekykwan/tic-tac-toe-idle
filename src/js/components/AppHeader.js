@@ -21,6 +21,7 @@ const mapStateToProps = state => {
   return {
     paused: state.paused,
     progressLevel: state.unlocks.progressLevel,
+    lastTickTime: state.lastTickTime,
   };
 };
 
@@ -30,7 +31,7 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
-function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
+function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) {
   const [ menuOpened, setMenuOpened ] = useState(null);
   const [ anchorEl, setAnchorEl ] = useState(null);
 
@@ -113,6 +114,14 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
     return items;
   };
 
+  let offlineProgressRemaining = () => {
+    let timeRemaining = (Date.now()-lastTickTime)/1000;
+    if (timeRemaining > 10) {
+      return `Offline Progress Remaining: ${timeRemaining} seconds`
+    }
+    return null
+  } 
+
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.HEADER)}>
       <Box key='app-header' bgcolor='background.default' className='App-header' color='text.primary'
@@ -123,6 +132,9 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused }) {
           </Box>
           {getShops()}
         </Box>
+
+        <Box>{offlineProgressRemaining}</Box>
+
         <Box display='flex' flexDirection='row'>
           <Box key='pause' mx={1}>
             <IconButton size='medium'

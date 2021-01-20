@@ -1,6 +1,7 @@
 import * as COIN_TYPE from '../constants/coinTypes';
-import { INITIAL_UPGRADES, updateGameSettings } from '../game/upgrades';
-import { createNewBoard } from '../game/boards';
+import { INITIAL_UPGRADES, updateGameSettings } from './upgrades';
+import { createNewBoard } from './boards';
+import { initialUserSettings } from './settings';
 import store from "../store/index";
 import _ from 'lodash';
 
@@ -34,7 +35,7 @@ const initialUnlocks = {
 };
 
 export const initialState = {
-  userSettings: {},
+  userSettings: initialUserSettings,
   upgrades: INITIAL_UPGRADES,
   unlocks: initialUnlocks,
   gameSettings: initialGameSettings,
@@ -64,6 +65,9 @@ export const deserializeGameState = (encoded) => {
     let decoded = atob(encoded);
     let state = JSON.parse(decoded);
     // Put data migrations here.
+    if (state.userSettings.pauseOnLoad) {
+      state.paused = true;
+    }
     if (!isValidGameState(state)) {
       console.log('Invalid game state:', state);
       return null;
