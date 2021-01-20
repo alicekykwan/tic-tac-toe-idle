@@ -27,3 +27,11 @@ export function timeTravelAction(payload) {
 export function importSaveAction(payload) {
   return { type: ACTION_TYPE.ACTION_IMPORT_SAVE, payload };
 }
+
+export function clearGameAction(payload) {
+  return { type: ACTION_TYPE.ACTION_CLEAR_GAME, payload };
+}
+
+export function changeUserSettingsAction(payload) {
+  return { type: ACTION_TYPE.ACTION_CHANGE_USER_SETTINGS, payload };
+}

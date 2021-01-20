@@ -4,6 +4,10 @@ import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from '../
 import { performPrestige } from '../game/prestige';
 import { deserializeGameState, getStateFromLocalStorage, initialState } from '../game/save';
 import _ from 'lodash';
+import { isValidUserSettings } from '../game/settings';
+
+
+let lastOffTime = Date.now();
 
 function rootReducer(state, action) {
   if (state === undefined || state === null) {
@@ -20,7 +24,17 @@ function rootReducer(state, action) {
     case ACTION_TYPE.ACTION_PROCESS_TICKS: {
       let tickDuration = 1000 / state.gameSettings.gameSpeed;
       let currTime = Date.now();
+      if (state.lastTickTime > currTime + 1000) {
+        return {...state, lastTickTime: currTime};
+      }
       if (state.lastTickTime + tickDuration > currTime) {
+        return state;
+      }
+      // Force the fake offline game clock to always be within 2 seconds.
+      // Note: this will freeze the game if offlineTickDuration > 2000.
+      lastOffTime = Math.max(lastOffTime, currTime - 2000);
+      let offlineTickDuration = tickDuration / state.userSettings.maxOfflineProgressSpeed;
+      if (lastOffTime + offlineTickDuration > currTime) {
         return state;
       }
       if (state.paused && state.boards.length === state.gameSettings.boardCount) {
@@ -35,14 +49,12 @@ function rootReducer(state, action) {
       if (newState.unlocks.progressLevel === 0 && newState.boards.length >= 9) {
         newState.unlocks = {...newState.unlocks, progressLevel: 1};
       }
-      let ticksProcessed = 0;
-      while (newState.lastTickTime + tickDuration <= currTime) {
+      while (newState.lastTickTime + tickDuration <= currTime &&
+             lastOffTime + offlineTickDuration <= currTime &&
+             Date.now() - currTime <= 10) {
         newState.lastTickTime += tickDuration;
+        lastOffTime += offlineTickDuration;
         performOneMove(newState);
-        if (++ticksProcessed >= 100) {
-          // Only attempt to perform 100 ticks at a time.
-          break;
-        }
       }
       return newState;
     }
@@ -88,6 +100,19 @@ function rootReducer(state, action) {
     case ACTION_TYPE.ACTION_IMPORT_SAVE: {
       let loadedState = deserializeGameState(action.payload);
       return loadedState ? loadedState : state;
+    }
+
+    case ACTION_TYPE.ACTION_CLEAR_GAME: {
+      return initialState;
+    }
+
+    case ACTION_TYPE.ACTION_CHANGE_USER_SETTINGS: {
+      let newUserSettings = {...state.userSettings, ...action.payload};
+      if (isValidUserSettings(newUserSettings)) {
+        return {...state, userSettings: newUserSettings};
+      }
+      console.log('Invalid user settings:', newUserSettings);
+      return state;
     }
 
     default:
