@@ -9,6 +9,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import WarningIcon from '@material-ui/icons/Warning';
 import { COIN_TYPE_O, COIN_TYPE_SUPER_O, COIN_TYPE_SUPER_X, COIN_TYPE_X } from "../constants/coinTypes";
 import { convertCoinsToStars } from '../game/prestige';
+import { COIN_X, COIN_O, COIN_SUPER_X, COIN_SUPER_O, COIN_STAR, renderCoin } from '../constants/coins';
 
 
 const mapStateToProps = state => {
@@ -27,10 +28,10 @@ function mapDispatchToProps(dispatch) {
 }
 
 const COIN_TYPES_AND_NAMES = [
-  [COIN_TYPE_X, 'X'],
-  [COIN_TYPE_O, 'O'],
-  [COIN_TYPE_SUPER_X, 'Super X'],
-  [COIN_TYPE_SUPER_O, 'Super O'],
+  COIN_TYPE_X,
+  COIN_TYPE_O,
+  COIN_TYPE_SUPER_X,
+  COIN_TYPE_SUPER_O,
 ];
 
 function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, prestige }) {
@@ -58,20 +59,20 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
 
   let totalStars = 0;
   let tableRows = [];
-  for (let [coinType, coinName] of COIN_TYPES_AND_NAMES) {
+  for (let coinType of COIN_TYPES_AND_NAMES) {
     let amt = spent[coinType] + coins[coinType];
     let stars = convertCoinsToStars(coinType, amt);
     totalStars += stars;
     tableRows.push(
       <TableRow key={coinType}>
-        <TableCell><b>{coinName}</b></TableCell>
+        <TableCell><b>{renderCoin(coinType)}</b></TableCell>
         <TableCell align='right'>{amt}</TableCell>
         <TableCell align='right'>{stars}</TableCell>
       </TableRow>);
   }
   tableRows.push(
     <TableRow key='total'>
-      <TableCell colSpan={2} align='right'><b>Total Stars on Prestige</b></TableCell>
+      <TableCell colSpan={2} align='right'><b>Total</b></TableCell>
       <TableCell align='right'>{totalStars}</TableCell>
     </TableRow>);
 
@@ -91,7 +92,7 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
                   disabled={ !canPrestige } startIcon={<WarningIcon/>}
                   variant='contained' color='primary'
                   onClick={ handlePrompt }>
-                  Reset progress for {totalStars} stars
+                  Reset progress for {totalStars}&nbsp;{COIN_STAR}
                 </Button>
               </Box>
             </Box>
@@ -100,9 +101,9 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
             <Table size='small'>
               <TableHead>
                 <TableRow>
-                  <TableCell><b>Coin Type</b></TableCell>
+                  <TableCell />
                   <TableCell align='right'><b>Total Earned<br/>(Spent + Held)</b></TableCell>
-                  <TableCell align='right'><b>Stars Gained<br/>on Prestige</b></TableCell>
+                  <TableCell align='right'><b>{COIN_STAR} Gained<br/>on Prestige</b></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -113,13 +114,17 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
         </Accordion>
       </Card>
       <Dialog open={dialogOpen} onClose={handleCancel}>
-        <DialogTitle>Prestige</DialogTitle>
+        <DialogTitle>Confirm Prestige</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This will reset all X coins, O coins, super X coins, super O coins,
-            and all upgrades purchased using those coins in exchange for star coins.
-            Really prestige?
-            (This confirmation can be disabled under Settings &gt; Confirmations.)
+            <p>
+              This will reset all {COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O},
+              and all their upgrades in exchange for {totalStars}&nbsp;{COIN_STAR}.
+            </p>
+            <p>
+              Really prestige?
+              (This confirmation can be disabled under Settings &gt; Confirmations.)
+            </p>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
