@@ -6,6 +6,7 @@ import Fade from '@material-ui/core/Fade';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import * as COIN_TYPE from '../constants/coinTypes';
+import { renderCoin } from '../constants/coins';
 
 import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
 import { ThemeProvider } from '@material-ui/core/styles';
@@ -23,22 +24,6 @@ const mapStateToProps = state => {
 
 function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType }) {
   const open = (menuOpened === menuType);
-
-  const getButtonText = () => {
-    switch (coinType) {
-      case COIN_TYPE.COIN_TYPE_X:
-        return `${coins[coinType]} X`;
-      case COIN_TYPE.COIN_TYPE_O:
-        return `${coins[coinType]} O`;
-      case COIN_TYPE.COIN_TYPE_SUPER_X:
-        return `${coins[coinType]} Super X`;
-      case COIN_TYPE.COIN_TYPE_SUPER_O:
-        return `${coins[coinType]} Super O`;
-      case COIN_TYPE.COIN_TYPE_STAR:
-        return `${coins[coinType]} star`;
-      default:
-    }
-  };
 
   const getContent = () => {
     switch (coinType) {
@@ -77,7 +62,7 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
   return (<ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, getThemeElement(coinType))}>
     <Button variant='contained' color='primary' onClick={toggleMenu(menuType)}
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
-      { getButtonText() }
+      {coins[coinType]}&nbsp;{renderCoin(coinType)}
     </Button>
     <Popper open={open} anchorEl={anchorEl} placement='bottom' style={{zIndex:1100}} transition>
       {({ TransitionProps }) => (

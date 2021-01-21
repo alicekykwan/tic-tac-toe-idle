@@ -15,6 +15,11 @@ export const THEME_ELEMENT = {
   SETTINGS: 'settings',
 };
 
+const GLOBAL_FONT = {
+  'fontFamily': '"Itim", cursive',
+  'fontSize': 16,
+};
+
 const THEMES_BY_TYPE_THEN_ELEMENT = {
   [THEME_TYPE.NORMAL]: {
     [THEME_ELEMENT.MAIN]: createMuiTheme({
@@ -23,6 +28,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           default: '#696969',
         },
       },
+      typography: GLOBAL_FONT,
     }),
     [THEME_ELEMENT.HEADER]: createMuiTheme({
       palette: {
@@ -41,6 +47,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           contrastText: '#000000',
         },
       },
+      typography: GLOBAL_FONT,
     }),
     [THEME_ELEMENT.SETTINGS]: createMuiTheme({
       palette: {
@@ -57,6 +64,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           contrastText: '#000000',
         },
       },
+      typography: GLOBAL_FONT,
     }),
     [THEME_ELEMENT.SHOP_X]: createMuiTheme({
       palette: {
@@ -73,6 +81,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           contrastText: '#000000',
         },
       },
+      typography: GLOBAL_FONT,
     }),
     [THEME_ELEMENT.SHOP_O]: createMuiTheme({
       palette: {
@@ -89,6 +98,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           contrastText: '#000000',
         },
       },
+      typography: GLOBAL_FONT,
     }),
     [THEME_ELEMENT.SHOP_STAR]: createMuiTheme({
       palette: {
@@ -105,6 +115,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           contrastText: '#000000',
         },
       },
+      typography: GLOBAL_FONT,
     }),
   },
 };

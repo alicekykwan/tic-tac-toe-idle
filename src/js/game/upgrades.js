@@ -1,6 +1,7 @@
 import * as COIN_TYPE from '../constants/coinTypes';
 import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache } from '../game/boards'
+import { COIN_STAR, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -126,12 +127,12 @@ export const getNextUpgradeCost = (upgradeType, upgradeLevel) => {
 
 const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 'Board Count',
-  [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: 'Coins per Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN]: 'Rewards per Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED]: 'Game Speed',
   [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: 'Critical Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 'Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Super Coins per Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Rewards per Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super Board Count',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Super Critical Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 'Delay after Win',
@@ -160,10 +161,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       return <span><b>{tempGameSettings.boardCount}</b> game boards</span>;
 
     case UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN:
-      if (tempGameSettings.coinsPerWin === 1) {
-        return <span>Gain <b>{tempGameSettings.coinsPerWin}</b> coin per win</span>;
-      }
-      return <span>Gain <b>{tempGameSettings.coinsPerWin}</b> coins per win</span>;
+      return <span>Gain <b>{tempGameSettings.coinsPerWin}</b>&nbsp;{renderRegularCoins(false)}&nbsp;per win</span>;
 
     case UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED:
     case UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED:
@@ -175,7 +173,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       }
       return (
         <span>
-          <b>{tempGameSettings.criticalWinMult}</b>x more coins when winning in more than one way
+          <b>{tempGameSettings.criticalWinMult}</b>x more&nbsp;{renderRegularCoins(false)}&nbsp;when winning in more than one way
         </span>
       );
 
@@ -194,10 +192,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       }
 
     case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN:
-      if (tempGameSettings.superCoinsPerWin === 1) {
-        return <span>Gain <b>{tempGameSettings.superCoinsPerWin}</b> super-coin per super-win</span>;
-      }
-      return <span>Gain <b>{tempGameSettings.superCoinsPerWin}</b> super-coins per super-win</span>;
+      return <span>Gain <b>{tempGameSettings.superCoinsPerWin}</b>&nbsp;{renderSuperCoins(false)}&nbsp;per super-win</span>;
 
     case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT:
       if (tempGameSettings.superBoardMaxCount === 1) {
@@ -211,7 +206,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       }
       return (
         <span>
-          <b>{tempGameSettings.criticalSuperWinMult}</b>x more super-coins when super-winning in more than one way
+          <b>{tempGameSettings.criticalSuperWinMult}</b>x more&nbsp;{renderSuperCoins(false)}&nbsp;when super-winning in more than one way
         </span>
       );
 
@@ -230,7 +225,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       if (!tempGameSettings.canPrestige) {
         return 'No effect';
       }
-      return <span>Unlock the <b>Prestige</b> option in the <b>Star Shop</b></span>;
+      return <span>Unlock the <b>Prestige</b> option in the&nbsp;{COIN_STAR}&nbsp;<b>Shop</b></span>;
 
     default:
       return `Unknown upgrade type: ${upgradeType}`
