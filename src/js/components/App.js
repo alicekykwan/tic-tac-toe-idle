@@ -4,7 +4,6 @@ import { processTicksAction } from '../actions/index';
 
 import BoardsContainer from './BoardsContainer';
 import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
-import '../../css/App.css';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Box from '@material-ui/core/Box';
@@ -42,11 +41,9 @@ function ConnectedApp({ autoSaveSeconds, processTicks }) {
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.MAIN)}>
       <CssBaseline />
-      <Box bgcolor='background.default' key='app' className='App'>
-        <AppHeader />
-        <Box key='app-boards' className='App-content' >
-          <BoardsContainer />
-        </Box>
+      <AppHeader />
+      <Box bgcolor='background.default'>
+        <BoardsContainer />
       </Box>
     </ThemeProvider>
   );

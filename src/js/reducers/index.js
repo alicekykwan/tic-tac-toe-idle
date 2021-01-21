@@ -95,7 +95,12 @@ function rootReducer(state, action) {
   
     case ACTION_TYPE.ACTION_TIME_TRAVEL: {
       let {seconds} = action.payload;
-      return {...state, lastTickTime: state.lastTickTime - 1000*seconds};
+      let millis = 1000*seconds;
+      if (isNaN(millis)) {
+        console.log('invalid duration:', seconds);
+        return state;
+      }
+      return {...state, lastTickTime: state.lastTickTime - millis};
     }
 
     case ACTION_TYPE.ACTION_IMPORT_SAVE: {
@@ -117,7 +122,7 @@ function rootReducer(state, action) {
     }
 
     case ACTION_TYPE.ACTION_ADD_COINS: {
-      let amt = action.payload || 1000000;
+      let {amt} = action.payload;
       let newCoins = {...state.coins};
       for (let key in newCoins) {
         newCoins[key] += amt;
