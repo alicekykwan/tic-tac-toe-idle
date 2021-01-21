@@ -1,13 +1,14 @@
-import React from "react";
-import * as UPGRADE_TYPES from "../constants/upgradeTypes";
-import { purchaseUpgradeAction } from "../actions/index";
-import { connect } from "react-redux";
-import { Box, Button, Card, Typography } from '@material-ui/core';
-import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from "../game/upgrades";
+import { useState } from 'react';
+import * as UPGRADE_TYPES from '../constants/upgradeTypes';
+import { purchaseUpgradeAction } from '../actions/index';
+import { connect } from 'react-redux';
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Typography } from '@material-ui/core';
+import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from '../game/upgrades';
 import ArrowRightAltIcon from '@material-ui/icons/ArrowRightAlt';
 import SelectionGrid from './SelectionGrid';
+import WarningIcon from '@material-ui/icons/Warning';
 
-const mapStateToProps = state => {
+function mapStateToProps(state) {
   return {
     coins: state.coins,
     upgrades: state.upgrades
@@ -20,20 +21,41 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchaseUpgrade }) {
+function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchaseUpgrade, warning, confirm }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handlePrompt = () => {
+    if (warning && confirm) {
+      setDialogOpen(true);
+    } else {
+      purchaseUpgrade({upgradeType, upgradeLevel});
+    }
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
+    purchaseUpgrade({upgradeType, upgradeLevel});
+  };
+
   let upgradeLevel = upgrades[upgradeType];
   let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
   let upgradeButton = null;
   if (cost === null) {
-    upgradeButton = <Button variant="contained" color="primary" disabled>Cannot Upgrade (MAX)</Button>;
+    upgradeButton = <Button variant='contained' color='primary' disabled>Cannot Upgrade (MAX)</Button>;
   } else {
     upgradeButton = (<Button
       disabled={ !canPurchase(coins, cost) }
-      variant="contained" color="primary"
-      onClick={ ()=>{purchaseUpgrade({upgradeType, upgradeLevel})} }>
+      variant='contained' color='primary'
+      startIcon={ warning ? <WarningIcon/> : null }
+      onClick={ handlePrompt }>
       Upgrade (cost: { cost[coinType] })
     </Button>);
   }
+
   return (
     <Box key={`upgrade-${upgradeType}`} m={1}>
       <Card>
@@ -87,6 +109,26 @@ function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchase
               : null}
         </Box>
       </Card>
+      { warning
+        ? <Dialog open={dialogOpen} onClose={handleCancel}>
+            <DialogTitle>Confirm Upgrade Purchase</DialogTitle>
+            <DialogContent>
+              <DialogContentText>
+                {warning}
+                This purchase cannot be undone. Continue with purchase?
+                (This confirmation can be disabled under Settings &gt; Confirmations.)
+              </DialogContentText>
+            </DialogContent>
+            <DialogActions>
+              <Button variant='contained' color='primary' onClick={handleCancel}>
+                No, Cancel Purchase
+              </Button>
+              <Button variant='contained' color='primary' onClick={handleConfirm} autoFocus startIcon={<WarningIcon />}>
+                Yes, Purchase
+              </Button>
+            </DialogActions>
+          </Dialog>
+        : null}
     </Box>);
 };
 

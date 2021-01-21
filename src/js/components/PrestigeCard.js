@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { prestigeAction } from "../actions/index";
 import { connect } from "react-redux";
-import { Box, Button, Card, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
+import { Box, Button, Card, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@material-ui/core';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -15,7 +15,8 @@ const mapStateToProps = state => {
   return {
     coins: state.coins,
     spent: state.spent,
-    canPrestige: state.gameSettings.canPrestige
+    canPrestige: state.gameSettings.canPrestige,
+    confirmPrestige: state.userSettings.confirmPrestige,
   };
 };
 
@@ -32,13 +33,26 @@ const COIN_TYPES_AND_NAMES = [
   [COIN_TYPE_SUPER_O, 'Super O'],
 ];
 
-function ConnectedPrestigeCard({ coins, spent, canPrestige, prestige }) {
+function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, prestige }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
 
-  const doPrestige = (evt) => {
+  const handlePrompt = (evt) => {
     evt.stopPropagation();
     evt.preventDefault();
-    // TODO: add confirmation modal that can be disabled in settings
+    if (confirmPrestige) {
+      setDialogOpen(true);
+    } else {
+      prestige();
+    }
+  };
+
+  const handleCancel = () => {
+    setDialogOpen(false);
+  };
+
+  const handleConfirm = () => {
+    setDialogOpen(false);
     prestige();
   };
 
@@ -76,7 +90,7 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, prestige }) {
                 <Button
                   disabled={ !canPrestige } startIcon={<WarningIcon/>}
                   variant='contained' color='primary'
-                  onClick={ doPrestige }>
+                  onClick={ handlePrompt }>
                   Reset progress for {totalStars} stars
                 </Button>
               </Box>
@@ -98,6 +112,25 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, prestige }) {
           </AccordionDetails>
         </Accordion>
       </Card>
+      <Dialog open={dialogOpen} onClose={handleCancel}>
+        <DialogTitle>Prestige</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This will reset all X coins, O coins, super X coins, super O coins,
+            and all upgrades purchased using those coins in exchange for star coins.
+            Really prestige?
+            (This confirmation can be disabled under Settings &gt; Confirmations.)
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant='contained' color='primary' onClick={handleCancel}>
+            No
+          </Button>
+          <Button variant='contained' color='primary' onClick={handleConfirm} autoFocus startIcon={<WarningIcon />}>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>);
 };
 
