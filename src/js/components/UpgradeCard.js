@@ -115,6 +115,8 @@ function ConnectedUpgradeCard({ upgradeType, coinType, coins, upgrades, purchase
             <DialogContent>
               <DialogContentText>
                 {warning}
+              </DialogContentText>
+              <DialogContentText>
                 This purchase cannot be undone. Continue with purchase?
                 (This confirmation can be disabled under Settings &gt; Confirmations.)
               </DialogContentText>

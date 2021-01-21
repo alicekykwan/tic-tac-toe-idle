@@ -6,6 +6,7 @@ import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import LockIcon from '@material-ui/icons/Lock';
 import WarningIcon from '@material-ui/icons/Warning';
 import { COIN_TYPE_O, COIN_TYPE_SUPER_O, COIN_TYPE_SUPER_X, COIN_TYPE_X } from "../constants/coinTypes";
 import { convertCoinsToStars } from '../game/prestige';
@@ -88,12 +89,17 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
                 </Typography>
               </Box>
               <Box textAlign='right'>
-                <Button
-                  disabled={ !canPrestige } startIcon={<WarningIcon/>}
-                  variant='contained' color='primary'
-                  onClick={ handlePrompt }>
-                  Reset progress for {totalStars}&nbsp;{COIN_STAR}
-                </Button>
+              { canPrestige
+                ? <Button
+                    disabled={ !canPrestige } startIcon={<WarningIcon/>}
+                    variant='contained' color='primary'
+                    onClick={ handlePrompt }>
+                    Reset progress for {totalStars}&nbsp;{COIN_STAR}
+                  </Button>
+                : <Button variant='contained' disabled startIcon={<LockIcon/>}>
+                    Unlock prestige in&nbsp;{COIN_SUPER_O}&nbsp;shop
+                  </Button>
+              }
               </Box>
             </Box>
           </AccordionSummary>
@@ -117,14 +123,12 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
         <DialogTitle>Confirm Prestige</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            <p>
-              This will reset all {COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O},
-              and all their upgrades in exchange for {totalStars}&nbsp;{COIN_STAR}.
-            </p>
-            <p>
-              Really prestige?
-              (This confirmation can be disabled under Settings &gt; Confirmations.)
-            </p>
+            This will reset all {COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O},
+            and all their upgrades in exchange for {totalStars}&nbsp;{COIN_STAR}.
+          </DialogContentText>
+          <DialogContentText>
+            Really prestige?
+            (This confirmation can be disabled under Settings &gt; Confirmations.)
           </DialogContentText>
         </DialogContent>
         <DialogActions>
