@@ -17,6 +17,9 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 0,
 };
 
 export const IS_UPGRADE_PERMANENT = {
@@ -33,6 +36,9 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: true,
 };
 
 const BASE_BOARD_COUNT = 1;
@@ -93,6 +99,10 @@ const SHOP_SUPER_O_UPGRADE_COSTS = {
 
 const SHOP_STAR_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: [1, 2, 3],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: [1, 2, 3],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: [1, 2, 3],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: [1, 2, 3],
+
 };
 
 export const getNextUpgradeCost = (upgradeType, upgradeLevel) => {
@@ -139,6 +149,9 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 'Unlock Prestige',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Permanent Game Speed',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Permanent Rewards per Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Permanent Board Count',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 'Permanent Pick Starting Moves'
 };
 
 export const getUpgradeName = (upgradeType) => {
@@ -155,12 +168,14 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
 
   switch (upgradeType) {
     case UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT:
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT:
       if (tempGameSettings.boardCount === 1) {
         return <span><b>{tempGameSettings.boardCount}</b> game board</span>;
       }
       return <span><b>{tempGameSettings.boardCount}</b> game boards</span>;
 
     case UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN:
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN:
       return <span>Gain <b>{tempGameSettings.coinsPerWin}</b>&nbsp;{renderRegularCoins(false)}&nbsp;per win</span>;
 
     case UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED:
@@ -183,12 +198,13 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
     }
 
     case UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES:
-      if (tempGameSettings.boardSettings.maxInitialMoves === 0) {
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES:
+      if (tempGameSettings.maxInitialMoves === 0) {
         return 'No effect';
-      } else if (tempGameSettings.boardSettings.maxInitialMoves === 1) {
+      } else if (tempGameSettings.maxInitialMoves === 1) {
         return 'First move is no longer random';
       } else {
-        return <span>First <b>{tempGameSettings.boardSettings.maxInitialMoves}</b> moves are no longer random</span>;
+        return <span>First <b>{tempGameSettings.maxInitialMoves}</b> moves are no longer random</span>;
       }
 
     case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN:
@@ -271,7 +287,10 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
 
   // Star Shop upgrades
   mutableGameSettings.gameSpeed += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED];
-}
+  mutableGameSettings.coinsPerWin += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN];
+  mutableGameSettings.boardCount += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT];
+  mutableGameSettings.maxInitialMoves += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES];
+};
 
 export const performUpgrade = (upgradeType, upgradeLevel, mutableState) => {
   let { upgrades, coins, spent, gameSettings } = mutableState;
@@ -285,4 +304,4 @@ export const performUpgrade = (upgradeType, upgradeLevel, mutableState) => {
   deductBalance(coins, spent, cost);
   ++upgrades[upgradeType];
   updateGameSettings(gameSettings, upgrades);
-}
+};
