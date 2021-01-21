@@ -12,14 +12,9 @@ import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TimelineIcon from '@material-ui/icons/Timeline';
-import '../../css/App.css';
 import { ThemeProvider } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import { Typography } from '@material-ui/core';
-
+import { AppBar, Box, Tooltip, Snackbar, SnackbarContent, Typography } from '@material-ui/core';
+import AdminDialog from './AdminDialog';
 
 function mapStateToProps(state) {
   return {
@@ -65,16 +60,21 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
     setOfflineDurationMillis(Date.now()-lastTickTime);
   }, [heartbeat, lastTickTime]);
 
+  // Admin Dialog state.
+  const [ adminDialogOpen, setAdminDialogOpen ] = useState(false);
 
   // Shared state for poppers.
   const [ menuOpened, setMenuOpened ] = useState(null);
   const [ anchorEl, setAnchorEl ] = useState(null);
+
   const onKeyDown = useCallback((evt) => {
     const { key, repeat } = evt;
     if (repeat) return;
     if (key === 'Escape') {
       setMenuOpened(null);
       setAnchorEl(null);
+    } else if (key === 'h') {
+      setAdminDialogOpen(true)
     }
   }, []);
   useEffect(() => {
@@ -148,41 +148,47 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
     return items;
   };
 
+
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.HEADER)}>
-      <Box key='app-header' bgcolor='background.default' className='App-header' color='text.primary'
-          display='flex' flexDirection='row' justifyContent='space-between' p={1} pt={2}>
-        <Box display='flex' flexDirection='row'>
-          <Box key='title' mx={1}>
-            <b>Tic-Tac-Toe<br />Idle</b>
-          </Box>
-          {getShops()}
-        </Box>
-
-        <Box display='flex' flexDirection='row'>
-          <Tooltip title={(paused ? 'Resume Game' : 'Pause Game')}>
-            <Box key='pause' mx={1}>
-              <IconButton size='medium'
-                color={ paused ? 'primary' : 'secondary' }
-                children={ paused ? <PlayArrowIcon /> : <PauseIcon /> }
-                onClick={ () => setPaused(!paused)} />
+      <AppBar position='sticky' style={{overflow:'scroll'}}>
+        <Box key='app-header' bgcolor='background.default' color='text.primary' width='100%'
+            display='flex' flexDirection='row' justifyContent='space-between' p={1} pt={2}>
+          <Box display='flex' flexDirection='row'>
+            <Box key='title' mx={1}>
+              <b>Tic-Tac-Toe<br />Idle</b>
             </Box>
-          </Tooltip>
-          <Box key='stats' mx={1}>
-            <IconButton size='medium' color='secondary' children={<TimelineIcon />}/>
+            {getShops()}
           </Box>
-          <Box key='settings' mx={1}>
-            <SettingsButton menuType='settings'
-                menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
-          </Box>
-          <Box key='help' mx={1}>
-            <IconButton size='medium' color='secondary' children={<HelpOutlineIcon />}/>
+
+          <Box display='flex' flexDirection='row'>
+            <Tooltip title={(paused ? 'Resume Game' : 'Pause Game')}>
+              <Box key='pause' mx={1}>
+                <IconButton size='medium'
+                  color={ paused ? 'primary' : 'secondary' }
+                  children={ paused ? <PlayArrowIcon /> : <PauseIcon /> }
+                  onClick={ () => setPaused(!paused)} />
+              </Box>
+            </Tooltip>
+            <Box key='stats' mx={1}>
+              <IconButton size='medium' color='secondary' children={<TimelineIcon />}/>
+            </Box>
+            <Box key='settings' mx={1}>
+              <SettingsButton menuType='settings'
+                  menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
+            </Box>
+            <Box key='help' mx={1}>
+              <IconButton size='medium' color='secondary' children={<HelpOutlineIcon />}/>
+            </Box>
           </Box>
         </Box>
-      </Box>
+      </AppBar>
+
       <Snackbar open={offlineDurationMillis>=1000}>
         <SnackbarContent message={<Typography>Offline progress remaining: {renderDuration(offlineDurationMillis)}</Typography>} />
       </Snackbar>
+
+      <AdminDialog open={adminDialogOpen} onClose={()=>setAdminDialogOpen(false)} />
     </ThemeProvider>
   );
 }
