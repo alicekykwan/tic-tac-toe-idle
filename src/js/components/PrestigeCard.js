@@ -47,11 +47,11 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
     }
   };
 
-  const handleCancel = (evt) => {
+  const handleCancel = () => {
     setDialogOpen(false);
   };
 
-  const handleConfirm = (evt) => {
+  const handleConfirm = () => {
     setDialogOpen(false);
     prestige();
   };
@@ -119,6 +119,7 @@ function ConnectedPrestigeCard({ coins, spent, canPrestige, confirmPrestige, pre
             This will reset all X coins, O coins, super X coins, super O coins,
             and all upgrades purchased using those coins in exchange for star coins.
             Really prestige?
+            (This confirmation can be disabled under Settings &gt; Confirmations.)
           </DialogContentText>
         </DialogContent>
         <DialogActions>
