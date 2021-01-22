@@ -148,10 +148,10 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 'Delay after Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 'Unlock Prestige',
-  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Permanent Game Speed',
-  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Permanent Rewards per Win',
-  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Permanent Board Count',
-  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 'Permanent Pick Starting Moves'
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Game Speed',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Rewards per Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Board Count',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 'Pick Starting Moves'
 };
 
 export const getUpgradeName = (upgradeType) => {
@@ -290,6 +290,13 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   mutableGameSettings.coinsPerWin += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN];
   mutableGameSettings.boardCount += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT];
   mutableGameSettings.maxInitialMoves += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES];
+  // TODO: set this based on automation upgrade level
+  mutableGameSettings.canAutomate = {
+    [COIN_TYPE.COIN_TYPE_X]: true,
+    [COIN_TYPE.COIN_TYPE_O]: false,
+    [COIN_TYPE.COIN_TYPE_SUPER_X]: false,
+    [COIN_TYPE.COIN_TYPE_SUPER_O]: false,
+  };
 };
 
 export const performUpgrade = (upgradeType, upgradeLevel, mutableState) => {
