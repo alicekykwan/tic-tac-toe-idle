@@ -1,3 +1,5 @@
+import { AUTOMATABLE_UPGRADES } from '../constants/upgradeTypes';
+
 export const initialUserSettings = {
   pauseOnLoad: false,
   maxOfflineSpeed: 10,
@@ -5,7 +7,12 @@ export const initialUserSettings = {
   confirmBoardSize: true,
   confirmSuperBoardSize: true,
   confirmPrestige: true,
+  autoBuyers: {},
 };
+
+for (let upgradeType of AUTOMATABLE_UPGRADES) {
+  initialUserSettings.autoBuyers[upgradeType] = {on: false, lim: 100};
+}
 
 export const isValidUserSettings = (userSettings) => {
   if (!userSettings.hasOwnProperty('pauseOnLoad')) {
