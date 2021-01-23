@@ -67,6 +67,9 @@ function rootReducer(state, action) {
       if (mutableState.unlocks.progressLevel === 1 && mutableState.gameSettings.canPrestige) {
         mutableState.unlocks.progressLevel = 2;
       }
+      if (mutableState.unlocks.progressLevel === 2 && mutableState.gameSettings.challengesUnlocked) {
+        mutableState.unlocks.progressLevel = 3;
+      }
       return mutableState;
     }
 

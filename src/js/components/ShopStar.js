@@ -4,7 +4,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 
-import { UPGRADE_SHOP_STAR_BOARD_COUNT, UPGRADE_SHOP_STAR_COINS_PER_WIN, UPGRADE_SHOP_STAR_GAME_SPEED, UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES } from '../constants/upgradeTypes';
+import { UPGRADE_SHOP_STAR_BOARD_COUNT, UPGRADE_SHOP_STAR_COINS_PER_WIN, UPGRADE_SHOP_STAR_GAME_SPEED, UPGRADE_SHOP_STAR_AUTO_BUY, UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES, UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES } from '../constants/upgradeTypes';
 import { COIN_TYPE_STAR } from '../constants/coinTypes';
 import UpgradeTabPanel from './UpgradeTabPanel';
 import { getUpgradeName } from '../game/upgrades';
@@ -39,6 +39,9 @@ function ShopStar() {
               <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_COINS_PER_WIN)} />
               <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_BOARD_COUNT)} />
               <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES)} />
+              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_AUTO_BUY)} />
+              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES)} />
+              
             </Tabs>
             <TabPanel value={activeTab} index={0}>
               <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_GAME_SPEED} />
@@ -51,6 +54,12 @@ function ShopStar() {
             </TabPanel>
             <TabPanel value={activeTab} index={3}>
               <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES} />
+            </TabPanel>
+            <TabPanel value={activeTab} index={4}>
+              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_AUTO_BUY} />
+            </TabPanel>
+            <TabPanel value={activeTab} index={5}>
+              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES} />
             </TabPanel>
           </Box>
         </Paper>

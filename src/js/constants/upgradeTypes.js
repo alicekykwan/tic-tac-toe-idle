@@ -14,6 +14,9 @@ export const UPGRADE_SHOP_STAR_GAME_SPEED = 'stgs';
 export const UPGRADE_SHOP_STAR_COINS_PER_WIN = 'stcpw';
 export const UPGRADE_SHOP_STAR_BOARD_COUNT = 'stbc';
 export const UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES = 'stpim';
+export const UPGRADE_SHOP_STAR_AUTO_BUY = 'stab';
+export const UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES = 'stuc';
+
 
 export const AUTOMATABLE_UPGRADES = [
   UPGRADE_SHOP_X_BOARD_COUNT,
