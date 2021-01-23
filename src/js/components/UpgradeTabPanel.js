@@ -111,7 +111,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
           <Box display='flex' flexDirection='row' m={1}>
             <Box width='100%'>
               <Typography color='textSecondary'>
-                Upgraded (level {upgradeLevel+1}):{ getUpgradeDescription(upgradeType, upgradeLevel+1, upgrades) }
+                Upgraded (level {upgradeLevel+1}): { getUpgradeDescription(upgradeType, upgradeLevel+1, upgrades) }
                 </Typography>
             </Box>
           </Box>

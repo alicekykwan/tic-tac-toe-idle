@@ -1,7 +1,7 @@
 import * as COIN_TYPE from '../constants/coinTypes';
 import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache } from '../game/boards'
-import { COIN_STAR, renderRegularCoins, renderSuperCoins } from '../constants/coins';
+import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -20,6 +20,9 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 0,
+
 };
 
 export const IS_UPGRADE_PERMANENT = {
@@ -39,6 +42,9 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: true,
+
 };
 
 const BASE_BOARD_COUNT = 1;
@@ -102,6 +108,8 @@ const SHOP_STAR_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: [1, 2, 3],
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: [1, 2, 3],
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: [1, 2, 3],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: [1, 2, 3, 4],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: [10],
 
 };
 
@@ -151,7 +159,9 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Game Speed',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Rewards per Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Board Count',
-  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 'Pick Starting Moves'
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 'Auto Buy Upgrades',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 'Unlock Challenges',
 };
 
 export const getUpgradeName = (upgradeType) => {
@@ -242,6 +252,26 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
         return 'No effect';
       }
       return <span>Unlock the <b>Prestige</b> option in the&nbsp;{COIN_STAR}&nbsp;<b>Shop</b></span>;
+    
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY:
+      if (tempGameSettings.autoBuyLevel === 0) {
+        return <span>No effect</span>;
+      } else if (tempGameSettings.autoBuyLevel === 1) {
+        return <span>{COIN_X}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
+      } else if (tempGameSettings.autoBuyLevel === 2) {
+        return <span>{COIN_O}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
+      } else if (tempGameSettings.autoBuyLevel === 3) {
+        return <span>{COIN_SUPER_X}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
+      } else if (tempGameSettings.autoBuyLevel === 4) {
+        return <span>{COIN_SUPER_O}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
+      };
+
+      case UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES:
+        if (!tempGameSettings.challengesUnlocked) {
+          return 'No effect';
+        }
+        return <span>Unlock <b>Challenges</b></span>;
+
 
     default:
       return `Unknown upgrade type: ${upgradeType}`
@@ -291,12 +321,14 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   mutableGameSettings.boardCount += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT];
   mutableGameSettings.maxInitialMoves += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES];
   // TODO: set this based on automation upgrade level
+  mutableGameSettings.autoBuyLevel = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]
   mutableGameSettings.canAutomate = {
-    [COIN_TYPE.COIN_TYPE_X]: true,
-    [COIN_TYPE.COIN_TYPE_O]: false,
-    [COIN_TYPE.COIN_TYPE_SUPER_X]: false,
-    [COIN_TYPE.COIN_TYPE_SUPER_O]: false,
+    [COIN_TYPE.COIN_TYPE_X]: Boolean(mutableGameSettings.autoBuyLevel > 0),
+    [COIN_TYPE.COIN_TYPE_O]: Boolean(mutableGameSettings.autoBuyLevel > 1),
+    [COIN_TYPE.COIN_TYPE_SUPER_X]: Boolean(mutableGameSettings.autoBuyLevel > 2),
+    [COIN_TYPE.COIN_TYPE_SUPER_O]: Boolean(mutableGameSettings.autoBuyLevel > 3),
   };
+  mutableGameSettings.challengesUnlocked = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES] > 0);
 };
 
 export const performUpgrade = (upgradeType, upgradeLevel, mutableState) => {

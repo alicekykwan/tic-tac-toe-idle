@@ -39,7 +39,7 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
           primary: '#cccccc',
         },
         primary: {
-          main: '#b2ebf2',
+          main: '#424242',
           contrastText: '#000000',
         },
         secondary: {

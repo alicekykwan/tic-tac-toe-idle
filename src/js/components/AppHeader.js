@@ -13,7 +13,7 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { AppBar, Box, Tooltip, Snackbar, SnackbarContent, Typography } from '@material-ui/core';
+import { AppBar, Box, Button, Tooltip, Snackbar, SnackbarContent, Typography } from '@material-ui/core';
 import AdminDialog from './AdminDialog';
 
 function mapStateToProps(state) {
@@ -145,6 +145,16 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
         </Box>);
       return items;
     }
+
+    items.push(
+      <Box key='challenges' mx={1}>
+        <Button variant='contained'>
+          Challenges
+        </Button>
+      </Box>);
+
+
+
     return items;
   };
 
