@@ -171,26 +171,28 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
             {getShops()}
           </Box>
 
-          <Box display='flex' flexDirection='row'>
-            <Tooltip title={(paused ? 'Resume Game' : 'Pause Game')}>
-              <Box key='pause' mx={1}>
-                <IconButton size='medium'
-                  color={ paused ? 'primary' : 'secondary' }
-                  children={ paused ? <PlayArrowIcon /> : <PauseIcon /> }
-                  onClick={ () => setPaused(!paused)} />
+          <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.SETTINGS)}>
+            <Box display='flex' flexDirection='row'>
+              <Tooltip title={(paused ? 'Resume Game' : 'Pause Game')}>
+                <Box key='pause' mx={1}>
+                  <IconButton size='medium'
+                    color={ paused ? 'secondary' : 'primary' }
+                    children={ paused ? <PlayArrowIcon /> : <PauseIcon /> }
+                    onClick={ () => setPaused(!paused)} />
+                </Box>
+              </Tooltip>
+              <Box key='stats' mx={1}>
+                <IconButton size='medium' color='primary' children={<TimelineIcon />}/>
               </Box>
-            </Tooltip>
-            <Box key='stats' mx={1}>
-              <IconButton size='medium' color='secondary' children={<TimelineIcon />}/>
+              <Box key='settings' mx={1}>
+                <SettingsButton menuType='settings'
+                    menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
+              </Box>
+              <Box key='help' mx={1}>
+                <IconButton size='medium' color='primary' children={<HelpOutlineIcon />}/>
+              </Box>
             </Box>
-            <Box key='settings' mx={1}>
-              <SettingsButton menuType='settings'
-                  menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
-            </Box>
-            <Box key='help' mx={1}>
-              <IconButton size='medium' color='secondary' children={<HelpOutlineIcon />}/>
-            </Box>
-          </Box>
+          </ThemeProvider>
         </Box>
       </AppBar>
 
