@@ -10,8 +10,10 @@ export const initialUserSettings = {
   autoBuyers: {},
 };
 
-for (let upgradeType of AUTOMATABLE_UPGRADES) {
-  initialUserSettings.autoBuyers[upgradeType] = {on: false, lim: 100};
+for (let upgradeTypes of Object.values(AUTOMATABLE_UPGRADES)) {
+  for (let upgradeType of upgradeTypes){
+    initialUserSettings.autoBuyers[upgradeType] = {on: false, lim: 100};
+  }
 }
 
 export const isValidUserSettings = (userSettings) => {

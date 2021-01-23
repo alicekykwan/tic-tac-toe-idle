@@ -1,5 +1,5 @@
 import * as ACTION_TYPE from '../constants/actionTypes';
-import { performUpgrade } from '../game/upgrades';
+import { performUpgrade, checkAutoBuyers, triggerAutoBuyers } from '../game/upgrades';
 import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from '../game/boards';
 import { performPrestige } from '../game/prestige';
 import { deserializeGameState, getStateFromLocalStorage, initialState } from '../game/save';
@@ -57,20 +57,20 @@ function rootReducer(state, action) {
         lastOffTime += offlineTickDuration;
         performOneMove(newState);
       }
+      newState = checkAutoBuyers(newState);
       return newState;
     }
 
     case ACTION_TYPE.ACTION_PURCHASE_UPGRADE: {
       let {upgradeType, upgradeLevel} = action.payload;
-      let mutableState = _.cloneDeep(state);
-      performUpgrade(upgradeType, upgradeLevel, mutableState);
-      if (mutableState.unlocks.progressLevel === 1 && mutableState.gameSettings.canPrestige) {
-        mutableState.unlocks.progressLevel = 2;
+      let newState = performUpgrade(upgradeType, upgradeLevel, state);
+      if (newState.unlocks.progressLevel === 1 && newState.gameSettings.canPrestige) {
+        newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 2}};
       }
-      if (mutableState.unlocks.progressLevel === 2 && mutableState.gameSettings.challengesUnlocked) {
-        mutableState.unlocks.progressLevel = 3;
+      if (newState.unlocks.progressLevel === 2 && newState.gameSettings.challengesUnlocked) {
+        newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 3}};
       }
-      return mutableState;
+      return newState;
     }
 
     case ACTION_TYPE.ACTION_SET_INITIAL_MOVES: {

@@ -2,6 +2,7 @@ import * as COIN_TYPE from '../constants/coinTypes';
 import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
+import _ from 'lodash';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -262,16 +263,15 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
         return <span>{COIN_O}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
       } else if (tempGameSettings.autoBuyLevel === 3) {
         return <span>{COIN_SUPER_X}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
-      } else if (tempGameSettings.autoBuyLevel === 4) {
+      } else {
         return <span>{COIN_SUPER_O}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
       };
 
-      case UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES:
-        if (!tempGameSettings.challengesUnlocked) {
-          return 'No effect';
-        }
-        return <span>Unlock <b>Challenges</b></span>;
-
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES:
+      if (!tempGameSettings.challengesUnlocked) {
+        return 'No effect';
+      }
+      return <span>Unlock <b>Challenges</b></span>;
 
     default:
       return `Unknown upgrade type: ${upgradeType}`
@@ -331,16 +331,67 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   mutableGameSettings.challengesUnlocked = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES] > 0);
 };
 
-export const performUpgrade = (upgradeType, upgradeLevel, mutableState) => {
-  let { upgrades, coins, spent, gameSettings } = mutableState;
-  if (upgrades[upgradeType] !== upgradeLevel) {
-    return false;
+// returns the new state after performing an upgrade
+export const performUpgrade = (upgradeType, upgradeLevel, state) => {
+  if (state.upgrades[upgradeType] !== upgradeLevel) {
+    return state;
   }
   let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
-  if (!canPurchase(coins, cost)) {
-    return false;
+  if (!canPurchase(state.coins, cost)) {
+    return state;
   }
-  deductBalance(coins, spent, cost);
-  ++upgrades[upgradeType];
-  updateGameSettings(gameSettings, upgrades);
+  let newState = {
+      ...state,
+      coins: {...state.coins},
+      spent: {...state.spent},
+      upgrades: {...state.upgrades},
+      gameSettings: _.cloneDeep(state.gameSettings)};
+  deductBalance(newState.coins, newState.spent, cost);
+  ++newState.upgrades[upgradeType];
+  updateGameSettings(newState.gameSettings, newState.upgrades);
+  return newState;
+};
+
+export const checkAutoBuyers = (state) => {
+  let purchased = false;
+  for (let [coinType, upgradeTypes] of Object.entries(UPGRADE_TYPE.AUTOMATABLE_UPGRADES)) {
+    if (!state.gameSettings.canAutomate[coinType]) {
+      continue;
+    }
+    for (let upgradeType of upgradeTypes) {
+      let autoBuyer = state.userSettings.autoBuyers[upgradeType];
+      if (!autoBuyer.on || autoBuyer.lim > 100 || autoBuyer.lim <= 0 ) {
+        continue;
+      }      
+
+      let upgradeLevel = state.upgrades[upgradeType];
+      let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
+      // adjust cost
+      for (let costCoinType in cost) {
+        cost[costCoinType] *= 100/autoBuyer.lim;
+      }
+      if (!canPurchase(state.coins, cost)) {
+        continue;
+      }
+
+      if (!purchased) {
+        // First time we purchase we should make mutable copies.
+        purchased = true;
+        state = {
+            ...state,
+            coins: {...state.coins},
+            spent: {...state.spent},
+            upgrades: {...state.upgrades}};
+      }
+      deductBalance(state.coins, state.spent, cost);
+      ++state.upgrades[upgradeType];
+    }
+  }
+  if (purchased) {
+    // NOTE: if we reach here, we would have already made
+    // at least a shallow copy of state
+    state.gameSettings = _.cloneDeep(state.gameSettings);
+    updateGameSettings(state.gameSettings, state.upgrades);
+  }
+  return state;
 };
