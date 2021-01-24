@@ -3,7 +3,7 @@ import { createNewBoard } from './boards';
 import { IS_UPGRADE_PERMANENT, updateGameSettings } from './upgrades';
 import _ from 'lodash';
 
-const COIN_TYPES_TO_RESET = [
+export const PRESTIGE_COIN_TYPES = [
   COIN_TYPE_X,
   COIN_TYPE_O,
   COIN_TYPE_SUPER_X,
@@ -32,14 +32,43 @@ export const convertCoinsToStars = (coinType, amt) => {
   return Math.floor(res);
 };
 
+export const convertAllCoinsToStars = (coins, spent) => {
+  let stars = 0;
+  for (let coinType of PRESTIGE_COIN_TYPES) {
+    stars += convertCoinsToStars(coinType, coins[coinType] + spent[coinType]);
+  }
+  return stars;
+}
+
+export const bonusCoinsOnPrestige = (prestigeCount, startBonusMulti) => {
+  return {
+    [COIN_TYPE_X]: 25 * (prestigeCount + 1) * startBonusMulti,
+    [COIN_TYPE_O]: 10 * (prestigeCount + 1) * startBonusMulti,
+  };
+};
+
+// Requires a mutable copy of state.
 const resetForPrestige = (mutableState) => {
   // Reset coins and award stars.
-  let {coins, spent, upgrades } = mutableState;
-  for (let coinType of COIN_TYPES_TO_RESET) {
+  let { coins, spent, upgrades, stats } = mutableState;
+  let { canPrestige, startBonusMulti } = mutableState.gameSettings;
+
+  for (let coinType of PRESTIGE_COIN_TYPES) {
     let stars = convertCoinsToStars(coinType, coins[coinType] + spent[coinType]);
     coins[coinType] = 0;
     spent[coinType] = 0;
-    coins[COIN_TYPE_STAR] += stars;
+    if (canPrestige) {
+      coins[COIN_TYPE_STAR] += stars;
+    }
+  }
+
+  let bonusCoins = bonusCoinsOnPrestige(stats.prestigeCount, startBonusMulti);
+  for (let coinType in bonusCoins) {
+    coins[coinType] += bonusCoins[coinType];
+  }
+
+  if (canPrestige) {
+    stats.prestigeCount += 1;
   }
 
   // Reset upgrades and recompute game settings.
@@ -50,11 +79,11 @@ const resetForPrestige = (mutableState) => {
   }
   mutableState.gameSettings = {};
   updateGameSettings(mutableState.gameSettings, upgrades);
+  let { superBoardSettings, boardCount, boardSettings } = mutableState.gameSettings;
 
   // Reset board state.
-  mutableState.appliedSBSettings = _.cloneDeep(mutableState.gameSettings.superBoardSettings);
-  mutableState.boards = _.range(mutableState.gameSettings.boardCount).map(
-      () => createNewBoard(mutableState.gameSettings.boardSettings));
+  mutableState.appliedSBSettings = _.cloneDeep(superBoardSettings);
+  mutableState.boards = _.range(boardCount).map(() => createNewBoard(boardSettings));
   mutableState.superBoards = [];
 
   // force re-render

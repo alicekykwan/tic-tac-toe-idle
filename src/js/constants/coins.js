@@ -42,11 +42,11 @@ export const renderAmount = (amt) => {
 export const renderAmountShort = (amt) => {
   if (amt < 1000) {
     return amt.toLocaleString();
-  } else if (amt < 1000000) {
+  } else if (amt < 999500) {
     return (amt/1000).toPrecision(3)+'K';
-  } else if (amt < 1000000000) {
+  } else if (amt < 999500000) {
     return (amt/1000000).toPrecision(3)+'M';
-  } else if (amt < 1000000000) {
+  } else if (amt < 999500000000) {
     return (amt/1000000000).toPrecision(3)+'B';
   }
   return amt.toPrecision(3);

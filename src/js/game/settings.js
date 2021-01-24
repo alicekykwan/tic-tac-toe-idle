@@ -2,7 +2,7 @@ import { AUTOMATABLE_UPGRADES } from '../constants/upgradeTypes';
 
 export const initialUserSettings = {
   pauseOnLoad: false,
-  maxOfflineSpeed: 10,
+  maxOfflineSpeed: 5,
   autoSaveSeconds: 15,
   confirmBoardSize: true,
   confirmSuperBoardSize: true,

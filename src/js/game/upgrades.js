@@ -329,6 +329,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
     [COIN_TYPE.COIN_TYPE_SUPER_O]: Boolean(mutableGameSettings.autoBuyLevel > 3),
   };
   mutableGameSettings.challengesUnlocked = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES] > 0);
+  mutableGameSettings.startBonusMulti = 1;
 };
 
 // returns the new state after performing an upgrade

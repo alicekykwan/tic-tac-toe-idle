@@ -2,13 +2,12 @@ import { connect } from 'react-redux';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
-import Fade from '@material-ui/core/Fade';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUpIcon from '@material-ui/icons/ArrowDropUp';
 import * as COIN_TYPE from '../constants/coinTypes';
 import { renderCoin, renderAmountShort } from '../constants/coins';
 
-import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
+import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes';
 import { ThemeProvider } from '@material-ui/core/styles';
 import ShopX from './ShopX';
 import ShopO from './ShopO';
@@ -65,13 +64,9 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
       {renderAmountShort(coins[coinType])}&nbsp;{renderCoin(coinType)}
     </Button>
     <Popper open={open} anchorEl={anchorEl} placement='bottom' style={{zIndex:1100}} transition>
-      {({ TransitionProps }) => (
-        <Fade {...TransitionProps} timeout={300}>
-          <Box bgcolor='background.default' maxHeight='85vh' overflow='scroll'>
-            {getContent()}
-          </Box>
-        </Fade>
-      )}
+      <Box bgcolor='background.default' maxHeight='85vh' overflow='scroll'>
+        {getContent()}
+      </Box>
     </Popper>
   </ThemeProvider>);
 }

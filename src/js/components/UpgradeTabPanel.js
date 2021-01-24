@@ -7,6 +7,7 @@ import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost 
 import SelectionGrid from './SelectionGrid';
 import WarningIcon from '@material-ui/icons/Warning';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import { renderAmount, renderCoin } from '../constants/coins';
 
 function mapStateToProps(state) {
   return {
@@ -72,7 +73,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
         variant='contained' color='primary'
         startIcon={ warning ? <WarningIcon/> : null }
         onClick={ handlePrompt }>
-        Upgrade (cost: { cost[coinType] })
+        Upgrade (cost: {renderAmount(cost[coinType])}&nbsp;{renderCoin(coinType)})
       </Button>
     );
   }
