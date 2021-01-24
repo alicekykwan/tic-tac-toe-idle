@@ -59,6 +59,11 @@ export const recomputeBoardSettingsCache = (mutableBoardSettings) => {
   };
 };
 
+export const recomputeSuperBoardSettingsCache = (mutableSuperBoardSettings) => {
+  mutableSuperBoardSettings.cache = {
+    winningGroups: computeWinningGroups(mutableSuperBoardSettings),
+  };
+};
 
 const resetBoard = (board, boardSettings) => {
   board.numRows = boardSettings.numRows;
@@ -163,7 +168,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, criticalSuperWinMult } = gameSettings;
-  let { numRows, numCols } = superBoardSettings;
+  let { numRows, numCols, cache } = superBoardSettings;
   let numPlayers = 2;
 
   // On resize we must reset all super-boards.
@@ -208,10 +213,8 @@ const updateSuperBoards = (newState) => {
     }
 
     // Look for winners on the computed super board.
-    // TODO: cache winning groups within superBoardSettings.cache
     let winningGroups = [];
-    let superBoardWinningGroups = computeWinningGroups(newState.gameSettings.superBoardSettings);
-    for (let winningGroup of superBoardWinningGroups) {
+    for (let winningGroup of cache.winningGroups) {
       let winner = superBoardCellState[winningGroup[0]];
       if (winner < 0) {
         continue;

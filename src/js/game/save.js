@@ -41,7 +41,10 @@ export const initialState = {
   gameSettings: initialGameSettings,
   boards: _.range(initialGameSettings.boardCount).map(
       () => createNewBoard(initialGameSettings.boardSettings)),
-  appliedSBSettings: _.cloneDeep(initialGameSettings.superBoardSettings),
+  appliedSBSettings: {
+    numRows: initialGameSettings.superBoardSettings.numRows,
+    numCols: initialGameSettings.superBoardSettings.numCols,
+  },
   superBoards: [],
   coins: initialCoins,
   spent: initialSpent,

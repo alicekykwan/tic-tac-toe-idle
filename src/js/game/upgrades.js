@@ -1,6 +1,6 @@
 import * as COIN_TYPE from '../constants/coinTypes';
 import * as UPGRADE_TYPE from '../constants/upgradeTypes';
-import { recomputeBoardSettingsCache } from '../game/boards'
+import { recomputeBoardSettingsCache, recomputeSuperBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
 
@@ -310,8 +310,14 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   mutableGameSettings.criticalSuperWinMult = BASE_CRITICAL_SUPER_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT];
 
   // Super O Shop upgrades
-  mutableGameSettings.superBoardSettings.numRows = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
-  mutableGameSettings.superBoardSettings.numCols = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
+  let numSuperRows = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
+  let numSuperCols = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
+  if (mutableGameSettings.superBoardSettings.numRows !== numSuperRows ||
+      mutableGameSettings.superBoardSettings.numCols !== numSuperCols) {
+    mutableGameSettings.superBoardSettings.numRows = numSuperRows;
+    mutableGameSettings.superBoardSettings.numCols = numSuperCols;
+    recomputeSuperBoardSettingsCache(mutableGameSettings.superBoardSettings);
+  }
   mutableGameSettings.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
   mutableGameSettings.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
 
