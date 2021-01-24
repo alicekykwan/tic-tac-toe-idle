@@ -11,7 +11,7 @@ import PrestigeGreeting from './PrestigeGreeting';
 import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
-function ShopStar() {
+function ShopStar({tabState}) {
   const classes = useShopTabStyles({tabState});
   const [activeTab, setActiveTab] = tabState;
 
