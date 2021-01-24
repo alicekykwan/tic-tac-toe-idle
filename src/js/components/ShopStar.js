@@ -8,8 +8,7 @@ import { UPGRADE_SHOP_STAR_BOARD_COUNT, UPGRADE_SHOP_STAR_COINS_PER_WIN, UPGRADE
 import { COIN_TYPE_STAR } from '../constants/coinTypes';
 import UpgradeTabPanel from './UpgradeTabPanel';
 import { getUpgradeName } from '../game/upgrades';
-import ShopGreeting from './ShopGreeting';
-import PrestigeCard from './PrestigeCard';
+import PrestigeGreeting from './PrestigeGreeting';
 import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
@@ -21,10 +20,9 @@ function ShopStar() {
     <Box display='flex' flexDirection='column' width='600px' p={1}>
       <Box m={1}>
         <Paper>
-          <ShopGreeting coinType={COIN_TYPE_STAR} />
+          <PrestigeGreeting />
         </Paper>
       </Box>
-      <PrestigeCard />
       <Box m={1}>
         <Paper className={classes.root}>
           <Box display='flex'>

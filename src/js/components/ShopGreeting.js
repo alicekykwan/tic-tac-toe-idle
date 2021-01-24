@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { renderCoin, renderAmount, COIN_X, COIN_O, COIN_SUPER_X, COIN_SUPER_O, COIN_STAR } from '../constants/coins';
-import { COIN_TYPE_X, COIN_TYPE_O, COIN_TYPE_SUPER_X, COIN_TYPE_SUPER_O, COIN_TYPE_STAR } from '../constants/coinTypes';
+import { renderCoin, renderAmount, COIN_X, COIN_O, COIN_SUPER_X, COIN_SUPER_O } from '../constants/coins';
+import { COIN_TYPE_X, COIN_TYPE_O, COIN_TYPE_SUPER_X, COIN_TYPE_SUPER_O } from '../constants/coinTypes';
 
 const getShopDescription = (coinType) => {
   switch (coinType) {
@@ -30,15 +30,6 @@ const getShopDescription = (coinType) => {
             Earn&nbsp;{COIN_SUPER_O}&nbsp;whenever&nbsp;{COIN_O}&nbsp;wins on a super-board.
           </Typography>
         );
-      case COIN_TYPE_STAR:
-        return [
-          <Typography key={1}>
-            Earn&nbsp;{COIN_STAR}&nbsp;whenever you prestige.
-          </Typography>,
-          <Typography key={2}>
-            The&nbsp;{COIN_STAR}&nbsp;Shop upgrades are permanent.
-          </Typography>
-        ];
     default:
       return '';
   }

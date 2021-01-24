@@ -45,6 +45,9 @@ export const initialState = {
   superBoards: [],
   coins: initialCoins,
   spent: initialSpent,
+  stats: {
+    prestigeCount: 0,
+  },
   lastTickTime: Date.now(),
   paused: false,
   version: 1
