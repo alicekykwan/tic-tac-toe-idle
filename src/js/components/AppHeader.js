@@ -93,17 +93,22 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
   };
 
   // TODO: Provide menuOpened, anchorEl, toggleMenu via Context
+  const tabX = useState(0);
+  const tabO = useState(0);
+  const tabSX = useState(0);
+  const tabSO = useState(0);
+  const tabStar = useState(0);
   const getShops = () => {
     let items = [
       <Box key='x' mx={1}>
         <ShopButton menuType='x'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_X} />
+            coinType={COIN_TYPE.COIN_TYPE_X} tabState={tabX} />
       </Box>,
       <Box key='o' mx={1}>
         <ShopButton menuType='o'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_O} />
+            coinType={COIN_TYPE.COIN_TYPE_O} tabState={tabO} />
       </Box>,
     ];
     if (progressLevel === 0) {
@@ -113,17 +118,18 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
         </Box>);
       return items;
     }
+
     items.push(
       <Box key='superx' mx={1}>
         <ShopButton menuType='superx'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_SUPER_X} />
+            coinType={COIN_TYPE.COIN_TYPE_SUPER_X} tabState={tabSX} />
       </Box>);
     items.push(
       <Box key='supero' mx={1}>
         <ShopButton menuType='supero'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_SUPER_O} />
+            coinType={COIN_TYPE.COIN_TYPE_SUPER_O} tabState={tabSO} />
       </Box>);
     if (progressLevel === 1) {
       items.push(
@@ -132,11 +138,12 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
         </Box>);
       return items;
     }
+
     items.push(
       <Box key='star' mx={1}>
         <ShopButton menuType='star'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_STAR} />
+            coinType={COIN_TYPE.COIN_TYPE_STAR} tabState={tabStar} />
       </Box>);
     if (progressLevel === 2) {
       items.push(
@@ -152,9 +159,6 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
           Challenges
         </Button>
       </Box>);
-
-
-
     return items;
   };
 
