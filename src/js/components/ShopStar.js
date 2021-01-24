@@ -12,7 +12,7 @@ import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
 function ShopStar({tabState}) {
-  const classes = useShopTabStyles({tabState});
+  const classes = useShopTabStyles();
   const [activeTab, setActiveTab] = tabState;
 
   return (
