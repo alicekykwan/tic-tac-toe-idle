@@ -21,21 +21,21 @@ const mapStateToProps = state => {
   };
 };
 
-function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType }) {
+function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType, tabState}) {
   const open = (menuOpened === menuType);
 
   const getContent = () => {
     switch (coinType) {
       case COIN_TYPE.COIN_TYPE_X:
-        return <ShopX key={coinType} />;
+        return <ShopX key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_O:
-        return <ShopO key={coinType} />;
+        return <ShopO key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_SUPER_X:
-        return <ShopSuperX key={coinType} />;
+        return <ShopSuperX key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_SUPER_O:
-        return <ShopSuperO key={coinType} />;
+        return <ShopSuperO key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_STAR:
-        return <ShopStar key={coinType} />;
+        return <ShopStar key={coinType} tabState={tabState} />;
       default:
     }
   };

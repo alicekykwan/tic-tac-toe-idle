@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import Box from '@material-ui/core/Box';
@@ -12,9 +11,9 @@ import ShopGreeting from './ShopGreeting';
 import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
-export default function ShopO() {
+export default function ShopO({tabState}) {
   const classes = useShopTabStyles();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = tabState;
 
   return (
     <Box display='flex' flexDirection='column' width='600px' p={1}>
