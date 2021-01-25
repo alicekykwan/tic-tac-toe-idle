@@ -71,6 +71,7 @@ function BoardCanvas(props) {
   const drawWin = (ctx, winningGroup) => {
     ctx.beginPath();
     ctx.strokeStyle = winColor;
+    ctx.lineJoin = 'round';
     ctx.lineWidth = gridThickness;
     let first = true;
     let start = null;
