@@ -73,6 +73,7 @@ function BoardCanvas(props) {
     ctx.strokeStyle = winColor;
     ctx.lineWidth = gridThickness;
     let first = true;
+    let start = null;
     for (let cellIdx of winningGroup) {
       let rowIdx = Math.floor(cellIdx / numCols);
       let colIdx = cellIdx % numCols;
@@ -80,11 +81,13 @@ function BoardCanvas(props) {
       let centerY = padding + cellHeight * (rowIdx + 0.5);
       if (first) {
         first = false;
+        start = [centerX, centerY];
         ctx.moveTo(centerX, centerY);
       } else {
         ctx.lineTo(centerX, centerY);
       }
     }
+    ctx.lineTo(start[0], start[1]);
     ctx.stroke();
   }
 
