@@ -91,9 +91,7 @@ function rootReducer(state, action) {
     }
   
     case ACTION_TYPE.ACTION_PRESTIGE: {
-      let mutableState = _.cloneDeep(state);
-      performPrestige(mutableState);
-      return mutableState;
+      return performPrestige(state);
     }
   
     case ACTION_TYPE.ACTION_TIME_TRAVEL: {
@@ -131,6 +129,11 @@ function rootReducer(state, action) {
         newCoins[key] += amt;
       }
       return {...state, coins: newCoins};
+    }
+
+    case ACTION_TYPE.ACTION_START_CHALLENGE: {
+      let {challenge} = action.payload;
+      return performPrestige(state, challenge);
     }
 
     default:

@@ -39,3 +39,7 @@ export function changeUserSettingsAction(payload) {
 export function addCoinsAction(payload) {
   return { type: ACTION_TYPE.ACTION_ADD_COINS, payload };
 }
+
+export function startChallengeAction(payload) {
+  return { type: ACTION_TYPE.ACTION_START_CHALLENGE, payload };
+}
