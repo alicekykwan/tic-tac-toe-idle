@@ -42,6 +42,7 @@ function SuperBoardCanvas(props) {
   const drawSuperWin = (ctx, winningGroup) => {
     ctx.beginPath();
     ctx.strokeStyle = winColor;
+    ctx.lineJoin = 'round';
     ctx.lineWidth = superGridThickness;
     let first = true;
     let start = null;
@@ -106,6 +107,7 @@ function SuperBoardCanvas(props) {
   const drawWin = (ctx, winningGroup, numCols, startX, startY, cellWidth, cellHeight, thickness) => {
     ctx.beginPath();
     ctx.strokeStyle = winColor;
+    ctx.lineJoin = 'round';
     ctx.lineWidth = thickness;
     let first = true;
     let start = null;
