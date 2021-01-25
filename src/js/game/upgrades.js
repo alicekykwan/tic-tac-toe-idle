@@ -3,7 +3,7 @@ import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache, recomputeSuperBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
-import { CHALLENGE_1_SQUARE } from '../constants/challenges';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD } from '../constants/challenges';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -305,6 +305,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
     numCols: boardSize,
     lineWin: boardSize,
     squareWin: 0,
+    requireFull: false,
   };
 
   // Super X Shop upgrades
@@ -319,6 +320,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
     numCols: superBoardSize,
     lineWin: superBoardSize,
     squareWin: 0,
+    requireFull: false,
   };
   mgs.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
   mgs.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
@@ -346,6 +348,10 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
     newBoardSettings.squareWin = 2;
     newSuperBoardSettings.lineWin = 0;
     newSuperBoardSettings.squareWin = 2;
+  }
+  if (challenge & CHALLENGE_2_FULLBOARD) {
+    newBoardSettings.requireFull = true;
+    newSuperBoardSettings.requireFull = true;
   }
 
   if (Object.entries(newBoardSettings).some(([prop,val])=>mgs.boardSettings[prop]!==val)) {

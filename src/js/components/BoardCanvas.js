@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import Box from '@material-ui/core/Box';
-import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
+import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_EMPTY_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
 
 function BoardCanvas(props) {
   const boardColor = COLOR_BOARD;
   const gridColor = COLOR_GRID;
   const playerColor = [COLOR_X, COLOR_O];
-  const winColor = COLOR_WIN;
   let { board, lastTickTime, width, height, padding } = props;
   let { numRows, numCols, numPlayers, allMoves } = board;
   let cellWidth = (width-2*padding) / numCols;
@@ -68,9 +67,9 @@ function BoardCanvas(props) {
     }
   };
 
-  const drawWin = (ctx, winningGroup) => {
+  const drawWin = (ctx, winningGroup, color) => {
     ctx.beginPath();
-    ctx.strokeStyle = winColor;
+    ctx.strokeStyle = color;
     ctx.lineJoin = 'round';
     ctx.lineWidth = gridThickness;
     let first = true;
@@ -114,8 +113,9 @@ function BoardCanvas(props) {
         move % numPlayers);
     }
     if (board.numMovesMade === board.movesUntilWin) {
+      let color = board.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
       for (let winningGroup of board.winningGroups) {
-        drawWin(ctx, winningGroup);
+        drawWin(ctx, winningGroup, color);
       }
     }
     drawnTick.current = lastTickTime;

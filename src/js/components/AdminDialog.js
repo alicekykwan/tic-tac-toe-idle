@@ -1,24 +1,35 @@
 import { connect } from 'react-redux';
-import { addCoinsAction, timeTravelAction } from '../actions/index';
+import { adminSetStateAction } from '../actions/index';
 
 import { Box, Button, ButtonGroup, Dialog, DialogContent, DialogTitle, Typography } from '@material-ui/core';
 import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes'
 import { ThemeProvider } from '@material-ui/core/styles';
 
+const timeTravel = (state, seconds) => {
+  return {...state, lastTickTime: state.lastTickTime - 1000*seconds};
+};
+
+const addAllCoins = (state, amt) => {
+  let newCoins = {...state.coins};
+  for (let key in newCoins) {
+    newCoins[key] += amt;
+  }
+  return {...state, coins: newCoins};
+};
+
 function mapStateToProps(state) {
   return {
-    paused: state.paused,
+    state: state,
   };
 };
 
 function mapDispatchToProps(dispatch) {
   return {
-    addCoins: (amt) => dispatch(addCoinsAction({amt})), 
-    timeTravel: (seconds) => dispatch(timeTravelAction({seconds})),
+    adminSetState: (payload) => dispatch(adminSetStateAction(payload)), 
   };
 };
 
-function ConnectedAdminDialog({ open, onClose, addCoins, timeTravel }) {
+function ConnectedAdminDialog({ open, onClose, state, adminSetState }) {
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.SETTINGS)}>
       <Dialog open={open} onClose={onClose}>
@@ -31,11 +42,11 @@ function ConnectedAdminDialog({ open, onClose, addCoins, timeTravel }) {
               </Box>
               <Box ml={2}>
                 <ButtonGroup>
-                  <Button onClick={()=>timeTravel(5*60)}>+5 minutes</Button>
-                  <Button onClick={()=>timeTravel(15*60)}>+15 minutes</Button>
-                  <Button onClick={()=>timeTravel(60*60)}>+1 hour</Button>
-                  <Button onClick={()=>timeTravel(4*60*60)}>+4 hours</Button>
-                  <Button onClick={()=>timeTravel(24*60*60)}>+24 hours</Button>
+                  <Button onClick={()=>adminSetState(timeTravel(state, 5*60))}>+5 minutes</Button>
+                  <Button onClick={()=>adminSetState(timeTravel(state, 15*60))}>+15 minutes</Button>
+                  <Button onClick={()=>adminSetState(timeTravel(state, 60*60))}>+1 hour</Button>
+                  <Button onClick={()=>adminSetState(timeTravel(state, 4*60*60))}>+4 hours</Button>
+                  <Button onClick={()=>adminSetState(timeTravel(state, 24*60*60))}>+24 hours</Button>
                 </ButtonGroup>
               </Box>
             </Box>
@@ -45,8 +56,8 @@ function ConnectedAdminDialog({ open, onClose, addCoins, timeTravel }) {
               </Box>
               <Box ml={2}>
                 <ButtonGroup>
-                  <Button onClick={()=>addCoins(1000)}>+1,000</Button>
-                  <Button onClick={()=>addCoins(1000000)}>+1,000,000</Button>
+                  <Button onClick={()=>adminSetState(addAllCoins(state, 1000))}>+1,000</Button>
+                  <Button onClick={()=>adminSetState(addAllCoins(state, 1000000))}>+1,000,000</Button>
                 </ButtonGroup>
               </Box>
             </Box>

@@ -141,6 +141,7 @@ const resetBoard = (board, boardSettings) => {
       board.winningGroups.push(winningGroup);
     }
   }
+  board.emptyWin = (boardSettings.requireFull && board.movesUntilWin !== numCells);
 };
 
 export const createNewBoard = (boardSettings) => {
@@ -176,7 +177,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
   board.numMovesMade += 1;
 
   // Check winner and award coins.
-  if (board.numMovesMade === board.movesUntilWin) {
+  if (board.numMovesMade === board.movesUntilWin && !board.emptyWin) {
     let coinsWon = gameSettings.coinsPerWin * board.winningGroups.length;
     if (board.winningGroups.length > 1) {
       coinsWon *= gameSettings.criticalWinMult;
@@ -197,7 +198,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, criticalSuperWinMult } = gameSettings;
-  let { numRows, numCols, cache } = superBoardSettings;
+  let { numRows, numCols, cache, requireFull } = superBoardSettings;
   let numPlayers = 2;
 
   // On resize we must reset all super-boards.
@@ -216,6 +217,7 @@ const updateSuperBoards = (newState) => {
   while (superBoards.length < numSuperBoards) {
     superBoards.push({
       winningGroups: [],
+      emptyWin: false,
       id: Math.random(),
     });
   }
@@ -226,6 +228,7 @@ const updateSuperBoards = (newState) => {
     if (superBoards[superBoardIdx].winningGroups.length > 0) {
       superBoards[superBoardIdx] = {
         winningGroups: [],
+        emptyWin: false,
         id: Math.random(),
       }
     }
@@ -233,11 +236,14 @@ const updateSuperBoards = (newState) => {
     let superWins = new Array(numPlayers).fill(0);
 
     // Compute current state of the super board.
-    let superBoardCellState = new Array(boardsPerSuperBoard).fill(-1)
+    let superBoardCellState = new Array(boardsPerSuperBoard).fill(-1);
+    let fullBoard = true;
     for (let i=0; i<boardsPerSuperBoard; i++) {
       let board = boards[superBoardIdx*boardsPerSuperBoard+i];
       if (board.numMovesMade === board.movesUntilWin) {
         superBoardCellState[i] = board.winner;
+      } else {
+        fullBoard = false;
       }
     }
 
@@ -254,25 +260,32 @@ const updateSuperBoards = (newState) => {
       }
     }
 
-  // Check winner and award coins.
-    let critical = (superWins[0] + superWins[1] > 1);
-    if (superWins[0] > 0) {
-      let coinsWon = superCoinsPerWin * superWins[0];
-      if (critical) {
-        coinsWon *= criticalSuperWinMult;
+    // Check winner and award coins.
+    let emptyWin = (requireFull && !fullBoard);
+    if (!emptyWin) {
+      let critical = (superWins[0] + superWins[1] > 1);
+      if (superWins[0] > 0) {
+        let coinsWon = superCoinsPerWin * superWins[0];
+        if (critical) {
+          coinsWon *= criticalSuperWinMult;
+        }
+        coins[COIN_TYPE.COIN_TYPE_SUPER_X] += coinsWon;
       }
-      coins[COIN_TYPE.COIN_TYPE_SUPER_X] += coinsWon;
-    }
-    if (superWins[1] > 0) {
-      let coinsWon = superCoinsPerWin * superWins[1];
-      if (critical) {
-        coinsWon *= criticalSuperWinMult;
+      if (superWins[1] > 0) {
+        let coinsWon = superCoinsPerWin * superWins[1];
+        if (critical) {
+          coinsWon *= criticalSuperWinMult;
+        }
+        coins[COIN_TYPE.COIN_TYPE_SUPER_O] += coinsWon;
       }
-      coins[COIN_TYPE.COIN_TYPE_SUPER_O] += coinsWon;
     }
 
     if (winningGroups.length > 0) {
-      superBoards[superBoardIdx] = {...superBoards[superBoardIdx], winningGroups};
+      superBoards[superBoardIdx] = {
+        ...superBoards[superBoardIdx],
+        winningGroups,
+        emptyWin,
+      };
     }
   }
   newState.superBoards = superBoards;

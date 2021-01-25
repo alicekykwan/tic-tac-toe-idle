@@ -93,16 +93,6 @@ function rootReducer(state, action) {
     case ACTION_TYPE.ACTION_PRESTIGE: {
       return performPrestige(state);
     }
-  
-    case ACTION_TYPE.ACTION_TIME_TRAVEL: {
-      let {seconds} = action.payload;
-      let millis = 1000*seconds;
-      if (isNaN(millis)) {
-        console.log('invalid duration:', seconds);
-        return state;
-      }
-      return {...state, lastTickTime: state.lastTickTime - millis};
-    }
 
     case ACTION_TYPE.ACTION_IMPORT_SAVE: {
       let loadedState = deserializeGameState(action.payload);
@@ -122,18 +112,14 @@ function rootReducer(state, action) {
       return state;
     }
 
-    case ACTION_TYPE.ACTION_ADD_COINS: {
-      let {amt} = action.payload;
-      let newCoins = {...state.coins};
-      for (let key in newCoins) {
-        newCoins[key] += amt;
-      }
-      return {...state, coins: newCoins};
-    }
-
     case ACTION_TYPE.ACTION_START_CHALLENGE: {
       let {challenge} = action.payload;
       return performPrestige(state, challenge);
+    }
+
+    case ACTION_TYPE.ACTION_ADMIN_SET_STATE: {
+      console.log(action.payload);
+      return action.payload;
     }
 
     default:
