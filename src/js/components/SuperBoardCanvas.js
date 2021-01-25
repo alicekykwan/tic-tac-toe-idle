@@ -44,6 +44,7 @@ function SuperBoardCanvas(props) {
     ctx.strokeStyle = winColor;
     ctx.lineWidth = superGridThickness;
     let first = true;
+    let start = null;
     for (let cellIdx of winningGroup) {
       let rowIdx = Math.floor(cellIdx / numSuperCols);
       let colIdx = cellIdx % numSuperCols;
@@ -51,11 +52,13 @@ function SuperBoardCanvas(props) {
       let centerY = padding + superCellHeight * (rowIdx + 0.5);
       if (first) {
         first = false;
+        start = [centerX, centerY];
         ctx.moveTo(centerX, centerY);
       } else {
         ctx.lineTo(centerX, centerY);
       }
     }
+    ctx.lineTo(start[0], start[1]);
     ctx.stroke();
   };
 
@@ -105,6 +108,7 @@ function SuperBoardCanvas(props) {
     ctx.strokeStyle = winColor;
     ctx.lineWidth = thickness;
     let first = true;
+    let start = null;
     for (let cellIdx of winningGroup) {
       let rowIdx = Math.floor(cellIdx / numCols);
       let colIdx = cellIdx % numCols;
@@ -112,11 +116,13 @@ function SuperBoardCanvas(props) {
       let centerY = startY + cellHeight * (rowIdx + 0.5);
       if (first) {
         first = false;
+        start = [centerX, centerY];
         ctx.moveTo(centerX, centerY);
       } else {
         ctx.lineTo(centerX, centerY);
       }
     }
+    ctx.lineTo(start[0], start[1]);
     ctx.stroke();
   }
 

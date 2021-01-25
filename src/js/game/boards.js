@@ -2,35 +2,64 @@ import * as COIN_TYPE from '../constants/coinTypes';
 import _ from 'lodash';
 
 const computeWinningGroups = (boardSettings) => {
+  let { numRows, numCols, lineWin, squareWin } = boardSettings;
   let winningGroups = [];
 
-  //check rows
-  for (let i = 0; i < boardSettings.numRows; i++) {
-    let currrow = _.range(i*boardSettings.numCols, (i+1)*boardSettings.numCols);
-    winningGroups.push(currrow);
-  }
-
-  //check columns
-  let numCells = boardSettings.numRows * boardSettings.numCols;
-  for (let c = 0; c < boardSettings.numCols; c++) {
-    let currcolumn = _.range(c, numCells, boardSettings.numCols);
-    winningGroups.push(currcolumn);
-  }
-
-  //check diagonals
-  if (boardSettings.numRows === boardSettings.numCols) {
-    // TODO: Generalize
-    let antidiagonal = []
-    for (let r = 0; r < boardSettings.numRows; r++) {
-      antidiagonal.push(r*boardSettings.numRows + r)
+  if (lineWin > 0) {
+    // rows
+    for (let i = 0; i < numRows; ++i) {
+      for (let j = 0; j <= numCols - lineWin; ++j) {
+        let cell = i*numCols+j;
+        winningGroups.push(_.range(cell, cell+lineWin));
+      }
     }
-    winningGroups.push(antidiagonal);
+    // columns
+    for (let i = 0; i <= numRows - lineWin; ++i) {
+      for (let j = 0; j < numCols; ++j) {
+        let cell = i*numCols+j;
+        winningGroups.push(_.range(cell, cell+lineWin*numCols, numCols));
+      }
+    }
+    // diagonals
+    for (let i = 0; i <= numRows - lineWin; ++i) {
+      for (let j = 0; j <= numCols - lineWin; ++j) {
+        let cell = i*numCols+j;
+        winningGroups.push(_.range(cell, cell+lineWin*(numCols+1), numCols+1));
+      }
+    }
+    // anti-diagonals
+    for (let i = 0; i <= numRows - lineWin; ++i) {
+      for (let j = lineWin - 1; j < numCols; ++j) {
+        let cell = i*numCols+j;
+        winningGroups.push(_.range(cell, cell+lineWin*(numCols-1), numCols-1));
+      }
+    }
+  }
 
-    let maindiagonal = []
-    for (let r = 0; r < boardSettings.numRows; r++) {
-      maindiagonal.push(r*boardSettings.numRows + (boardSettings.numRows-r-1))
-    }  
-    winningGroups.push(maindiagonal);
+  if (squareWin > 0) {
+    for (let i = 0; i <= numRows - squareWin; ++i) {
+      for (let j = 0; j <= numCols - squareWin; ++j) {
+        let cell = i*numCols+j;
+        let winningGroup = [];
+        for (let k = 0; k < squareWin - 1; ++k) {
+          winningGroup.push(cell);
+          cell += 1;
+        }
+        for (let k = 0; k < squareWin - 1; ++k) {
+          winningGroup.push(cell);
+          cell += numCols;
+        }
+        for (let k = 0; k < squareWin - 1; ++k) {
+          winningGroup.push(cell);
+          cell -= 1;
+        }
+        for (let k = 0; k < squareWin - 1; ++k) {
+          winningGroup.push(cell);
+          cell -= numCols;
+        }
+        winningGroups.push(winningGroup);
+      }
+    }
   }
 
   return winningGroups;

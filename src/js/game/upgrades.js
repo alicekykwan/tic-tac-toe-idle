@@ -3,6 +3,7 @@ import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache, recomputeSuperBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
+import { CHALLENGE_1_SQUARE } from '../constants/challenges';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -282,63 +283,82 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
 
 // Perform almost-full reconcile from upgrades to mutableGameSettings.
 // Exceptions: initialMoves
-export const updateGameSettings = (mutableGameSettings, upgrades) => {
-  if (!mutableGameSettings.hasOwnProperty('boardSettings')) {
-    mutableGameSettings.boardSettings = {};
+export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
+  if (!mgs.hasOwnProperty('boardSettings')) {
+    mgs.boardSettings = {};
   }
-  if (!mutableGameSettings.hasOwnProperty('superBoardSettings')) {
-    mutableGameSettings.superBoardSettings = {};
+  if (!mgs.hasOwnProperty('superBoardSettings')) {
+    mgs.superBoardSettings = {};
   }
 
   // X Shop upgrades
-  mutableGameSettings.boardCount = BASE_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT];
-  mutableGameSettings.gameSpeed = BASE_GAME_SPEED + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED];
-  mutableGameSettings.coinsPerWin = BASE_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN];
-  mutableGameSettings.criticalWinMult = BASE_CRITICAL_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT];
+  mgs.boardCount = BASE_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT];
+  mgs.gameSpeed = BASE_GAME_SPEED + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED];
+  mgs.coinsPerWin = BASE_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_COINS_PER_WIN];
+  mgs.criticalWinMult = BASE_CRITICAL_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT];
 
   // O Shop upgrades
-  mutableGameSettings.maxInitialMoves = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES];
-  if (mutableGameSettings.boardSettings.numRows !== BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE] ||
-      mutableGameSettings.boardSettings.numCols !== BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]) {
-    // Clear initial moves whenever board resizes.
-    mutableGameSettings.boardSettings.numRows = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
-    mutableGameSettings.boardSettings.numCols = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
-    mutableGameSettings.boardSettings.initialMoves = [];
-    recomputeBoardSettingsCache(mutableGameSettings.boardSettings);
-  }
+  mgs.maxInitialMoves = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES];
+  let boardSize = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
+  let newBoardSettings = {
+    numRows: boardSize,
+    numCols: boardSize,
+    lineWin: boardSize,
+    squareWin: 0,
+  };
 
   // Super X Shop upgrades
-  mutableGameSettings.superCoinsPerWin = BASE_SUPER_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN];
-  mutableGameSettings.superBoardMaxCount = BASE_SUPER_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT];
-  mutableGameSettings.criticalSuperWinMult = BASE_CRITICAL_SUPER_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT];
+  mgs.superCoinsPerWin = BASE_SUPER_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN];
+  mgs.superBoardMaxCount = BASE_SUPER_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT];
+  mgs.criticalSuperWinMult = BASE_CRITICAL_SUPER_WIN_MULT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT];
 
   // Super O Shop upgrades
-  let numSuperRows = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
-  let numSuperCols = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
-  if (mutableGameSettings.superBoardSettings.numRows !== numSuperRows ||
-      mutableGameSettings.superBoardSettings.numCols !== numSuperCols) {
-    mutableGameSettings.superBoardSettings.numRows = numSuperRows;
-    mutableGameSettings.superBoardSettings.numCols = numSuperCols;
-    recomputeSuperBoardSettingsCache(mutableGameSettings.superBoardSettings);
-  }
-  mutableGameSettings.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
-  mutableGameSettings.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
+  let superBoardSize = BASE_SUPER_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE];
+  let newSuperBoardSettings = {
+    numRows: superBoardSize,
+    numCols: superBoardSize,
+    lineWin: superBoardSize,
+    squareWin: 0,
+  };
+  mgs.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
+  mgs.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
 
   // Star Shop upgrades
-  mutableGameSettings.gameSpeed += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED];
-  mutableGameSettings.coinsPerWin += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN];
-  mutableGameSettings.boardCount += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT];
-  mutableGameSettings.maxInitialMoves += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES];
+  mgs.gameSpeed += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED];
+  mgs.coinsPerWin += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN];
+  mgs.boardCount += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT];
+  mgs.maxInitialMoves += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES];
   // TODO: set this based on automation upgrade level
-  mutableGameSettings.autoBuyLevel = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]
-  mutableGameSettings.canAutomate = {
-    [COIN_TYPE.COIN_TYPE_X]: Boolean(mutableGameSettings.autoBuyLevel > 0),
-    [COIN_TYPE.COIN_TYPE_O]: Boolean(mutableGameSettings.autoBuyLevel > 1),
-    [COIN_TYPE.COIN_TYPE_SUPER_X]: Boolean(mutableGameSettings.autoBuyLevel > 2),
-    [COIN_TYPE.COIN_TYPE_SUPER_O]: Boolean(mutableGameSettings.autoBuyLevel > 3),
+  mgs.autoBuyLevel = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]
+  mgs.canAutomate = {
+    [COIN_TYPE.COIN_TYPE_X]: Boolean(mgs.autoBuyLevel > 0),
+    [COIN_TYPE.COIN_TYPE_O]: Boolean(mgs.autoBuyLevel > 1),
+    [COIN_TYPE.COIN_TYPE_SUPER_X]: Boolean(mgs.autoBuyLevel > 2),
+    [COIN_TYPE.COIN_TYPE_SUPER_O]: Boolean(mgs.autoBuyLevel > 3),
   };
-  mutableGameSettings.challengesUnlocked = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES] > 0);
-  mutableGameSettings.startBonusMulti = 1;
+  mgs.challengesUnlocked = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES] > 0);
+  mgs.startBonusMulti = 1;
+
+  // Challenges
+  let challenge = upgrades[UPGRADE_TYPE.CURRENT_CHALLENGE];
+  if (challenge & CHALLENGE_1_SQUARE) {
+    newBoardSettings.lineWin = 0;
+    newBoardSettings.squareWin = 2;
+    newSuperBoardSettings.lineWin = 0;
+    newSuperBoardSettings.squareWin = 2;
+  }
+
+  if (Object.entries(newBoardSettings).some(([prop,val])=>mgs.boardSettings[prop]!==val)) {
+    Object.assign(mgs.boardSettings, newBoardSettings);
+    // TODO: only clear initial moves on resize.
+    mgs.boardSettings.initialMoves = [];
+    recomputeBoardSettingsCache(mgs.boardSettings);
+  }
+
+  if (Object.entries(newSuperBoardSettings).some(([prop,val])=>mgs.superBoardSettings[prop]!==val)) {
+    Object.assign(mgs.superBoardSettings, newSuperBoardSettings);
+    recomputeSuperBoardSettingsCache(mgs.superBoardSettings);
+  }
 };
 
 // returns the new state after performing an upgrade
