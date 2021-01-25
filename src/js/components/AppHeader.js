@@ -15,6 +15,7 @@ import TimelineIcon from '@material-ui/icons/Timeline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import { AppBar, Box, Button, Tooltip, Snackbar, SnackbarContent, Typography } from '@material-ui/core';
 import AdminDialog from './AdminDialog';
+import ChallengeButton from './ChallengeButton';
 
 function mapStateToProps(state) {
   return {
@@ -155,9 +156,8 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
 
     items.push(
       <Box key='challenges' mx={1}>
-        <Button variant='contained'>
-          Challenges
-        </Button>
+        <ChallengeButton menuType='challenge'
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
       </Box>);
     return items;
   };

@@ -23,6 +23,7 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 0,
+  [UPGRADE_TYPE.CURRENT_CHALLENGE]: 0,
 
 };
 
@@ -45,6 +46,7 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: true,
+  [UPGRADE_TYPE.CURRENT_CHALLENGE]: true,
 
 };
 
@@ -287,6 +289,7 @@ export const updateGameSettings = (mutableGameSettings, upgrades) => {
   if (!mutableGameSettings.hasOwnProperty('superBoardSettings')) {
     mutableGameSettings.superBoardSettings = {};
   }
+
   // X Shop upgrades
   mutableGameSettings.boardCount = BASE_BOARD_COUNT + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT];
   mutableGameSettings.gameSpeed = BASE_GAME_SPEED + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_X_GAME_SPEED];

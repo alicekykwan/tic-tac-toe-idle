@@ -18,7 +18,7 @@ export const UPGRADE_SHOP_STAR_BOARD_COUNT = 'stbc';
 export const UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES = 'stpim';
 export const UPGRADE_SHOP_STAR_AUTO_BUY = 'stab';
 export const UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES = 'stuc';
-
+export const CURRENT_CHALLENGE = 'cc';
 
 export const AUTOMATABLE_UPGRADES = {
   [COIN_TYPE_X]: [

@@ -63,7 +63,7 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
       {renderAmountShort(coins[coinType])}&nbsp;{renderCoin(coinType)}
     </Button>
-    <Popper open={open} anchorEl={anchorEl} placement='bottom' style={{zIndex:1100}} transition>
+    <Popper open={open} anchorEl={anchorEl} placement='bottom' style={{zIndex:1100}}>
       <Box bgcolor='background.default' maxHeight='85vh' overflow='scroll'>
         {getContent()}
       </Box>
