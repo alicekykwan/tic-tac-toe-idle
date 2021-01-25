@@ -1,13 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import Box from '@material-ui/core/Box';
-import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
+import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_EMPTY_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
 
 function SuperBoardCanvas(props) {
   const boardColor = COLOR_BOARD;
   const gridColor = COLOR_GRID;
   const playerColor = [COLOR_X, COLOR_O];
-  const winColor = COLOR_WIN;
   let { appliedSBSettings, boards, superBoard, lastTickTime, width, height, padding } = props;
   let numSuperRows = appliedSBSettings.numRows;
   let numSuperCols = appliedSBSettings.numCols;
@@ -39,9 +38,9 @@ function SuperBoardCanvas(props) {
     ctx.stroke();
   };
 
-  const drawSuperWin = (ctx, winningGroup) => {
+  const drawSuperWin = (ctx, winningGroup, color) => {
     ctx.beginPath();
-    ctx.strokeStyle = winColor;
+    ctx.strokeStyle = color;
     ctx.lineJoin = 'round';
     ctx.lineWidth = superGridThickness;
     let first = true;
@@ -104,9 +103,9 @@ function SuperBoardCanvas(props) {
     }
   };
 
-  const drawWin = (ctx, winningGroup, numCols, startX, startY, cellWidth, cellHeight, thickness) => {
+  const drawWin = (ctx, winningGroup, color, numCols, startX, startY, cellWidth, cellHeight, thickness) => {
     ctx.beginPath();
-    ctx.strokeStyle = winColor;
+    ctx.strokeStyle = color;
     ctx.lineJoin = 'round';
     ctx.lineWidth = thickness;
     let first = true;
@@ -156,8 +155,9 @@ function SuperBoardCanvas(props) {
       drawPiece(ctx, move % numPlayers, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
     }
     if (board.numMovesMade === board.movesUntilWin) {
+      let color = board.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
       for (let winningGroup of board.winningGroups) {
-        drawWin(ctx, winningGroup, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
+        drawWin(ctx, winningGroup, color, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
         ctx.beginPath();
         ctx.globalAlpha = 0.75;
         ctx.fillStyle = boardColor;
@@ -196,8 +196,9 @@ function SuperBoardCanvas(props) {
       let startY = centerY - boardHeight / 2;
       drawSubBoard(ctx, boards[i], lastDrawnMove, startX, startY, boardWidth, boardHeight);
     }
+    let color = superBoard.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
     for (let winningGroup of superBoard.winningGroups) {
-      drawSuperWin(ctx, winningGroup);
+      drawSuperWin(ctx, winningGroup, color);
     }
     drawnTick.current = lastTickTime;
     drawnSuperBoard.current = superBoard;
