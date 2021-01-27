@@ -12,6 +12,7 @@ function mapStateToProps(state) {
   return {
     challenge: state.upgrades[CURRENT_CHALLENGE],
     unlocks: state.unlocks,
+    maxChallengeSelect: state.gameSettings.maxChallengeSelect,
   };
 };
 
@@ -27,11 +28,14 @@ const toggledToChallenge = (toggled) => {
 
 const buttonStyle = {width:'100px', height:'100px'};
 
-function ConnectedChallengeMenu({ challenge, unlocks, startChallenge, displayedChallengeState, toggledState }) {
+function ConnectedChallengeMenu({ challenge, unlocks, maxChallengeSelect, startChallenge, displayedChallengeState, toggledState }) {
   let [ displayedChallenge, setDisplayedChallenge ] = displayedChallengeState;
   let [ toggled, setToggled ] = toggledState;
 
   const handleChangeToggled = (event, newToggled) => {
+    if (newToggled.length >= maxChallengeSelect) {
+      newToggled = newToggled.slice(-maxChallengeSelect);
+    }
     setToggled(newToggled);
     setDisplayedChallenge(toggledToChallenge(newToggled));
   };
@@ -51,6 +55,7 @@ function ConnectedChallengeMenu({ challenge, unlocks, startChallenge, displayedC
         variant='contained' color='primary'
         style={buttonStyle}
         onClick={handleStartChallenge}
+        disabled={displayedChallenge===0}
       >
         Start Challenge
       </Button>

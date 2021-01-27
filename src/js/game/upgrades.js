@@ -113,7 +113,7 @@ const SHOP_STAR_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: [1, 2, 3],
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: [1, 2, 3],
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: [1, 2, 3, 4],
-  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: [10],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: [10, 10, 10],
 
 };
 
@@ -270,11 +270,20 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
         return <span>{COIN_SUPER_O}&nbsp;<b>Shop</b> Auto Buyers Unlocked</span>;
       };
 
-    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES:
-      if (!tempGameSettings.challengesUnlocked) {
-        return 'No effect';
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES: {
+      switch (tempGameSettings.maxChallengeSelect) {
+        case 0:
+          return 'No effect';
+        case 1:
+          return 'Unlock challenges';
+        case 2:
+          return 'Can attempt two challenges at once';
+        case 3:
+          return 'Can attempt three challenges at once';
+        default:
+          return `Can attempt ${tempGameSettings.maxChallengeSelect} challenges at once`;
       }
-      return <span>Unlock <b>Challenges</b></span>;
+    }
 
     default:
       return `Unknown upgrade type: ${upgradeType}`
@@ -338,7 +347,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
     [COIN_TYPE.COIN_TYPE_SUPER_X]: Boolean(mgs.autoBuyLevel > 2),
     [COIN_TYPE.COIN_TYPE_SUPER_O]: Boolean(mgs.autoBuyLevel > 3),
   };
-  mgs.challengesUnlocked = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES] > 0);
+  mgs.maxChallengeSelect = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES];
   mgs.startBonusMulti = 1;
 
   // Challenges

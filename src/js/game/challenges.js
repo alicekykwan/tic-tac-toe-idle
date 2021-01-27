@@ -125,3 +125,17 @@ export const renderChallengeRewards = (challenge, unlocks) => {
     </List>
   );
 };
+
+export const canStartChallenge = (challenge, maxChallengeSelect) => {
+  let numChallengeSelect = 0;
+  if (challenge & CHALLENGE_1_SQUARE) {
+    ++numChallengeSelect;
+  }
+  if (challenge & CHALLENGE_2_FULLBOARD) {
+    ++numChallengeSelect;
+  }
+  if (challenge & CHALLENGE_3_ERASER) {
+    ++numChallengeSelect;
+  }
+  return numChallengeSelect <= maxChallengeSelect;
+};
