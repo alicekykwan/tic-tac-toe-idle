@@ -14,6 +14,11 @@ import { useShopTabStyles } from './styles';
 export default function ShopSuperX({tabState}) {
   const classes = useShopTabStyles();
   const [activeTab, setActiveTab] = tabState;
+  const upgradeTypes = [
+    UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN,
+    UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT,
+    UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT,
+  ];
 
   return (
     <Box display='flex' flexDirection='column' width='600px' p={1}>
@@ -32,18 +37,12 @@ export default function ShopSuperX({tabState}) {
               onChange={(evt, val) => setActiveTab(val)}
               className={classes.tabs}
             >
-              <Tab label={getUpgradeName(UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT)} />
+              { upgradeTypes.map((upgradeType) => (
+                <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
+              ))}
             </Tabs>
-            <TabPanel value={activeTab} index={0}>
-              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_X} upgradeType={UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={1}>
-              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_X} upgradeType={UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={2}>
-              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_X} upgradeType={UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT} />
+            <TabPanel>
+              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_X} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

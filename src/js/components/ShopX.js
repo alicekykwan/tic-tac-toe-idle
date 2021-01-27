@@ -14,6 +14,12 @@ import { useShopTabStyles } from './styles';
 export default function ShopX({tabState}) {
   const classes = useShopTabStyles();
   const [activeTab, setActiveTab] = tabState;
+  const upgradeTypes = [
+    UPGRADE_SHOP_X_GAME_SPEED,
+    UPGRADE_SHOP_X_COINS_PER_WIN,
+    UPGRADE_SHOP_X_BOARD_COUNT,
+    UPGRADE_SHOP_X_CRITICAL_WIN_MULT,
+  ];
 
   return (
     <Box display='flex' flexDirection='column' width='600px' p={1}>
@@ -32,22 +38,12 @@ export default function ShopX({tabState}) {
               onChange={(evt, val) => setActiveTab(val)}
               className={classes.tabs}
             >
-              <Tab label={getUpgradeName(UPGRADE_SHOP_X_GAME_SPEED)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_X_COINS_PER_WIN)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_X_BOARD_COUNT)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_X_CRITICAL_WIN_MULT)} />
+              { upgradeTypes.map((upgradeType) => (
+                <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
+              ))}
             </Tabs>
-            <TabPanel value={activeTab} index={0}>
-              <UpgradeTabPanel coinType={COIN_TYPE_X} upgradeType={UPGRADE_SHOP_X_GAME_SPEED} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={1}>
-              <UpgradeTabPanel coinType={COIN_TYPE_X} upgradeType={UPGRADE_SHOP_X_COINS_PER_WIN} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={2}>
-              <UpgradeTabPanel coinType={COIN_TYPE_X} upgradeType={UPGRADE_SHOP_X_BOARD_COUNT} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={3}>
-              <UpgradeTabPanel coinType={COIN_TYPE_X} upgradeType={UPGRADE_SHOP_X_CRITICAL_WIN_MULT} />
+            <TabPanel>
+              <UpgradeTabPanel coinType={COIN_TYPE_X} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

@@ -24,7 +24,7 @@ const mapStateToProps = state => {
 
 function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType}) {
   const open = (menuOpened === menuType);
-  const tabState = useState(0);
+  const tabState = useState(false);
 
   const getContent = () => {
     switch (coinType) {

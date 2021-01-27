@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as UPGRADE_TYPES from '../constants/upgradeTypes';
+import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES, UPGRADE_WARNING, UPGRADE_CONFIRMATION } from '../constants/upgradeTypes';
 import { changeUserSettingsAction, purchaseUpgradeAction } from '../actions/index';
 import { connect } from 'react-redux';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Select, Switch, Typography } from '@material-ui/core';
@@ -25,8 +25,23 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
-function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purchaseUpgrade, warning, confirm, userSettings, setAutoBuyers, canAutomate }) {
+function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purchaseUpgrade, userSettings, setAutoBuyers, canAutomate }) {
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  if (!upgradeType) {
+    return (
+      <Box m={1}>
+        <Box mx={2}>
+          <Typography variant='h6'>
+            Select an Upgrade
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  let warning = UPGRADE_WARNING[upgradeType];
+  let confirm = UPGRADE_CONFIRMATION[upgradeType];
 
   const handlePrompt = () => {
     if (warning && userSettings[confirm]) {
@@ -79,7 +94,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
   }
 
   return (
-    <Box key={`upgrade-${upgradeType}`} m={1}>
+    <Box m={1} key={upgradeType}>
       <Box mx={2}>
         <Typography variant='h6'>
           {getUpgradeName(upgradeType)}
@@ -143,7 +158,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
           </Box>
         )}
 
-        {upgradeType === UPGRADE_TYPES.UPGRADE_SHOP_O_PICK_INITIAL_MOVES && (
+        {upgradeType === UPGRADE_SHOP_O_PICK_INITIAL_MOVES && (
           <SelectionGrid key='selection-grid'/>
         )}
       </Box>

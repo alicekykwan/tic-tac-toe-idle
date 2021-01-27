@@ -14,6 +14,11 @@ import { useShopTabStyles } from './styles';
 export default function ShopSuperO({tabState}) {
   const classes = useShopTabStyles();
   const [activeTab, setActiveTab] = tabState;
+  const upgradeTypes = [
+    UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY,
+    UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE,
+    UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE,
+  ];
 
   return (
     <Box display='flex' flexDirection='column' width='600px' p={1}>
@@ -32,21 +37,12 @@ export default function ShopSuperO({tabState}) {
               onChange={(evt, val) => setActiveTab(val)}
               className={classes.tabs}
             >
-              <Tab label={getUpgradeName(UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE)} />
+              { upgradeTypes.map((upgradeType) => (
+                <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
+              ))}
             </Tabs>
-            <TabPanel value={activeTab} index={0}>
-              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_O} upgradeType={UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY} showAutoBuy={false} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={1}>
-              <UpgradeTabPanel
-                  coinType={COIN_TYPE_SUPER_O} upgradeType={UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE} showAutoBuy={false}
-                  warning='This will increase the super-board size and the number of boards required per super-board.'
-                  confirm='confirmSuperBoardSize'  />
-            </TabPanel>
-            <TabPanel value={activeTab} index={2}>
-              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_O} upgradeType={UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE} showAutoBuy={false} />
+            <TabPanel>
+              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_O} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

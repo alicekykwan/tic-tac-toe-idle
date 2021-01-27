@@ -14,6 +14,14 @@ import { useShopTabStyles } from './styles';
 function ShopStar({tabState}) {
   const classes = useShopTabStyles();
   const [activeTab, setActiveTab] = tabState;
+  const upgradeTypes = [
+    UPGRADE_SHOP_STAR_GAME_SPEED,
+    UPGRADE_SHOP_STAR_COINS_PER_WIN,
+    UPGRADE_SHOP_STAR_BOARD_COUNT,
+    UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES,
+    UPGRADE_SHOP_STAR_AUTO_BUY,
+    UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES,
+  ];
 
   return (
     <Box display='flex' flexDirection='column' width='600px' p={1}>
@@ -32,31 +40,12 @@ function ShopStar({tabState}) {
               onChange={(evt, val) => setActiveTab(val)}
               className={classes.tabs}
             >
-              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_GAME_SPEED)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_COINS_PER_WIN)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_BOARD_COUNT)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_AUTO_BUY)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES)} />
-              
+              { upgradeTypes.map((upgradeType) => (
+                <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
+              ))}
             </Tabs>
-            <TabPanel value={activeTab} index={0}>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_GAME_SPEED} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={1}>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_COINS_PER_WIN} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={2}>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_BOARD_COUNT} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={3}>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={4}>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_AUTO_BUY} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={5}>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES} />
+            <TabPanel>
+              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>
