@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { useState } from 'react';
 import Popper from '@material-ui/core/Popper';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -21,8 +22,9 @@ const mapStateToProps = state => {
   };
 };
 
-function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType, tabState}) {
+function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType}) {
   const open = (menuOpened === menuType);
+  const tabState = useState(0);
 
   const getContent = () => {
     switch (coinType) {

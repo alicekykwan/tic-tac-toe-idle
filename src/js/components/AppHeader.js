@@ -13,7 +13,7 @@ import PauseIcon from '@material-ui/icons/Pause';
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TimelineIcon from '@material-ui/icons/Timeline';
 import { ThemeProvider } from '@material-ui/core/styles';
-import { AppBar, Box, Button, Tooltip, Snackbar, SnackbarContent, Typography } from '@material-ui/core';
+import { AppBar, Box, Tooltip, Snackbar, SnackbarContent, Typography } from '@material-ui/core';
 import AdminDialog from './AdminDialog';
 import ChallengeButton from './ChallengeButton';
 
@@ -94,22 +94,17 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
   };
 
   // TODO: Provide menuOpened, anchorEl, toggleMenu via Context
-  const tabX = useState(0);
-  const tabO = useState(0);
-  const tabSX = useState(0);
-  const tabSO = useState(0);
-  const tabStar = useState(0);
   const getShops = () => {
     let items = [
       <Box key='x' mx={1}>
         <ShopButton menuType='x'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_X} tabState={tabX} />
+            coinType={COIN_TYPE.COIN_TYPE_X} />
       </Box>,
       <Box key='o' mx={1}>
         <ShopButton menuType='o'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_O} tabState={tabO} />
+            coinType={COIN_TYPE.COIN_TYPE_O} />
       </Box>,
     ];
     if (progressLevel === 0) {
@@ -124,13 +119,13 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
       <Box key='superx' mx={1}>
         <ShopButton menuType='superx'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_SUPER_X} tabState={tabSX} />
+            coinType={COIN_TYPE.COIN_TYPE_SUPER_X} />
       </Box>);
     items.push(
       <Box key='supero' mx={1}>
         <ShopButton menuType='supero'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_SUPER_O} tabState={tabSO} />
+            coinType={COIN_TYPE.COIN_TYPE_SUPER_O} />
       </Box>);
     if (progressLevel === 1) {
       items.push(
@@ -144,7 +139,7 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
       <Box key='star' mx={1}>
         <ShopButton menuType='star'
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
-            coinType={COIN_TYPE.COIN_TYPE_STAR} tabState={tabStar} />
+            coinType={COIN_TYPE.COIN_TYPE_STAR} />
       </Box>);
     if (progressLevel === 2) {
       items.push(

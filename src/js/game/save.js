@@ -4,6 +4,7 @@ import { createNewBoard } from './boards';
 import { initialUserSettings } from './settings';
 import store from "../store/index";
 import _ from 'lodash';
+import { INITIAL_CHALLENGE_UNLOCKS } from '../constants/challengeTypes';
 
 const initialGameSettings = {};
 updateGameSettings(initialGameSettings, INITIAL_UPGRADES);
@@ -25,6 +26,7 @@ const initialSpent = {
 };
 
 const initialUnlocks = {
+  ...INITIAL_CHALLENGE_UNLOCKS,
   // progressLevel | super shops | star shop | challenges | triangle shop
   // --------------+-------------+-----------+------------+---------------
   // 0             | hidden      | hidden    | hidden     | hidden

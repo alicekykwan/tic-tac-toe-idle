@@ -3,7 +3,7 @@ import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache, recomputeSuperBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
-import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD } from '../constants/challenges';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD } from '../constants/challengeTypes';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
