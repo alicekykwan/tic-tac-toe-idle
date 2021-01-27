@@ -14,6 +14,10 @@ import { useShopTabStyles } from './styles';
 export default function ShopO({tabState}) {
   const classes = useShopTabStyles();
   const [activeTab, setActiveTab] = tabState;
+  const upgradeTypes = [
+    UPGRADE_SHOP_O_PICK_INITIAL_MOVES,
+    UPGRADE_SHOP_O_BOARD_SIZE,
+  ];
 
   return (
     <Box display='flex' flexDirection='column' width='600px' p={1}>
@@ -32,17 +36,12 @@ export default function ShopO({tabState}) {
               onChange={(evt, val) => setActiveTab(val)}
               className={classes.tabs}
             >
-              <Tab label={getUpgradeName(UPGRADE_SHOP_O_PICK_INITIAL_MOVES)} />
-              <Tab label={getUpgradeName(UPGRADE_SHOP_O_BOARD_SIZE)} />
+              { upgradeTypes.map((upgradeType) => (
+                <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
+              ))}
             </Tabs>
-            <TabPanel value={activeTab} index={0}>
-              <UpgradeTabPanel coinType={COIN_TYPE_O} upgradeType={UPGRADE_SHOP_O_PICK_INITIAL_MOVES} />
-            </TabPanel>
-            <TabPanel value={activeTab} index={1}>
-              <UpgradeTabPanel
-                  coinType={COIN_TYPE_O} upgradeType={UPGRADE_SHOP_O_BOARD_SIZE}
-                  warning='This will increase the board size of all newly created boards.'
-                  confirm='confirmBoardSize' />
+            <TabPanel>
+              <UpgradeTabPanel coinType={COIN_TYPE_O} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

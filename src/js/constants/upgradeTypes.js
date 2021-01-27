@@ -42,3 +42,13 @@ export const AUTOMATABLE_UPGRADES = {
     UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE,
   ],
 };
+
+export const UPGRADE_WARNING = {
+  [UPGRADE_SHOP_O_BOARD_SIZE]: 'This will increase the board size of all newly created boards.',
+  [UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'This will increase the super-board size and the number of boards required per super-board.',
+};
+
+export const UPGRADE_CONFIRMATION = {
+  [UPGRADE_SHOP_O_BOARD_SIZE]: 'confirmBoardSize',
+  [UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'confirmSuperBoardSize',
+};
