@@ -1,10 +1,11 @@
 import * as ACTION_TYPE from '../constants/actionTypes';
-import { performUpgrade, checkAutoBuyers, triggerAutoBuyers } from '../game/upgrades';
+import { performUpgrade, checkAutoBuyers } from '../game/upgrades';
 import { recomputeBoardSettingsCache, createNewBoard, performOneMove } from '../game/boards';
 import { performPrestige } from '../game/prestige';
 import { deserializeGameState, getStateFromLocalStorage, initialState } from '../game/save';
 import _ from 'lodash';
 import { isValidUserSettings } from '../game/settings';
+import { canStartChallenge } from '../game/challenges';
 
 
 let lastOffTime = Date.now();
@@ -114,6 +115,10 @@ function rootReducer(state, action) {
 
     case ACTION_TYPE.ACTION_START_CHALLENGE: {
       let {challenge} = action.payload;
+      if (!canStartChallenge(challenge, state.gameSettings.maxChallengeSelect)) {
+        console.log('Invalid challenge: ', challenge);
+        return state;
+      }
       return performPrestige(state, challenge);
     }
 
