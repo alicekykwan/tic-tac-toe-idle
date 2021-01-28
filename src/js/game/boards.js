@@ -192,9 +192,18 @@ const extendBoard = (board, boardSettings) => {
   board.startPlayer += board.allMoves.length;
   board.startPlayer %= board.numPlayers;
   board.numPlayers = 2;
+  board.id = Math.random();
+
+  // Determine a new sequence of random moves (assuming board.allowErase)
+  let numCells = board.numRows * board.numCols;
+  board.allMoves = [];
+  while (board.allMoves.length < numCells) {
+    board.allMoves.push(_.random(0, numCells-1));
+  }
+
+  // Determine the winner from sequence of moves.
   board.startState = board.endState;
   board.prevId = board.id;
-  board.id = Math.random();
   simulateMoves(board, boardSettings, [...board.endState]);
 };
 
