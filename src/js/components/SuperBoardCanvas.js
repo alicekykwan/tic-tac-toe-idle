@@ -131,7 +131,7 @@ function SuperBoardCanvas(props) {
     if (lastDrawnMove === board.numMovesMade) {
       return;
     }
-    let { numRows, numCols, numPlayers } = board;
+    let { numRows, numCols, numPlayers } = board.settings;
     let cellWidth = width / numCols;
     let cellHeight = height / numRows;
     let pieceWidth = 0.5 * cellWidth;

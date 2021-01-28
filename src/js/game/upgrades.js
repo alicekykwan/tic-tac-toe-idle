@@ -316,6 +316,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
     squareWin: 0,
     requireFull: false,
     allowErase: false,
+    numPlayers: 2,
   };
 
   // Super X Shop upgrades
@@ -331,6 +332,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
     lineWin: superBoardSize,
     squareWin: 0,
     requireFull: false,
+    numPlayers: 2,
   };
   mgs.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
   mgs.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
@@ -378,9 +380,6 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
 
   if (Object.entries(newSuperBoardSettings).some(([prop,val])=>mgs.superBoardSettings[prop]!==val)) {
     Object.assign(mgs.superBoardSettings, newSuperBoardSettings);
-    if (!skipUpdateCache) {
-      recomputeSuperBoardSettingsCache(mgs.superBoardSettings);
-    }
   }
 };
 

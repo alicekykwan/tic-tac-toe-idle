@@ -1,37 +1,37 @@
 import * as COIN_TYPE from '../constants/coinTypes';
 import _ from 'lodash';
 
-const computeWinningGroups = (boardSettings) => {
+const _computeWinningGroups = (boardSettings) => {
   let { numRows, numCols, lineWin, squareWin } = boardSettings;
-  let winningGroups = [];
+  let allWinningGroups = [];
 
   if (lineWin > 0) {
     // rows
     for (let i = 0; i < numRows; ++i) {
       for (let j = 0; j <= numCols - lineWin; ++j) {
         let cell = i*numCols+j;
-        winningGroups.push(_.range(cell, cell+lineWin));
+        allWinningGroups.push(_.range(cell, cell+lineWin));
       }
     }
     // columns
     for (let i = 0; i <= numRows - lineWin; ++i) {
       for (let j = 0; j < numCols; ++j) {
         let cell = i*numCols+j;
-        winningGroups.push(_.range(cell, cell+lineWin*numCols, numCols));
+        allWinningGroups.push(_.range(cell, cell+lineWin*numCols, numCols));
       }
     }
     // diagonals
     for (let i = 0; i <= numRows - lineWin; ++i) {
       for (let j = 0; j <= numCols - lineWin; ++j) {
         let cell = i*numCols+j;
-        winningGroups.push(_.range(cell, cell+lineWin*(numCols+1), numCols+1));
+        allWinningGroups.push(_.range(cell, cell+lineWin*(numCols+1), numCols+1));
       }
     }
     // anti-diagonals
     for (let i = 0; i <= numRows - lineWin; ++i) {
       for (let j = lineWin - 1; j < numCols; ++j) {
         let cell = i*numCols+j;
-        winningGroups.push(_.range(cell, cell+lineWin*(numCols-1), numCols-1));
+        allWinningGroups.push(_.range(cell, cell+lineWin*(numCols-1), numCols-1));
       }
     }
   }
@@ -57,12 +57,29 @@ const computeWinningGroups = (boardSettings) => {
           winningGroup.push(cell);
           cell -= numCols;
         }
-        winningGroups.push(winningGroup);
+        allWinningGroups.push(winningGroup);
       }
     }
   }
-  return winningGroups;
+
+  let numCells = numRows * numCols;
+  let groupsWithCell = [];
+  for (let i=0; i<numCells; ++i) {
+    groupsWithCell.push([]);
+  }
+  for (let [groupIdx, group] of allWinningGroups.entries()) {
+    for (let cell of group) {
+      groupsWithCell[cell].push(groupIdx);
+    }
+  }
+
+  return [ allWinningGroups, groupsWithCell ];
 };
+
+const computeWinningGroups = _.memoize(
+  _computeWinningGroups,
+  ({ numRows, numCols, lineWin, squareWin }) => `${numRows},${numCols},${lineWin},${squareWin}`
+);
 
 const computeRemainingMoves = (boardSettings) => {
   let { numRows, numCols, initialMoves } = boardSettings;
@@ -82,30 +99,12 @@ const computeRemainingMoves = (boardSettings) => {
 
 export const recomputeBoardSettingsCache = (mutableBoardSettings) => {
   mutableBoardSettings.cache = {
-    winningGroups: computeWinningGroups(mutableBoardSettings),
     remainingMoves: computeRemainingMoves(mutableBoardSettings),
   };
-  let numCells = mutableBoardSettings.numRows * mutableBoardSettings.numCols;
-  let groupsWithCell = [];
-  for (let i=0; i<numCells; ++i) {
-    groupsWithCell.push([]);
-  }
-  for (let [groupIdx, group] of mutableBoardSettings.cache.winningGroups.entries()) {
-    for (let cell of group) {
-      groupsWithCell[cell].push(groupIdx);
-    }
-  }
-  mutableBoardSettings.cache.groupsWithCell = groupsWithCell;
 };
 
-export const recomputeSuperBoardSettingsCache = (mutableSuperBoardSettings) => {
-  mutableSuperBoardSettings.cache = {
-    winningGroups: computeWinningGroups(mutableSuperBoardSettings),
-  };
-};
-
-const simulateMoves = (board, boardSettings, state) => {
-  let { winningGroups, groupsWithCell }= boardSettings.cache;
+const simulateMoves = (board, state) => {
+  let [ allWinningGroups, groupsWithCell ] = computeWinningGroups(board.settings);
   board.numMovesMade = 0;
   board.numMovesAfterWin = 0;
   board.movesUntilWin = 0;
@@ -114,14 +113,14 @@ const simulateMoves = (board, boardSettings, state) => {
   board.erase = [];
   let player = board.startPlayer;
   let count = [];
-  for (let i=0; i<board.numPlayers; ++i) {
-    count.push(new Array(winningGroups.length).fill(0));
+  for (let i=0; i<board.settings.numPlayers; ++i) {
+    count.push(new Array(allWinningGroups.length).fill(0));
   }
   for (let [cell, val] of state.entries()) {
     if (val >= 0) {
       for (let groupId of groupsWithCell[cell]) {
-        if (++count[val][groupId] === winningGroups[groupId].length) {
-          board.winningGroups.push(winningGroups[groupId]);
+        if (++count[val][groupId] === allWinningGroups[groupId].length) {
+          board.winningGroups.push(allWinningGroups[groupId]);
           board.winner = val;
         }
       }
@@ -137,8 +136,8 @@ const simulateMoves = (board, boardSettings, state) => {
       board.erase.push(false);
       state[cell] = player;
       for (let groupId of groupsWithCell[cell]) {
-        if (++count[player][groupId] === winningGroups[groupId].length) {
-          board.winningGroups.push(winningGroups[groupId]);
+        if (++count[player][groupId] === allWinningGroups[groupId].length) {
+          board.winningGroups.push(allWinningGroups[groupId]);
           board.winner = player;
         }
       }
@@ -150,7 +149,7 @@ const simulateMoves = (board, boardSettings, state) => {
       }
       state[cell] = -1;
     }
-    if (++player === board.numPlayers) {
+    if (++player === board.settings.numPlayers) {
       player = 0;
     }
   }
@@ -158,21 +157,20 @@ const simulateMoves = (board, boardSettings, state) => {
     board.movesUntilWin = board.allMoves.length + 1;
     board.endState = state;
   } else {
-    board.emptyWin = (boardSettings.requireFull && _.min(state) >= 0);
+    board.emptyWin = (board.settings.requireFull && _.min(state) >= 0);
     board.allMoves.splice(board.movesUntilWin);
   }
 }
 
 const resetBoard = (board, boardSettings) => {
-  let { remainingMoves }= boardSettings.cache;
-  board.numRows = boardSettings.numRows;
-  board.numCols = boardSettings.numCols;
-  board.numPlayers = 2;
+  let { remainingMoves } = boardSettings.cache;
+  board.settings = boardSettings;
   board.startPlayer = 0;
   board.id = Math.random();
 
   // Determine entire sequence of moves.
-  let numCells = board.numRows * board.numCols;
+  let { numRows, numCols } = board.settings;
+  let numCells = numRows * numCols;
   if (boardSettings.allowErase) {
     board.allMoves = [...boardSettings.initialMoves];
     while (board.allMoves.length < numCells) {
@@ -185,17 +183,18 @@ const resetBoard = (board, boardSettings) => {
   // Determine the winner from sequence of moves.
   delete board.startState;
   delete board.prevId;
-  simulateMoves(board, boardSettings, new Array(numCells).fill(-1));
+  simulateMoves(board, new Array(numCells).fill(-1));
 };
 
-const extendBoard = (board, boardSettings) => {
+const extendBoard = (board) => {
   board.startPlayer += board.allMoves.length;
-  board.startPlayer %= board.numPlayers;
-  board.numPlayers = 2;
+  board.startPlayer %= board.settings.numPlayers;
+  board.prevId = board.id;
   board.id = Math.random();
 
   // Determine a new sequence of random moves (assuming board.allowErase)
-  let numCells = board.numRows * board.numCols;
+  let { numRows, numCols } = board.settings;
+  let numCells = numRows * numCols;
   board.allMoves = [];
   while (board.allMoves.length < numCells) {
     board.allMoves.push(_.random(0, numCells-1));
@@ -203,8 +202,7 @@ const extendBoard = (board, boardSettings) => {
 
   // Determine the winner from sequence of moves.
   board.startState = board.endState;
-  board.prevId = board.id;
-  simulateMoves(board, boardSettings, [...board.endState]);
+  simulateMoves(board, [...board.endState]);
 };
 
 export const createNewBoard = (boardSettings) => {
@@ -241,7 +239,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 
   if (boardSettings.allowErase && board.winner < 0 && board.numMovesMade === board.allMoves.length) {
     // If erasing is alowed, then we have to regenerate to avoid draw.
-    extendBoard(board, boardSettings);
+    extendBoard(board);
     return board;
   }
 
@@ -267,7 +265,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, criticalSuperWinMult } = gameSettings;
-  let { numRows, numCols, cache, requireFull } = superBoardSettings;
+  let { numRows, numCols, requireFull } = superBoardSettings;
   let numPlayers = 2;
 
   // On resize we must reset all super-boards.
@@ -317,8 +315,9 @@ const updateSuperBoards = (newState) => {
     }
 
     // Look for winners on the computed super board.
+    let allWinningGroups = computeWinningGroups(superBoardSettings)[0];
     let winningGroups = [];
-    for (let winningGroup of cache.winningGroups) {
+    for (let winningGroup of allWinningGroups) {
       let winner = superBoardCellState[winningGroup[0]];
       if (winner < 0) {
         continue;
