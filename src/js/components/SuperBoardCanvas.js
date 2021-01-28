@@ -145,14 +145,33 @@ function SuperBoardCanvas(props) {
       ctx.fillRect(startX-gridThickness, startY-gridThickness, width+2*gridThickness, height+2*gridThickness);
       ctx.stroke();
       drawSubGrid(ctx, numRows, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
+      if (board.startState) {
+        for (let [cellIdx, player] of board.startState.entries()) {
+          let rowIdx = Math.floor(cellIdx / numCols);
+          let colIdx = cellIdx % numCols;
+          let centerX = startX + cellWidth * (colIdx + 0.5);
+          let centerY = startY + cellHeight * (rowIdx + 0.5);
+          drawPiece(ctx, player, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
+        }
+      }
     }
     for (let move=lastDrawnMove; move<board.numMovesMade; ++move) {
       let cellIdx = board.allMoves[move];
       let rowIdx = Math.floor(cellIdx / numCols);
       let colIdx = cellIdx % numCols;
-      let centerX = startX + cellWidth * (colIdx + 0.5);
-      let centerY = startY + cellHeight * (rowIdx + 0.5);
-      drawPiece(ctx, move % numPlayers, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
+      if (board.erase && board.erase[move]) {
+        let x = startX + cellWidth * colIdx;
+        let y = startY + cellHeight * rowIdx;
+        ctx.beginPath();
+        ctx.fillStyle = boardColor;
+        ctx.fillRect(x+gridThickness, y+gridThickness, cellWidth-2*gridThickness, cellHeight-2*gridThickness);
+        ctx.stroke();
+      } else {
+        let centerX = startX + cellWidth * (colIdx + 0.5);
+        let centerY = startY + cellHeight * (rowIdx + 0.5);
+        let player = (board.startPlayer + move) % numPlayers;
+        drawPiece(ctx, player, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
+      }
     }
     if (board.numMovesMade === board.movesUntilWin) {
       let color = board.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
@@ -185,6 +204,7 @@ function SuperBoardCanvas(props) {
     let boardHeight = superCellWidth - 2 * superGridThickness;
     for (let i=0; i<boards.length; ++i) {
       let lastDrawnMove = -1;
+      // TODO: optimize case where board.prevId === drawnBoard.current.id
       if (drawnBoards.current !== null && drawnBoards.current[i].id === boards[i].id) {
         lastDrawnMove = drawnBoards.current[i].numMovesMade;
       }

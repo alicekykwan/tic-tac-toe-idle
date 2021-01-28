@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES, UPGRADE_WARNING, UPGRADE_CONFIRMATION } from '../constants/upgradeTypes';
 import { changeUserSettingsAction, purchaseUpgradeAction } from '../actions/index';
 import { connect } from 'react-redux';
@@ -27,6 +27,16 @@ function mapDispatchToProps(dispatch) {
 
 function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purchaseUpgrade, userSettings, setAutoBuyers, canAutomate }) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentDesc, setCurrentDesc] = useState('');
+  const [upgradeDesc, setUpgradeDesc] = useState('');
+
+  let upgradeLevel = upgrades[upgradeType];
+  useEffect(() => {
+    if (upgradeType) {
+      setCurrentDesc(getUpgradeDescription(upgradeType, upgradeLevel, upgrades));
+      setUpgradeDesc(getUpgradeDescription(upgradeType, upgradeLevel+1, upgrades));
+    }
+  }, [upgrades, upgradeType, upgradeLevel]);
 
   if (!upgradeType) {
     return (
@@ -40,6 +50,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
     );
   }
 
+  let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
   let warning = UPGRADE_WARNING[upgradeType];
   let confirm = UPGRADE_CONFIRMATION[upgradeType];
 
@@ -71,8 +82,6 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
     setAutoBuyers({ ...autoBuyers, [upgradeType]: {...autoBuyer, lim}});
   };
 
-  let upgradeLevel = upgrades[upgradeType];
-  let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
   let upgradeButton = null;
 
   if (cost === null) {
@@ -94,7 +103,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
   }
 
   return (
-    <Box m={1} key={upgradeType}>
+    <Box m={1}>
       <Box mx={2}>
         <Typography variant='h6'>
           {getUpgradeName(upgradeType)}
@@ -107,7 +116,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
         <Box display='flex' flexDirection='row' m={1}>
           <Box width='100%'>
             <Typography>
-              Current (level {upgradeLevel}): { getUpgradeDescription(upgradeType, upgradeLevel, upgrades) }
+              Current (level {upgradeLevel}): { currentDesc }
             </Typography>
           </Box>
         </Box>
@@ -127,7 +136,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
           <Box display='flex' flexDirection='row' m={1}>
             <Box width='100%'>
               <Typography color='textSecondary'>
-                Upgraded (level {upgradeLevel+1}): { getUpgradeDescription(upgradeType, upgradeLevel+1, upgrades) }
+                Upgraded (level {upgradeLevel+1}): { upgradeDesc }
                 </Typography>
             </Box>
           </Box>

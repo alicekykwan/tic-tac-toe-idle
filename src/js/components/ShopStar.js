@@ -45,7 +45,7 @@ function ShopStar({tabState}) {
               ))}
             </Tabs>
             <TabPanel>
-              <UpgradeTabPanel coinType={COIN_TYPE_STAR} upgradeType={activeTab} />
+              <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_STAR} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

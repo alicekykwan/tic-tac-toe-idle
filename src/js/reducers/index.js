@@ -68,7 +68,7 @@ function rootReducer(state, action) {
       if (newState.unlocks.progressLevel === 1 && newState.gameSettings.canPrestige) {
         newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 2}};
       }
-      if (newState.unlocks.progressLevel === 2 && newState.gameSettings.challengesUnlocked) {
+      if (newState.unlocks.progressLevel === 2 && newState.gameSettings.maxChallengeSelect > 0) {
         newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 3}};
       }
       return newState;

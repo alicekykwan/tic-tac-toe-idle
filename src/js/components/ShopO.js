@@ -41,7 +41,7 @@ export default function ShopO({tabState}) {
               ))}
             </Tabs>
             <TabPanel>
-              <UpgradeTabPanel coinType={COIN_TYPE_O} upgradeType={activeTab} />
+              <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_O} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

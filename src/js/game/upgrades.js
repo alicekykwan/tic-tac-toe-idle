@@ -3,7 +3,7 @@ import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache, recomputeSuperBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
-import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD } from '../constants/challengeTypes';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER } from '../constants/challengeTypes';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -178,7 +178,7 @@ export const getUpgradeName = (upgradeType) => {
 export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
   let tempUpgrades = {...upgrades, [upgradeType]: upgradeLevel};
   let tempGameSettings = {};
-  updateGameSettings(tempGameSettings, tempUpgrades);
+  updateGameSettings(tempGameSettings, tempUpgrades, /* skipUpdateCache= */ true);
 
   switch (upgradeType) {
     case UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT:
@@ -292,7 +292,7 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
 
 // Perform almost-full reconcile from upgrades to mutableGameSettings.
 // Exceptions: initialMoves
-export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
+export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdateCache=false) => {
   if (!mgs.hasOwnProperty('boardSettings')) {
     mgs.boardSettings = {};
   }
@@ -315,6 +315,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
     lineWin: boardSize,
     squareWin: 0,
     requireFull: false,
+    allowErase: false,
   };
 
   // Super X Shop upgrades
@@ -362,17 +363,24 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades) => {
     newBoardSettings.requireFull = true;
     newSuperBoardSettings.requireFull = true;
   }
+  if (challenge & CHALLENGE_3_ERASER) {
+    newBoardSettings.allowErase = true;
+  }
 
   if (Object.entries(newBoardSettings).some(([prop,val])=>mgs.boardSettings[prop]!==val)) {
     Object.assign(mgs.boardSettings, newBoardSettings);
     // TODO: only clear initial moves on resize.
     mgs.boardSettings.initialMoves = [];
-    recomputeBoardSettingsCache(mgs.boardSettings);
+    if (!skipUpdateCache) {
+      recomputeBoardSettingsCache(mgs.boardSettings);
+    }
   }
 
   if (Object.entries(newSuperBoardSettings).some(([prop,val])=>mgs.superBoardSettings[prop]!==val)) {
     Object.assign(mgs.superBoardSettings, newSuperBoardSettings);
-    recomputeSuperBoardSettingsCache(mgs.superBoardSettings);
+    if (!skipUpdateCache) {
+      recomputeSuperBoardSettingsCache(mgs.superBoardSettings);
+    }
   }
 };
 

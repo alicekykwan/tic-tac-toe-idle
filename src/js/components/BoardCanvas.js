@@ -67,6 +67,17 @@ function BoardCanvas(props) {
     }
   };
 
+  const erasePiece = (ctx, cellIdx) => {
+    let rowIdx = Math.floor(cellIdx / numCols);
+    let colIdx = cellIdx % numCols;
+    let startX = padding + cellWidth * colIdx;
+    let startY = padding + cellHeight * rowIdx;
+    ctx.beginPath();
+    ctx.fillStyle = boardColor;
+    ctx.fillRect(startX+gridThickness, startY+gridThickness, cellWidth-2*gridThickness, cellHeight-2*gridThickness);
+    ctx.stroke();
+  };
+
   const drawWin = (ctx, winningGroup, color) => {
     ctx.beginPath();
     ctx.strokeStyle = color;
@@ -101,16 +112,26 @@ function BoardCanvas(props) {
     if (drawnBoard.current === null ||
         board.numMovesMade < drawnBoard.current.numMovesMade ||
         board.id !== drawnBoard.current.id) {
+      // TODO: optimize case where board.prevId === drawnBoard.current.id
       drawGrid(ctx);
+      if (board.startState) {
+        for (let [cell, player] of board.startState.entries()) {
+          drawPiece(ctx, cell, player);
+        }
+      }
       lastPieceDrawn = 0;
     } else {
       lastPieceDrawn = drawnBoard.current.numMovesMade;
     }
     for (let move=lastPieceDrawn; move<board.numMovesMade; ++move) {
-      drawPiece(
-        ctx,
-        allMoves[move],
-        move % numPlayers);
+      if (board.erase && board.erase[move]) {
+        erasePiece(ctx, allMoves[move]);
+      } else {
+        drawPiece(
+          ctx,
+          allMoves[move],
+          (board.startPlayer+move) % numPlayers);
+      }
     }
     if (board.numMovesMade === board.movesUntilWin) {
       let color = board.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
