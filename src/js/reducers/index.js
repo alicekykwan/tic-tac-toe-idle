@@ -123,7 +123,6 @@ function rootReducer(state, action) {
     }
 
     case ACTION_TYPE.ACTION_ADMIN_SET_STATE: {
-      console.log(action.payload);
       return action.payload;
     }
 
