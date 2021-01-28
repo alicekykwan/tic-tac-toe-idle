@@ -42,7 +42,7 @@ export default function ShopSuperX({tabState}) {
               ))}
             </Tabs>
             <TabPanel>
-              <UpgradeTabPanel coinType={COIN_TYPE_SUPER_X} upgradeType={activeTab} />
+              <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_SUPER_X} upgradeType={activeTab} />
             </TabPanel>
           </Box>
         </Paper>

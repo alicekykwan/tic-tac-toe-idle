@@ -61,7 +61,6 @@ const computeWinningGroups = (boardSettings) => {
       }
     }
   }
-
   return winningGroups;
 };
 
@@ -79,13 +78,24 @@ const computeRemainingMoves = (boardSettings) => {
     }
   }
   return remainingMoves;
-}
+};
 
 export const recomputeBoardSettingsCache = (mutableBoardSettings) => {
   mutableBoardSettings.cache = {
     winningGroups: computeWinningGroups(mutableBoardSettings),
     remainingMoves: computeRemainingMoves(mutableBoardSettings),
   };
+  let numCells = mutableBoardSettings.numRows * mutableBoardSettings.numCols;
+  let groupsWithCell = [];
+  for (let i=0; i<numCells; ++i) {
+    groupsWithCell.push([]);
+  }
+  for (let [groupIdx, group] of mutableBoardSettings.cache.winningGroups.entries()) {
+    for (let cell of group) {
+      groupsWithCell[cell].push(groupIdx);
+    }
+  }
+  mutableBoardSettings.cache.groupsWithCell = groupsWithCell;
 };
 
 export const recomputeSuperBoardSettingsCache = (mutableSuperBoardSettings) => {
@@ -94,54 +104,98 @@ export const recomputeSuperBoardSettingsCache = (mutableSuperBoardSettings) => {
   };
 };
 
-const resetBoard = (board, boardSettings) => {
-  board.numRows = boardSettings.numRows;
-  board.numCols = boardSettings.numCols;
-  let numPlayers = 2;
-  board.numPlayers = numPlayers;
+const simulateMoves = (board, boardSettings, state) => {
+  let { winningGroups, groupsWithCell }= boardSettings.cache;
   board.numMovesMade = 0;
   board.numMovesAfterWin = 0;
+  board.movesUntilWin = 0;
+  board.winningGroups = [];
+  board.winner = -1;
+  board.erase = [];
+  let player = board.startPlayer;
+  let count = [];
+  for (let i=0; i<board.numPlayers; ++i) {
+    count.push(new Array(winningGroups.length).fill(0));
+  }
+  for (let [cell, val] of state.entries()) {
+    if (val >= 0) {
+      for (let groupId of groupsWithCell[cell]) {
+        if (++count[val][groupId] === winningGroups[groupId].length) {
+          board.winningGroups.push(winningGroups[groupId]);
+          board.winner = val;
+        }
+      }
+    }
+  }
+  for (let cell of board.allMoves) {
+    if (board.winner !== -1) {
+      break;
+    }
+    ++board.movesUntilWin;
+    if (state[cell] === -1) {
+      // Place piece.
+      board.erase.push(false);
+      state[cell] = player;
+      for (let groupId of groupsWithCell[cell]) {
+        if (++count[player][groupId] === winningGroups[groupId].length) {
+          board.winningGroups.push(winningGroups[groupId]);
+          board.winner = player;
+        }
+      }
+    } else {
+      // Erase piece.
+      board.erase.push(true);
+      for (let groupId of groupsWithCell[cell]) {
+        --count[state[cell]][groupId];
+      }
+      state[cell] = -1;
+    }
+    if (++player === board.numPlayers) {
+      player = 0;
+    }
+  }
+  if (board.winner === -1) {
+    board.movesUntilWin = board.allMoves.length + 1;
+    board.endState = state;
+  } else {
+    board.emptyWin = (boardSettings.requireFull && _.min(state) >= 0);
+    board.allMoves.splice(board.movesUntilWin);
+  }
+}
+
+const resetBoard = (board, boardSettings) => {
+  let { remainingMoves }= boardSettings.cache;
+  board.numRows = boardSettings.numRows;
+  board.numCols = boardSettings.numCols;
+  board.numPlayers = 2;
+  board.startPlayer = 0;
   board.id = Math.random();
 
   // Determine entire sequence of moves.
-  board.allMoves = boardSettings.initialMoves.concat(
-      _.shuffle(boardSettings.cache.remainingMoves));
-
-  // t[x] is the move sequence number that fills cell x
   let numCells = board.numRows * board.numCols;
-  let t = new Array(numCells).fill(-1);
-  for (let i=0; i<board.allMoves.length; ++i) {
-    t[board.allMoves[i]] = i;
+  if (boardSettings.allowErase) {
+    board.allMoves = [...boardSettings.initialMoves];
+    while (board.allMoves.length < numCells) {
+      board.allMoves.push(_.random(0, numCells-1));
+    }
+  } else {
+    board.allMoves = boardSettings.initialMoves.concat(_.shuffle(remainingMoves));
   }
 
   // Determine the winner from sequence of moves.
-  board.movesUntilWin = numCells + 1;
-  board.winningGroups = [];
-  board.winner = -1;  // redundant, but helpful
-  for (let winningGroup of boardSettings.cache.winningGroups) {
-    let player = t[winningGroup[0]] % numPlayers;
-    let good = true;
-    let last = 0;
-    for (let move of winningGroup) {
-      if (t[move] < 0 || t[move] % numPlayers !== player) {
-        good = false;
-        break;
-      }
-      last = Math.max(last, t[move] + 1);
-    }
-    if (!good || last > board.movesUntilWin) {
-      continue;
-    }
-    if (last < board.movesUntilWin) {
-      board.movesUntilWin = last;
-      board.winningGroups = [];
-      board.winner = player;
-    }
-    if (last === board.movesUntilWin) {
-      board.winningGroups.push(winningGroup);
-    }
-  }
-  board.emptyWin = (boardSettings.requireFull && board.movesUntilWin !== numCells);
+  delete board.startState;
+  delete board.prevId;
+  simulateMoves(board, boardSettings, new Array(numCells).fill(-1));
+};
+
+const extendBoard = (board, boardSettings) => {
+  board.startPlayer += board.allMoves.length;
+  board.startPlayer %= board.numPlayers;
+  board.numPlayers = 2;
+  board.startState = board.endState;
+  board.prevId = board.id;
+  board.id = Math.random();
+  simulateMoves(board, boardSettings, [...board.endState]);
 };
 
 export const createNewBoard = (boardSettings) => {
@@ -175,6 +229,12 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 
   // Progress the next move.
   board.numMovesMade += 1;
+
+  if (boardSettings.allowErase && board.winner < 0 && board.numMovesMade === board.allMoves.length) {
+    // If erasing is alowed, then we have to regenerate to avoid draw.
+    extendBoard(board, boardSettings);
+    return board;
+  }
 
   // Check winner and award coins.
   if (board.numMovesMade === board.movesUntilWin && !board.emptyWin) {
