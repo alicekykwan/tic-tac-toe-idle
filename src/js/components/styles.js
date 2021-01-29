@@ -14,3 +14,13 @@ export const useShopTabStyles = makeStyles((theme) => ({
     fontWeight: 'bold',
   }
 }));
+
+export const useErrorButtonStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: '#f50057',
+    color: '#ffffff',
+    '&:hover': {
+      backgroundColor: '#d32f2f',
+    },
+  },
+}));

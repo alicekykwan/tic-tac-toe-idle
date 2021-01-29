@@ -53,6 +53,9 @@ export const initialState = {
   stats: {
     prestigeCount: 0,
   },
+  challengeStats: {
+    maxStarsOnPrestige: 0,
+  },
   lastTickTime: Date.now(),
   paused: false,
   version: 1

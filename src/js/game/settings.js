@@ -7,6 +7,7 @@ export const initialUserSettings = {
   confirmBoardSize: true,
   confirmSuperBoardSize: true,
   confirmPrestige: true,
+  confirmStartChallenge: true,
   autoBuyers: {},
 };
 
