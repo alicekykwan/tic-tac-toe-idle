@@ -108,6 +108,13 @@ function ConnectedSettingsMenu({ userSettings, changeUserSettings }) {
             checked={userSettings.confirmPrestige}
             onChange={(evt)=>changeUserSettings({confirmPrestige:evt.target.checked})} />
       </Box>
+
+      <Box display='flex' flexDirection='row' alignItems='center' m={1} >
+        <Typography>Confirm start challenge</Typography>
+        <Switch
+            checked={userSettings.confirmStartChallenge}
+            onChange={(evt)=>changeUserSettings({confirmStartChallenge:evt.target.checked})} />
+      </Box>
     </Box>
   );
 

@@ -63,15 +63,38 @@ export const renderChallengeRules = (challenge) => {
   return <List>{listItems}</List>
 };
 
-export const renderChallengeGoals = (challenge) => {
+export const resetChallengeStats = (challengeStats) => {
+  challengeStats.maxStarsOnPrestige = 0;
+};
+
+export const renderChallengeGoals = (challenge, challengeStats) => {
   return (
     <List>
       <ListItem>
-        <ListItemIcon children={bullet} />
+        <ListItemIcon children={challengeStats.maxStarsOnPrestige > 0 ? done : bullet} />
         <ListItemText>Prestige.</ListItemText>
       </ListItem>
     </List>
   );
+};
+
+export const updateChallengeUnlocks = (mutableUnlocks, challenge, challengeStats) => {
+  if (!metAllGoals(challenge, challengeStats)) {
+    return;
+  }
+  if (challenge & CHALLENGE_1_SQUARE) {
+    mutableUnlocks[UNLOCK_UPGRDADE_SQUARE] = true;
+  }
+  if (challenge & CHALLENGE_2_FULLBOARD) {
+    mutableUnlocks[UNLOCK_UPGRDADE_FULL] = true;
+  }
+  if (challenge & CHALLENGE_3_ERASER) {
+    mutableUnlocks[UNLOCK_UPGRDADE_3P] = true;
+  }
+};
+
+export const metAllGoals = (challenge, challengeStats) => {
+  return challengeStats.maxStarsOnPrestige > 0;
 };
 
 const getRewardsForChallenge = (challenge) => {

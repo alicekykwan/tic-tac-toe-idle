@@ -13,6 +13,7 @@ export const THEME_ELEMENT = {
   SHOP_O: 'shopo',
   BOARD: 'board',
   SETTINGS: 'settings',
+  CHALLENGE: 'challenge',
 };
 
 const GLOBAL_FONT = {
@@ -116,6 +117,36 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
         },
       },
       typography: GLOBAL_FONT,
+    }),
+    [THEME_ELEMENT.CHALLENGE]: createMuiTheme({
+      palette: {
+        text: {
+          primary: '#000000',
+          secondary: '#333333',
+        },
+        background: {
+          default: '#cabf45',
+          paper: '#ffffa8',
+        },
+        primary: {
+          main: COLOR_STAR,
+          contrastText: '#000000',
+        },
+        secondary: {
+          main: '#a2cf6e',
+          contrastText: '#000000',
+        },
+      },
+      typography: GLOBAL_FONT,
+      overrides: {
+        MuiToggleButton: {
+          root: {
+            '&$selected': {
+              color: '#000000',
+            },
+          },
+        },
+      },
     }),
   },
 };

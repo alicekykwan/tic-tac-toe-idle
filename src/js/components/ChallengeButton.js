@@ -34,7 +34,7 @@ function ConnectedChallengeButton({ menuType, menuOpened, anchorEl, toggleMenu, 
   let toggledState = useState(challengeToToggled(challenge));
 
   const open = (menuOpened === menuType);
-  return (<ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.SHOP_STAR)}>
+  return (<ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.CHALLENGE)}>
     <Button variant='contained' color='primary' onClick={toggleMenu(menuType)}
       startIcon={ open ? <ArrowDropUpIcon /> : <ArrowDropDownIcon /> }>
       { challenge ? renderChallenge(challenge) : 'Select Challenge' }

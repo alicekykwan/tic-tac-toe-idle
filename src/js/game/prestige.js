@@ -3,6 +3,7 @@ import { createNewBoard } from './boards';
 import { IS_UPGRADE_PERMANENT, updateGameSettings } from './upgrades';
 import _ from 'lodash';
 import { CURRENT_CHALLENGE } from '../constants/upgradeTypes';
+import { resetChallengeStats, updateChallengeUnlocks } from './challenges';
 
 export const PRESTIGE_COIN_TYPES = [
   COIN_TYPE_X,
@@ -57,18 +58,22 @@ export const performPrestige = (state, challenge=-1) => {
     spent: {...state.spent},
     upgrades: {...state.upgrades},
     stats: {...state.stats},
+    challengeStats: {...state.challengeStats},
+    unlocks: {...state.unlocks},
   };
-  let { coins, spent, upgrades, stats } = newState;
+  let { coins, spent, upgrades, stats, challengeStats, unlocks } = newState;
 
   // Reset coins and award stars.
+  let totalStars = 0;
   for (let coinType of PRESTIGE_COIN_TYPES) {
     let stars = convertCoinsToStars(coinType, coins[coinType] + spent[coinType]);
     coins[coinType] = 0;
     spent[coinType] = 0;
     if (canPrestige) {
-      coins[COIN_TYPE_STAR] += stars;
+      totalStars += stars;
     }
   }
+  coins[COIN_TYPE_STAR] += totalStars;
 
   let bonusCoins = bonusCoinsOnPrestige(stats.prestigeCount, startBonusMulti);
   for (let coinType in bonusCoins) {
@@ -79,6 +84,7 @@ export const performPrestige = (state, challenge=-1) => {
     stats.prestigeCount += 1;
   }
 
+
   // Reset upgrades and recompute game settings.
   for (let upgradeType in upgrades) {
     if (!IS_UPGRADE_PERMANENT[upgradeType]) {
@@ -86,9 +92,21 @@ export const performPrestige = (state, challenge=-1) => {
     }
   }
 
-  // Apply challenge.
+  // if you are in a challenge and is now prestiging with (0) or without (-1) exiting the challenge
+  if (upgrades[CURRENT_CHALLENGE] > 0) {
+    if (challenge === -1) {
+      // Stay within current challenge.
+      challengeStats.maxStarsOnPrestige = Math.max(challengeStats.maxStarsOnPrestige, totalStars);
+    } else {
+      // Exit current challenge.
+      updateChallengeUnlocks(unlocks, upgrades[CURRENT_CHALLENGE], challengeStats);
+    }
+  }
+
+  // Start new challenge.
   if (challenge >= 0) {
     upgrades[CURRENT_CHALLENGE] = challenge;
+    resetChallengeStats(challengeStats);
   }
 
   // Apply upgrades.
