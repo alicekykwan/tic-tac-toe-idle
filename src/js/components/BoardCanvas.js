@@ -110,18 +110,36 @@ function BoardCanvas(props) {
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext('2d');
     let lastPieceDrawn = 0; // number of valid pieces already drawn
-    if (drawnBoard.current === null ||
+    if (drawnBoard.current && board.prevId === drawnBoard.current.id) {
+      // New board is the next chunk of drawn board so drawing remaining moves
+      // should be faster than redrawing.
+      let { numMovesMade, allMoves, erase, startPlayer } = drawnBoard.current;
+      for (let move=numMovesMade; move<allMoves.length; ++move) {
+        if (erase && erase[move]) {
+          erasePiece(ctx, allMoves[move]);
+        } else {
+          drawPiece(
+            ctx,
+            allMoves[move],
+            (startPlayer+move) % numPlayers);
+        }
+      }
+      lastPieceDrawn = 0;
+    } else if (drawnBoard.current === null ||
         board.numMovesMade < drawnBoard.current.numMovesMade ||
         board.id !== drawnBoard.current.id) {
-      // TODO: optimize case where board.prevId === drawnBoard.current.id
+      // New board, wipe and redraw.
       drawGrid(ctx);
       if (board.startState) {
         for (let [cell, player] of board.startState.entries()) {
-          drawPiece(ctx, cell, player);
+          if (player >= 0) {
+            drawPiece(ctx, cell, player);
+          }
         }
       }
       lastPieceDrawn = 0;
     } else {
+      // Same board, continue from last drawn piece.
       lastPieceDrawn = drawnBoard.current.numMovesMade;
     }
     for (let move=lastPieceDrawn; move<board.numMovesMade; ++move) {

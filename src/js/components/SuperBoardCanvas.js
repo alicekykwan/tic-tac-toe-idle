@@ -127,8 +127,9 @@ function SuperBoardCanvas(props) {
     ctx.stroke();
   }
 
-  const drawSubBoard = (ctx, board, lastDrawnMove, startX, startY, width, height) => {
-    if (lastDrawnMove === board.numMovesMade) {
+  // negative lastDrawnMove means fully redraw
+  const drawSubBoard = (ctx, board, lastDrawnMove, targetMove, startX, startY, width, height) => {
+    if (lastDrawnMove === targetMove) {
       return;
     }
     let { numRows, numCols, numPlayers } = board.settings;
@@ -147,15 +148,17 @@ function SuperBoardCanvas(props) {
       drawSubGrid(ctx, numRows, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
       if (board.startState) {
         for (let [cellIdx, player] of board.startState.entries()) {
-          let rowIdx = Math.floor(cellIdx / numCols);
-          let colIdx = cellIdx % numCols;
-          let centerX = startX + cellWidth * (colIdx + 0.5);
-          let centerY = startY + cellHeight * (rowIdx + 0.5);
-          drawPiece(ctx, player, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
+          if (player >= 0) {
+            let rowIdx = Math.floor(cellIdx / numCols);
+            let colIdx = cellIdx % numCols;
+            let centerX = startX + cellWidth * (colIdx + 0.5);
+            let centerY = startY + cellHeight * (rowIdx + 0.5);
+            drawPiece(ctx, player, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
+          }
         }
       }
     }
-    for (let move=lastDrawnMove; move<board.numMovesMade; ++move) {
+    for (let move=lastDrawnMove; move<targetMove; ++move) {
       let cellIdx = board.allMoves[move];
       let rowIdx = Math.floor(cellIdx / numCols);
       let colIdx = cellIdx % numCols;
@@ -173,7 +176,7 @@ function SuperBoardCanvas(props) {
         drawPiece(ctx, player, centerX, centerY, pieceWidth, pieceHeight, pieceThickness);
       }
     }
-    if (board.numMovesMade === board.movesUntilWin) {
+    if (targetMove === board.movesUntilWin) {
       let color = board.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
       for (let winningGroup of board.winningGroups) {
         drawWin(ctx, winningGroup, color, numCols, startX, startY, cellWidth, cellHeight, gridThickness);
@@ -204,17 +207,27 @@ function SuperBoardCanvas(props) {
     let boardHeight = superCellWidth - 2 * superGridThickness;
     for (let i=0; i<boards.length; ++i) {
       let lastDrawnMove = -1;
-      // TODO: optimize case where board.prevId === drawnBoard.current.id
-      if (drawnBoards.current !== null && drawnBoards.current[i].id === boards[i].id) {
-        lastDrawnMove = drawnBoards.current[i].numMovesMade;
-      }
       let rowIdx = Math.floor(i / numSuperCols);
       let colIdx = i % numSuperCols;
       let centerX = padding + superCellWidth * (colIdx + 0.5);
       let centerY = padding + superCellHeight * (rowIdx + 0.5);
       let startX = centerX - boardWidth / 2;
       let startY = centerY - boardHeight / 2;
-      drawSubBoard(ctx, boards[i], lastDrawnMove, startX, startY, boardWidth, boardHeight);
+      if (drawnBoards.current !== null && drawnBoards.current[i].id === boards[i].id) {
+        // still the same board, so continue from last drawn move.
+        lastDrawnMove = drawnBoards.current[i].numMovesMade;
+      } else if (drawnBoards.current !== null && drawnBoards.current[i].id === boards[i].prevId) {
+        // this board is the next chunk, so finish drawn board.
+        drawSubBoard(
+          ctx,
+          drawnBoards.current[i], drawnBoards.current[i].numMovesMade, drawnBoards.current[i].allMoves.length,
+          startX, startY, boardWidth, boardHeight);
+        lastDrawnMove = 0;
+      }
+      drawSubBoard(
+        ctx,
+        boards[i], lastDrawnMove, boards[i].numMovesMade,
+        startX, startY, boardWidth, boardHeight);
     }
     let color = superBoard.emptyWin ? COLOR_EMPTY_WIN : COLOR_WIN;
     for (let winningGroup of superBoard.winningGroups) {
