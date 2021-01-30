@@ -161,7 +161,7 @@ const simulateMoves = (board, state) => {
     board.allMoves.splice(board.movesUntilWin);
     delete board.endState;
   }
-}
+};
 
 const resetBoard = (board, boardSettings) => {
   let { remainingMoves } = boardSettings.cache;
@@ -266,8 +266,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, criticalSuperWinMult } = gameSettings;
-  let { numRows, numCols, requireFull } = superBoardSettings;
-  let numPlayers = 2;
+  let { numRows, numCols, requireFull, numPlayers } = superBoardSettings;
 
   // On resize we must reset all super-boards.
   let superBoards = [];
@@ -279,7 +278,7 @@ const updateSuperBoards = (newState) => {
   }
 
   // Create missing super boards.
-  let boardsPerSuperBoard = superBoardSettings.numRows * superBoardSettings.numCols;
+  let boardsPerSuperBoard = numRows * numCols;
   let numSuperBoards = Math.min(
     superBoardMaxCount, Math.floor(boards.length / boardsPerSuperBoard));
   while (superBoards.length < numSuperBoards) {
