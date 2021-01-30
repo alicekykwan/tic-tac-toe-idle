@@ -115,7 +115,7 @@ const getRewardDescription = (reward) => {
   // TODO format coins
   switch (reward) {
     case UNLOCK_UPGRDADE_SQUARE:
-      return 'Unlock an O-shop upgrade that allows winning by forming 2x2 squares (in addition to lines).';
+      return 'Unlock upgrades that allows winning and super-winning by forming squares (in addition to lines).';
     case UNLOCK_UPGRDADE_FULL:
       return 'Unlock an X shop upgrade that increases rewards for each extra move taken.';
     case UNLOCK_UPGRDADE_3P:
