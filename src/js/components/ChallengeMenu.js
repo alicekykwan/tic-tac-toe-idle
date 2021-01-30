@@ -48,6 +48,7 @@ function ConnectedChallengeMenu({ challenge, unlocks, maxChallengeSelect, coins,
   let [ displayedChallenge, setDisplayedChallenge ] = displayedChallengeState;
   let [ toggled, setToggled ] = toggledState;
   const [ startDialogOpen, setStartDialogOpen ] = useState(false);
+  const [ abandonDialogOpen, setAbandonDialogOpen ] = useState(false);
   const errorButtonStyles = useErrorButtonStyles();
 
   const handleChangeToggled = (event, newToggled) => {
@@ -69,7 +70,7 @@ function ConnectedChallengeMenu({ challenge, unlocks, maxChallengeSelect, coins,
   const handleConfirm = () => {
     startChallenge(displayedChallenge);
     setStartDialogOpen(false);
-  }
+  };
 
   const handlePromptStart = () => {
     if (confirmStartChallenge) {
@@ -77,6 +78,19 @@ function ConnectedChallengeMenu({ challenge, unlocks, maxChallengeSelect, coins,
     } else {
       startChallenge(displayedChallenge);
     }
+  };
+
+  const handleCancelAbandon = () => {
+    setAbandonDialogOpen(false);
+  };
+
+  const handleConfirmAbandon = () => {
+    startChallenge(0);
+    setAbandonDialogOpen(false);
+  };
+
+  const handleAbandonChallenge = () => {
+    setAbandonDialogOpen(true);
   }
 
   let button = null;
@@ -101,7 +115,7 @@ function ConnectedChallengeMenu({ challenge, unlocks, maxChallengeSelect, coins,
         key='abandon'
         variant='contained' className={errorButtonStyles.root}
         style={buttonStyle}
-        onClick={handleExitChallenge}
+        onClick={handleAbandonChallenge}
       >
         Abandon Challenge
       </Button>
@@ -223,6 +237,45 @@ function ConnectedChallengeMenu({ challenge, unlocks, maxChallengeSelect, coins,
               ? <span>Yes, Gain {totalStars}&nbsp;{COIN_STAR} and Start Challenge</span>
               : <span>Yes, Start Challenge</span>
             }
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+
+      <Dialog open={abandonDialogOpen} onClose={handleCancelAbandon} maxWidth='md'>
+        <DialogTitle>Confirm Abandon Challenge</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            This will exit your current challenge.
+          </DialogContentText>
+          <DialogContentText>
+            <b>Because you have not completed the challenge, you will not gain any rewards.</b>
+          </DialogContentText>
+          <DialogContentText>
+            This will reset all {COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O},
+            and all their upgrades.
+          </DialogContentText>
+          <DialogContentText>
+            { canPrestige
+              ? <span>You will gain {totalStars}&nbsp;{COIN_STAR}.</span>
+              : <span>Since prestige is not unlocked, you will not gain any&nbsp;{COIN_STAR}.</span>
+            }
+          </DialogContentText>
+          <DialogContentText>
+            Since you have {displayedPrestigeCount}, you will restart
+            with {renderAmount(bonusCoins[COIN_TYPE_X])}&nbsp;{COIN_X}&nbsp;
+            and {renderAmount(bonusCoins[COIN_TYPE_O])}&nbsp;{COIN_O}.
+          </DialogContentText>
+          <DialogContentText>
+            Really abandon challenge?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant='contained' color='primary' onClick={handleCancelAbandon}>
+            No
+          </Button>
+          <Button variant='contained' color='primary' onClick={handleConfirmAbandon} autoFocus startIcon={<WarningIcon />}>
+            Yes, Abandon Challenge
           </Button>
         </DialogActions>
       </Dialog>

@@ -16,13 +16,15 @@ import ShopSuperX from './ShopSuperX';
 import ShopSuperO from './ShopSuperO';
 import ShopStar from './ShopStar';
 
+
 const mapStateToProps = state => {
   return {
-    coins: state.coins
+    coins: state.coins,
+    unlocks: state.unlocks,
   };
 };
 
-function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType}) {
+function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins, coinType, unlocks}) {
   const open = (menuOpened === menuType);
   const tabState = useState(false);
 
@@ -31,7 +33,7 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
       case COIN_TYPE.COIN_TYPE_X:
         return <ShopX key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_O:
-        return <ShopO key={coinType} tabState={tabState} />;
+        return <ShopO key={coinType} tabState={tabState} unlocks={unlocks}/>;
       case COIN_TYPE.COIN_TYPE_SUPER_X:
         return <ShopSuperX key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_SUPER_O:
