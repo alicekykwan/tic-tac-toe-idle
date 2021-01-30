@@ -1,9 +1,9 @@
 import * as COIN_TYPE from '../constants/coinTypes';
 import * as UPGRADE_TYPE from '../constants/upgradeTypes';
-import { recomputeBoardSettingsCache, recomputeSuperBoardSettingsCache } from '../game/boards'
+import { recomputeBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
-import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER } from '../constants/challengeTypes';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRDADE_SQUARE } from '../constants/challengeTypes';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -25,6 +25,7 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 0,
   [UPGRADE_TYPE.CURRENT_CHALLENGE]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 0,
 };
 
 export const IS_UPGRADE_PERMANENT = {
@@ -47,6 +48,7 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: true,
   [UPGRADE_TYPE.CURRENT_CHALLENGE]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: false,
 
 };
 
@@ -92,6 +94,7 @@ const SHOP_X_UPGRADE_COSTS = {
 const SHOP_O_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: [10, 20],
 };
 
 const SHOP_SUPER_X_UPGRADE_COSTS = {
@@ -153,6 +156,7 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: 'Critical Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 'Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 'Square Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Rewards per Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super Board Count',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Super Critical Win',
@@ -219,6 +223,16 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       } else {
         return <span>First <b>{tempGameSettings.maxInitialMoves}</b> moves are no longer random</span>;
       }
+    
+    case UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN: {
+      let squareWin = tempGameSettings.boardSettings.squareWin;
+      switch (squareWin) {
+        case 0:
+          return 'No effect';
+        default:
+          return `Can win when pieces form a ${squareWin}x${squareWin} square`;
+      }
+    }
 
     case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN:
       return <span>Gain <b>{tempGameSettings.superCoinsPerWin}</b>&nbsp;{renderSuperCoins(false)}&nbsp;per super-win</span>;
@@ -307,6 +321,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
 
   // O Shop upgrades
   mgs.maxInitialMoves = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES];
+
   let boardSize = BASE_BOARD_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE];
   let newBoardSettings = {
     numRows: boardSize,
@@ -316,6 +331,9 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
     requireFull: false,
     allowErase: false,
     numPlayers: 2,
+  };
+  if (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN] > 0) {
+    newBoardSettings.squareWin = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN] + 1;
   };
 
   // Super X Shop upgrades
@@ -341,13 +359,12 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   mgs.coinsPerWin += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN];
   mgs.boardCount += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT];
   mgs.maxInitialMoves += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES];
-  // TODO: set this based on automation upgrade level
-  mgs.autoBuyLevel = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]
+  mgs.autoBuyLevel = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY];
   mgs.canAutomate = {
-    [COIN_TYPE.COIN_TYPE_X]: Boolean(mgs.autoBuyLevel > 0),
-    [COIN_TYPE.COIN_TYPE_O]: Boolean(mgs.autoBuyLevel > 1),
-    [COIN_TYPE.COIN_TYPE_SUPER_X]: Boolean(mgs.autoBuyLevel > 2),
-    [COIN_TYPE.COIN_TYPE_SUPER_O]: Boolean(mgs.autoBuyLevel > 3),
+    [COIN_TYPE.COIN_TYPE_X]: (mgs.autoBuyLevel > 0),
+    [COIN_TYPE.COIN_TYPE_O]: (mgs.autoBuyLevel > 1),
+    [COIN_TYPE.COIN_TYPE_SUPER_X]: (mgs.autoBuyLevel > 2),
+    [COIN_TYPE.COIN_TYPE_SUPER_O]: (mgs.autoBuyLevel > 3),
   };
   mgs.maxChallengeSelect = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES];
   mgs.startBonusMulti = 1;
@@ -382,8 +399,20 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   }
 };
 
+export const canUpgrade = (upgradeType, upgradeLevel, state) => {
+  switch (upgradeType) {
+    case UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN:
+      return state.unlocks[UNLOCK_UPGRDADE_SQUARE];
+    default:
+      return true;
+  }
+};
+
 // returns the new state after performing an upgrade
 export const performUpgrade = (upgradeType, upgradeLevel, state) => {
+  if (!canUpgrade(upgradeType, upgradeLevel, state)) {
+    return state;
+  }
   if (state.upgrades[upgradeType] !== upgradeLevel) {
     return state;
   }
