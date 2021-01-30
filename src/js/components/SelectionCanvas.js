@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Box from '@material-ui/core/Box';
-import { COLOR_X, COLOR_O, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
+import { COLOR_X, COLOR_O, COLOR_T, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
 
 function SelectionCanvas({
-    width, height, padding, numRows, numCols,
+    width, height, padding, boardSettings,
     selectedMoves, maxNumSelectedCells, makeSelection }) {
   const boardColor = COLOR_BOARD;
   const gridColor = COLOR_GRID;
-  const playerColor = [COLOR_X, COLOR_O];
+  const playerColor = [COLOR_X, COLOR_O, COLOR_T];
   const hoverColor = ['#555555', '#ffff00'];
+  let { numRows, numCols, numPlayers } = boardSettings;
   let cellWidth = (width-2*padding) / numCols;
   let cellHeight = (height-2*padding) / numRows;
   let gridThickness = cellWidth / 8;
@@ -27,7 +28,7 @@ function SelectionCanvas({
     ctx.fillStyle = highlightColor;
     ctx.fillRect(padding + cellWidth * colIdx, padding + cellHeight * rowIdx, cellWidth, cellHeight);
     ctx.stroke();
-  }
+  };
 
   const drawGrid = (ctx) => {
     ctx.beginPath();
@@ -81,6 +82,16 @@ function SelectionCanvas({
         ctx.ellipse(centerX, centerY, pieceWidth/2, pieceHeight/2, 0, 0, 2*Math.PI);
         ctx.stroke();
         break;
+      case 2:  // T
+        ctx.beginPath();
+        ctx.strokeStyle = playerColor[player];
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = pieceThickness;
+        ctx.moveTo(centerX, centerY-pieceHeight/2);
+        ctx.lineTo(centerX+pieceHeight/2, centerY+pieceHeight/2);
+        ctx.lineTo(centerX-pieceHeight/2, centerY+pieceHeight/2);
+        ctx.lineTo(centerX, centerY-pieceHeight/2);
+        ctx.stroke();
       default:
     }
   };
@@ -91,7 +102,6 @@ function SelectionCanvas({
     }
     const canvasObj = canvasRef.current;
     const ctx = canvasObj.getContext('2d');
-    const numPlayers = 2;
     drawGrid(ctx);
     for (let move=0; move<selectedMoves.length; ++move) {
       drawPiece(

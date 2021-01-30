@@ -69,7 +69,8 @@ function ConnectedSelectionGrid({ maxNumSelectedCells, boardSettings, setInitial
   return (
     <Box display='flex' flexDirection='row' m={1} justifyContent='center' alignItems='center'>
       <SelectionCanvas key={0} width={240} height={240} padding={10}
-          numRows={numRows} numCols={numCols} selectedMoves={selectedMoves}
+          boardSettings={boardSettings}
+          selectedMoves={selectedMoves}
           maxNumSelectedCells={maxNumSelectedCells}
           makeSelection={makeSelection}/>
       <Box display='flex' flexDirection='column'>

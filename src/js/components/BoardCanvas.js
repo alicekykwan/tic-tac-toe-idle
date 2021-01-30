@@ -1,12 +1,12 @@
 import React, { useEffect, useRef } from "react";
 import Box from '@material-ui/core/Box';
-import { COLOR_X, COLOR_O, COLOR_WIN, COLOR_EMPTY_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors'
+import { COLOR_X, COLOR_O, COLOR_T, COLOR_WIN, COLOR_EMPTY_WIN, COLOR_BOARD, COLOR_GRID } from '../constants/colors';
 
 
 function BoardCanvas(props) {
   const boardColor = COLOR_BOARD;
   const gridColor = COLOR_GRID;
-  const playerColor = [COLOR_X, COLOR_O];
+  const playerColor = [COLOR_X, COLOR_O, COLOR_T];
   let { board, lastTickTime, width, height, padding } = props;
   let { numRows, numCols, numPlayers } = board.settings;
   let { allMoves } = board;
@@ -62,6 +62,17 @@ function BoardCanvas(props) {
         ctx.strokeStyle = playerColor[player];
         ctx.lineWidth = pieceThickness;
         ctx.ellipse(centerX, centerY, pieceWidth/2, pieceHeight/2, 0, 0, 2*Math.PI);
+        ctx.stroke();
+        break;
+      case 2:  // T
+        ctx.beginPath();
+        ctx.strokeStyle = playerColor[player];
+        ctx.lineJoin = 'round';
+        ctx.lineWidth = pieceThickness;
+        ctx.moveTo(centerX, centerY-pieceHeight/2);
+        ctx.lineTo(centerX+pieceHeight/2, centerY+pieceHeight/2);
+        ctx.lineTo(centerX-pieceHeight/2, centerY+pieceHeight/2);
+        ctx.lineTo(centerX, centerY-pieceHeight/2);
         ctx.stroke();
         break;
       default:
