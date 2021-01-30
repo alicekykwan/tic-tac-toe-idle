@@ -159,6 +159,7 @@ const simulateMoves = (board, state) => {
   } else {
     board.emptyWin = (board.settings.requireFull && _.min(state) >= 0);
     board.allMoves.splice(board.movesUntilWin);
+    delete board.endState;
   }
 }
 

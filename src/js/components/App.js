@@ -25,7 +25,6 @@ function mapDispatchToProps(dispatch) {
 function ConnectedApp({ autoSaveSeconds, processTicks }) {
   // Main game loop.
   useEffect(() => {
-    document.title = 'Tic-Tac-Toe Idle';
     let interval = window.setInterval(processTicks, 20);
     return () => window.clearInterval(interval);
   }, [processTicks]);
