@@ -37,7 +37,7 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
       case COIN_TYPE.COIN_TYPE_SUPER_X:
         return <ShopSuperX key={coinType} tabState={tabState} />;
       case COIN_TYPE.COIN_TYPE_SUPER_O:
-        return <ShopSuperO key={coinType} tabState={tabState} />;
+        return <ShopSuperO key={coinType} tabState={tabState} unlocks={unlocks}/>;
       case COIN_TYPE.COIN_TYPE_STAR:
         return <ShopStar key={coinType} tabState={tabState} />;
       default:

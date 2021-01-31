@@ -3,7 +3,7 @@ import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
-import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRDADE_SQUARE } from '../constants/challengeTypes';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRADE_SQUARE } from '../constants/challengeTypes';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -12,12 +12,14 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 0,
@@ -25,7 +27,7 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 0,
   [UPGRADE_TYPE.CURRENT_CHALLENGE]: 0,
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 0,
+
 };
 
 export const IS_UPGRADE_PERMANENT = {
@@ -41,6 +43,7 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: false,
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: true,
@@ -107,6 +110,7 @@ const SHOP_SUPER_O_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: [1000000],
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: [10, 20],
 };
 
 const SHOP_STAR_UPGRADE_COSTS = {
@@ -158,11 +162,12 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 'Square Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Rewards per Super-Win',
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super Board Count',
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Super Critical Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super-Board Count',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Critical Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: 'Delay after Win',
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super Board Size',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super-Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 'Unlock Prestige',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: 'Square Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Game Speed',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Rewards per Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Board Count',
@@ -270,6 +275,16 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       }
       return <span>Unlock the <b>Prestige</b> option in the&nbsp;{COIN_STAR}&nbsp;<b>Shop</b></span>;
     
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN: {
+      let squareWin = tempGameSettings.superBoardSettings.squareWin;
+      switch (squareWin) {
+        case 0:
+          return 'No effect';
+        default:
+          return `Can win when super pieces form a ${squareWin}x${squareWin} square`;
+      }
+    }
+
     case UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY:
       if (tempGameSettings.autoBuyLevel === 0) {
         return <span>No effect</span>;
@@ -353,6 +368,10 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   };
   mgs.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
   mgs.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
+  if (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN] > 0) {
+    newSuperBoardSettings.squareWin = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN] + 1;
+  };
+  
 
   // Star Shop upgrades
   mgs.gameSpeed += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED];
@@ -402,7 +421,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
 export const canUpgrade = (upgradeType, upgradeLevel, state) => {
   switch (upgradeType) {
     case UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN:
-      return state.unlocks[UNLOCK_UPGRDADE_SQUARE];
+      return state.unlocks[UNLOCK_UPGRADE_SQUARE];
     default:
       return true;
   }

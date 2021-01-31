@@ -11,7 +11,7 @@ import ShopGreeting from './ShopGreeting';
 import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
-import {UNLOCK_UPGRDADE_SQUARE} from '../constants/challengeTypes';
+import {UNLOCK_UPGRADE_SQUARE} from '../constants/challengeTypes';
 
 
 
@@ -22,7 +22,7 @@ export default function ShopO({tabState, unlocks}) {
     UPGRADE_SHOP_O_PICK_INITIAL_MOVES,
     UPGRADE_SHOP_O_BOARD_SIZE,
   ];
-  if (unlocks[UNLOCK_UPGRDADE_SQUARE]) {
+  if (unlocks[UNLOCK_UPGRADE_SQUARE]) {
     upgradeTypes.push(UPGRADE_SHOP_O_SQUARE_WIN);
   }
 

@@ -10,12 +10,12 @@ export const INDIVIDUAL_CHALLENGES = [
 ];
 
 // Unlocks associated with challenges
-export const UNLOCK_UPGRDADE_SQUARE = 'uus';
-export const UNLOCK_UPGRDADE_FULL = 'uuf';
-export const UNLOCK_UPGRDADE_3P = 'uu3';
+export const UNLOCK_UPGRADE_SQUARE = 'uus';
+export const UNLOCK_UPGRADE_FULL = 'uuf';
+export const UNLOCK_UPGRADE_3P = 'uu3';
 
 export const INITIAL_CHALLENGE_UNLOCKS = {
-  [UNLOCK_UPGRDADE_SQUARE]: false,
-  [UNLOCK_UPGRDADE_FULL]: false,
-  [UNLOCK_UPGRDADE_3P]: false,
+  [UNLOCK_UPGRADE_SQUARE]: false,
+  [UNLOCK_UPGRADE_FULL]: false,
+  [UNLOCK_UPGRADE_3P]: false,
 };
