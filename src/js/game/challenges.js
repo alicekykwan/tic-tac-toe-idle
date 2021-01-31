@@ -1,4 +1,4 @@
-import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRDADE_SQUARE, UNLOCK_UPGRDADE_FULL, UNLOCK_UPGRDADE_3P } from '../constants/challengeTypes';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRADE_SQUARE, UNLOCK_UPGRADE_FULL, UNLOCK_UPGRADE_3P } from '../constants/challengeTypes';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -83,13 +83,13 @@ export const updateChallengeUnlocks = (mutableUnlocks, challenge, challengeStats
     return;
   }
   if (challenge & CHALLENGE_1_SQUARE) {
-    mutableUnlocks[UNLOCK_UPGRDADE_SQUARE] = true;
+    mutableUnlocks[UNLOCK_UPGRADE_SQUARE] = true;
   }
   if (challenge & CHALLENGE_2_FULLBOARD) {
-    mutableUnlocks[UNLOCK_UPGRDADE_FULL] = true;
+    mutableUnlocks[UNLOCK_UPGRADE_FULL] = true;
   }
   if (challenge & CHALLENGE_3_ERASER) {
-    mutableUnlocks[UNLOCK_UPGRDADE_3P] = true;
+    mutableUnlocks[UNLOCK_UPGRADE_3P] = true;
   }
 };
 
@@ -100,13 +100,13 @@ export const metAllGoals = (challenge, challengeStats) => {
 const getRewardsForChallenge = (challenge) => {
   let res = [];
   if (challenge & CHALLENGE_1_SQUARE) {
-    res.push(UNLOCK_UPGRDADE_SQUARE);
+    res.push(UNLOCK_UPGRADE_SQUARE);
   }
   if (challenge & CHALLENGE_2_FULLBOARD) {
-    res.push(UNLOCK_UPGRDADE_FULL);
+    res.push(UNLOCK_UPGRADE_FULL);
   }
   if (challenge & CHALLENGE_3_ERASER) {
-    res.push(UNLOCK_UPGRDADE_3P);
+    res.push(UNLOCK_UPGRADE_3P);
   }
   return res;
 };
@@ -114,11 +114,11 @@ const getRewardsForChallenge = (challenge) => {
 const getRewardDescription = (reward) => {
   // TODO format coins
   switch (reward) {
-    case UNLOCK_UPGRDADE_SQUARE:
+    case UNLOCK_UPGRADE_SQUARE:
       return 'Unlock upgrades that allows winning and super-winning by forming squares (in addition to lines).';
-    case UNLOCK_UPGRDADE_FULL:
+    case UNLOCK_UPGRADE_FULL:
       return 'Unlock an X shop upgrade that increases rewards for each extra move taken.';
-    case UNLOCK_UPGRDADE_3P:
+    case UNLOCK_UPGRADE_3P:
       return 'Unlock a super-O shop upgrade to add a third player.';
     default:
       return `Unknown challenge reward: ${reward}.`;
