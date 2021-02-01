@@ -3,7 +3,7 @@ import Tabs from '@material-ui/core/Tabs';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 
-import { UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY, UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE, UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE, UPGRADE_SHOP_SUPER_O_SQUARE_WIN } from '../constants/upgradeTypes';
+import { UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY, UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE, UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE, UPGRADE_SHOP_SUPER_O_SQUARE_WIN, UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT } from '../constants/upgradeTypes';
 import { COIN_TYPE_SUPER_O } from '../constants/coinTypes';
 import UpgradeTabPanel from './UpgradeTabPanel';
 import { getUpgradeName } from '../game/upgrades';
@@ -19,6 +19,7 @@ export default function ShopSuperO({tabState, unlocks}) {
   const upgradeTypes = [
     UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY,
     UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE,
+    UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT,
     UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE,
   ];
   if (unlocks[UNLOCK_UPGRADE_SQUARE]) {

@@ -13,6 +13,7 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 0,
@@ -20,6 +21,7 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 0,
@@ -37,6 +39,8 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_CRITICAL_WIN_MULT]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: false,
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: false,
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: false,
@@ -44,6 +48,7 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: false,
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: false,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: true,
@@ -51,7 +56,7 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: true,
   [UPGRADE_TYPE.CURRENT_CHALLENGE]: true,
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: false,
+
 
 };
 
@@ -65,6 +70,8 @@ const BASE_SUPER_BOARD_COUNT = 1;
 const BASE_CRITICAL_SUPER_WIN_MULT = 1;
 const BASE_WIN_RESET_DELAY = 1;
 const BASE_SUPER_BOARD_SIZE = 3;
+const BASE_LARGER_WIN_MULTI = 2;
+const BASE_LARGER_SUPERWIN_MULTI = 2;
  
 
 export const canPurchase = (coins, cost) => {
@@ -97,6 +104,7 @@ const SHOP_X_UPGRADE_COSTS = {
 const SHOP_O_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: [10, 75, 250, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: [10, 20],
 };
 
@@ -109,6 +117,7 @@ const SHOP_SUPER_X_UPGRADE_COSTS = {
 const SHOP_SUPER_O_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: [10, 75, 250, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: [1000000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: [10, 20],
 };
@@ -161,6 +170,7 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 'Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 'Square Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: 'Larger Win Multiplier',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Rewards per Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super-Board Count',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Critical Super-Win',
@@ -168,6 +178,7 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super-Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 'Unlock Prestige',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: 'Square Super-Win',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: 'Larger Super-Win Multiplier',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Game Speed',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Rewards per Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Board Count',
@@ -181,7 +192,7 @@ export const getUpgradeName = (upgradeType) => {
     return UPGRADE_NAME[upgradeType];
   }
   return `Unknown upgrade type: ${upgradeType}`
-}
+};
 
 export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
   let tempUpgrades = {...upgrades, [upgradeType]: upgradeLevel};
@@ -239,6 +250,14 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       }
     }
 
+    case UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT:
+      return (
+        <span>
+          Each <b>additional winning piece</b> multiplies that win's rewards
+          by <b>{tempGameSettings.largerWinMult}</b>
+        </span>
+      );
+
     case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN:
       return <span>Gain <b>{tempGameSettings.superCoinsPerWin}</b>&nbsp;{renderSuperCoins(false)}&nbsp;per super-win</span>;
 
@@ -284,6 +303,14 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
           return `Can win when super pieces form a ${squareWin}x${squareWin} square`;
       }
     }
+
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT:
+      return (
+        <span>
+          Each <b>additional winning super-piece</b> multiplies that super-win's rewards
+          by <b>{tempGameSettings.largerWinMult}</b>
+        </span>
+      );
 
     case UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY:
       if (tempGameSettings.autoBuyLevel === 0) {
@@ -350,6 +377,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   if (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN] > 0) {
     newBoardSettings.squareWin = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN] + 1;
   };
+  mgs.largerWinMult = BASE_LARGER_WIN_MULTI + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT];
 
   // Super X Shop upgrades
   mgs.superCoinsPerWin = BASE_SUPER_COINS_PER_WIN + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN];
@@ -371,7 +399,8 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   if (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN] > 0) {
     newSuperBoardSettings.squareWin = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN] + 1;
   };
-  
+  mgs.largerSuperWinMult = BASE_LARGER_SUPERWIN_MULTI + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT];
+
 
   // Star Shop upgrades
   mgs.gameSpeed += upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED];

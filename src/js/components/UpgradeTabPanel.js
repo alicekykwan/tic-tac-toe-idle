@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES, UPGRADE_WARNING, UPGRADE_CONFIRMATION } from '../constants/upgradeTypes';
+import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES, UPGRADE_WARNING, UPGRADE_CONFIRMATION, UPGRADE_EXPLANATION } from '../constants/upgradeTypes';
 import { changeUserSettingsAction, purchaseUpgradeAction } from '../actions/index';
 import { connect } from 'react-redux';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Select, Switch, Typography } from '@material-ui/core';
@@ -137,7 +137,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
             <Box width='100%'>
               <Typography color='textSecondary'>
                 Upgraded (level {upgradeLevel+1}): { upgradeDesc }
-                </Typography>
+              </Typography>
             </Box>
           </Box>
         )}
@@ -169,6 +169,16 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
 
         {upgradeType === UPGRADE_SHOP_O_PICK_INITIAL_MOVES && (
           <SelectionGrid key='selection-grid'/>
+        )}
+
+        {UPGRADE_EXPLANATION[upgradeType] && (
+          <Box display='flex' flexDirection='row' m={1}>
+            <Box width='100%'>
+              <Typography color='textSecondary'>
+                {UPGRADE_EXPLANATION[upgradeType]}
+              </Typography>
+            </Box>
+          </Box>
         )}
       </Box>
     
