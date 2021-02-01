@@ -245,10 +245,15 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
   }
 
   // Check winner and award coins.
+  let { coinsPerWin, largerWinMult, criticalWinMult } = gameSettings;
   if (board.numMovesMade === board.movesUntilWin && !board.emptyWin) {
-    let coinsWon = gameSettings.coinsPerWin * board.winningGroups.length;
+    let coinsWon = 0;
+    for (let winningGroup of board.winningGroups) {
+      let additionalPiece = Math.max(0, winningGroup.length - 3);
+      coinsWon += coinsPerWin * Math.pow(largerWinMult, additionalPiece);
+    }
     if (board.winningGroups.length > 1) {
-      coinsWon *= gameSettings.criticalWinMult;
+      coinsWon *= criticalWinMult;
     }
     switch (board.winner) {
       case 0:
@@ -265,7 +270,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
-  let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, criticalSuperWinMult } = gameSettings;
+  let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, largerSuperWinMult, criticalSuperWinMult } = gameSettings;
   let { numRows, numCols, requireFull, numPlayers } = superBoardSettings;
 
   // On resize we must reset all super-boards.
@@ -300,7 +305,8 @@ const updateSuperBoards = (newState) => {
       }
     }
 
-    let superWins = new Array(numPlayers).fill(0);
+    let reward = new Array(numPlayers).fill(0);
+    let numWinningGroups = 0;
 
     // Compute current state of the super board.
     let superBoardCellState = new Array(boardsPerSuperBoard).fill(-1);
@@ -323,7 +329,9 @@ const updateSuperBoards = (newState) => {
         continue;
       }
       if (winningGroup.every((cell) => (superBoardCellState[cell] === winner))) {
-        superWins[winner] += 1;
+        let additionalPiece = Math.max(0, winningGroup.length - 3);
+        reward[winner] += superCoinsPerWin * Math.pow(largerSuperWinMult, additionalPiece);
+        numWinningGroups += 1;
         winningGroups.push(winningGroup);
       }
     }
@@ -331,21 +339,9 @@ const updateSuperBoards = (newState) => {
     // Check winner and award coins.
     let emptyWin = (requireFull && !fullBoard);
     if (!emptyWin) {
-      let critical = (superWins[0] + superWins[1] > 1);
-      if (superWins[0] > 0) {
-        let coinsWon = superCoinsPerWin * superWins[0];
-        if (critical) {
-          coinsWon *= criticalSuperWinMult;
-        }
-        coins[COIN_TYPE.COIN_TYPE_SUPER_X] += coinsWon;
-      }
-      if (superWins[1] > 0) {
-        let coinsWon = superCoinsPerWin * superWins[1];
-        if (critical) {
-          coinsWon *= criticalSuperWinMult;
-        }
-        coins[COIN_TYPE.COIN_TYPE_SUPER_O] += coinsWon;
-      }
+      let critMulti = (numWinningGroups > 1) ? criticalSuperWinMult : 1;
+      coins[COIN_TYPE.COIN_TYPE_SUPER_X] += reward[0] * critMulti;
+      coins[COIN_TYPE.COIN_TYPE_SUPER_O] += reward[1] * critMulti;
     }
 
     if (winningGroups.length > 0) {
