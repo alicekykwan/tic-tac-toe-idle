@@ -7,10 +7,14 @@ import ExportImportButton from './ExportImportButton'
 import HardResetButton from './HardResetButton';
 import SaveIcon from '@material-ui/icons/Save';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
+import { getUpgradeName } from '../game/upgrades';
+import { UPGRADE_SHOP_O_BOARD_SIZE, UPGRADE_SHOP_O_SQUARE_WIN, UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE, UPGRADE_SHOP_SUPER_O_SQUARE_WIN } from '../constants/upgradeTypes';
+import {UNLOCK_UPGRADE_SQUARE} from '../constants/challengeTypes';
 
 function mapStateToProps(state) {
   return {
     userSettings: state.userSettings,
+    unlocks: state.unlocks,
   };
 };
 
@@ -30,8 +34,14 @@ function TabPanel(props) {
   );
 };
 
-function ConnectedSettingsMenu({ userSettings, changeUserSettings }) {
+function ConnectedSettingsMenu({ userSettings, unlocks, changeUserSettings }) {
+  let { confirmUpgrade } = userSettings;
   const [activeTab, setActiveTab] = useState(0);
+  const changeConfirmUpgrade = (upgradeType, value) => {
+    changeUserSettings(
+      {confirmUpgrade: {...confirmUpgrade, [upgradeType]: value}}
+    );
+  };
 
   const saveTabContent = (
     <Box display='flex' flexDirection='column' p={1}>
@@ -86,31 +96,34 @@ function ConnectedSettingsMenu({ userSettings, changeUserSettings }) {
     </Box>
   );
 
+  const confirmUpgradeTypes = [
+    UPGRADE_SHOP_O_BOARD_SIZE,
+    UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE,
+  ];
+  if (unlocks[UNLOCK_UPGRADE_SQUARE]) {
+    confirmUpgradeTypes.push(UPGRADE_SHOP_O_SQUARE_WIN);
+    confirmUpgradeTypes.push(UPGRADE_SHOP_SUPER_O_SQUARE_WIN);
+  };
   const confirmationTabContent = (
     <Box display='flex' flexDirection='column' p={1}>
-      <Box display='flex' flexDirection='row' alignItems='center' m={1} >
-        <Typography>Confirm board size purchase</Typography>
-        <Switch
-            checked={userSettings.confirmBoardSize}
-            onChange={(evt)=>changeUserSettings({confirmBoardSize:evt.target.checked})} />
-      </Box>
+      { confirmUpgradeTypes.map((upgradeType) => (
+        <Box key={upgradeType} display='flex' flexDirection='row' alignItems='center' m={1} >
+          <Typography>Confirm {getUpgradeName(upgradeType)}</Typography>
+          <Switch
+              checked={confirmUpgrade[upgradeType]}
+              onChange={(evt)=>changeConfirmUpgrade(upgradeType, evt.target.checked)} />
+        </Box>
+      ))}
 
       <Box display='flex' flexDirection='row' alignItems='center' m={1} >
-        <Typography>Confirm super-board size purchase</Typography>
-        <Switch
-            checked={userSettings.confirmSuperBoardSize}
-            onChange={(evt)=>changeUserSettings({confirmSuperBoardSize:evt.target.checked})} />
-      </Box>
-
-      <Box display='flex' flexDirection='row' alignItems='center' m={1} >
-        <Typography>Confirm prestige</Typography>
+        <Typography>Confirm Prestige</Typography>
         <Switch
             checked={userSettings.confirmPrestige}
             onChange={(evt)=>changeUserSettings({confirmPrestige:evt.target.checked})} />
       </Box>
 
       <Box display='flex' flexDirection='row' alignItems='center' m={1} >
-        <Typography>Confirm start challenge</Typography>
+        <Typography>Confirm Start Challenge</Typography>
         <Switch
             checked={userSettings.confirmStartChallenge}
             onChange={(evt)=>changeUserSettings({confirmStartChallenge:evt.target.checked})} />

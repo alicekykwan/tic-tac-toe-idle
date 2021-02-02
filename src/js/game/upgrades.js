@@ -3,7 +3,7 @@ import * as UPGRADE_TYPE from '../constants/upgradeTypes';
 import { recomputeBoardSettingsCache } from '../game/boards'
 import { COIN_STAR, COIN_SUPER_X, COIN_SUPER_O, COIN_X, COIN_O, renderRegularCoins, renderSuperCoins } from '../constants/coins';
 import _ from 'lodash';
-import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRADE_SQUARE } from '../constants/challengeTypes';
+import { CHALLENGE_1_SQUARE, CHALLENGE_2_FULLBOARD, CHALLENGE_3_ERASER, UNLOCK_UPGRADE_SQUARE, INITIAL_CHALLENGE_UNLOCKS } from '../constants/challengeTypes';
 
 export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_X_BOARD_COUNT]: 0,
@@ -28,6 +28,7 @@ export const INITIAL_UPGRADES = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 0,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 0,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_START_BONUS_MULTI]: 0,
   [UPGRADE_TYPE.CURRENT_CHALLENGE]: 0,
 
 };
@@ -55,6 +56,7 @@ export const IS_UPGRADE_PERMANENT = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: true,
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: true,
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_START_BONUS_MULTI]: true,
   [UPGRADE_TYPE.CURRENT_CHALLENGE]: true,
 
 
@@ -72,10 +74,13 @@ const BASE_WIN_RESET_DELAY = 1;
 const BASE_SUPER_BOARD_SIZE = 3;
 const BASE_LARGER_WIN_MULTI = 2;
 const BASE_LARGER_SUPERWIN_MULTI = 2;
+const BASE_SQUARE_SIZE = 1;
+const BASE_SUPER_SQUARE_SIZE = 1;
+const BASE_START_BONUS_MULTI = 1;
  
 
 export const canPurchase = (coins, cost) => {
-  if (cost === null || cost.locked) {
+  if (cost === null) {
     return false;
   }
   for (let coinType in cost) {
@@ -105,7 +110,7 @@ const SHOP_O_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: [10, 75, 250, 1000, 2500, 7500, 15000, 50000, 100000],
   [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: [10, 75, 250, 1000],
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: [10, 20],
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: [10, 20, 30],
 };
 
 const SHOP_SUPER_X_UPGRADE_COSTS = {
@@ -119,7 +124,7 @@ const SHOP_SUPER_O_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: [100, 750, 1000, 1000, 1000, 1000, 1000, 1000, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: [10, 75, 250, 1000],
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: [1000000],
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: [10, 20],
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: [10, 20, 30],
 };
 
 const SHOP_STAR_UPGRADE_COSTS = {
@@ -129,6 +134,7 @@ const SHOP_STAR_UPGRADE_COSTS = {
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: [1, 2, 3],
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: [1, 2, 3, 4],
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: [10, 10, 10],
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_START_BONUS_MULTI]: [10, 10, 10],
 
 };
 
@@ -170,7 +176,7 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_O_BOARD_SIZE]: 'Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
   [UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN]: 'Square Win',
-  [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: 'Larger Win Multiplier',
+  [UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT]: 'Longer Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_COINS_PER_WIN]: 'Rewards per Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_SUPER_BOARD_COUNT]: 'Super-Board Count',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_X_CRITICAL_SUPER_WIN_MULT]: 'Critical Super-Win',
@@ -178,13 +184,14 @@ const UPGRADE_NAME = {
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'Super-Board Size',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE]: 'Unlock Prestige',
   [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: 'Square Super-Win',
-  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: 'Larger Super-Win Multiplier',
+  [UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT]: 'Longer Super-Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_GAME_SPEED]: 'Game Speed',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_COINS_PER_WIN]: 'Rewards per Win',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_BOARD_COUNT]: 'Board Count',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES]: 'Pick Starting Moves',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_AUTO_BUY]: 'Auto Buy Upgrades',
   [UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES]: 'Unlock Challenges',
+  [UPGRADE_TYPE.UPGRADE_SHOP_STAR_START_BONUS_MULTI]: 'Starting Bonus',
 };
 
 export const getUpgradeName = (upgradeType) => {
@@ -340,8 +347,15 @@ export const getUpgradeDescription = (upgradeType, upgradeLevel, upgrades) => {
       }
     }
 
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_START_BONUS_MULTI:
+      return (
+        <span>
+          <b>{tempGameSettings.startBonusMulti}</b>x starting bonus after prestige
+        </span>
+      );
+
     default:
-      return `Unknown upgrade type: ${upgradeType}`
+      return `Unknown upgrade type: ${upgradeType}`;
   }
 };
 
@@ -375,7 +389,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
     numPlayers: 2,
   };
   if (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN] > 0) {
-    newBoardSettings.squareWin = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN] + 1;
+    newBoardSettings.squareWin = BASE_SQUARE_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN];
   };
   mgs.largerWinMult = BASE_LARGER_WIN_MULTI + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_O_LARGER_WIN_MULT];
 
@@ -397,7 +411,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   mgs.winResetDelay = BASE_WIN_RESET_DELAY + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_WIN_RESET_DELAY];
   mgs.canPrestige = (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE] > 0);
   if (upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN] > 0) {
-    newSuperBoardSettings.squareWin = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN] + 1;
+    newSuperBoardSettings.squareWin = BASE_SUPER_SQUARE_SIZE + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN];
   };
   mgs.largerSuperWinMult = BASE_LARGER_SUPERWIN_MULTI + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_LARGER_WIN_MULT];
 
@@ -415,7 +429,7 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
     [COIN_TYPE.COIN_TYPE_SUPER_O]: (mgs.autoBuyLevel > 3),
   };
   mgs.maxChallengeSelect = upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES];
-  mgs.startBonusMulti = 1;
+  mgs.startBonusMulti = BASE_START_BONUS_MULTI + upgrades[UPGRADE_TYPE.UPGRADE_SHOP_STAR_START_BONUS_MULTI];
 
   // Challenges
   let challenge = upgrades[UPGRADE_TYPE.CURRENT_CHALLENGE];
@@ -447,25 +461,92 @@ export const updateGameSettings = (mgs /*mutableGameState*/, upgrades, skipUpdat
   }
 };
 
-export const canUpgrade = (upgradeType, upgradeLevel, state) => {
+const REASON_NOT_UNLOCKED = 'Need to unlock upgrade';
+const REASON_SQUARE_SIZE = 'Square win size cannot exceed board size.';
+const REASON_NOT_ENOUGH_CHALLENGES = 'Complete one more challenge';
+const REASON_NOT_AVAILABLE = 'Not available';
+
+export const cannotUpgradeReason = (upgradeType, upgradeLevel, state) => {
   switch (upgradeType) {
     case UPGRADE_TYPE.UPGRADE_SHOP_O_SQUARE_WIN:
-      return state.unlocks[UNLOCK_UPGRADE_SQUARE];
+      if (!state.unlocks[UNLOCK_UPGRADE_SQUARE]) {
+        return REASON_NOT_UNLOCKED;
+      }
+      if (state.upgrades[UPGRADE_TYPE.CURRENT_CHALLENGE] & CHALLENGE_1_SQUARE) {
+        // This upgrade does nothing in challenge 1.
+        return REASON_NOT_AVAILABLE;
+      }
+      let newSize = BASE_SQUARE_SIZE + upgradeLevel + 1;
+      if (newSize > state.gameSettings.boardSettings.numRows) {
+        return REASON_SQUARE_SIZE;
+      }
+      break;
+
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SQUARE_WIN: {
+      if (!state.unlocks[UNLOCK_UPGRADE_SQUARE]) {
+        return REASON_NOT_UNLOCKED;
+      }
+      if (state.upgrades[UPGRADE_TYPE.CURRENT_CHALLENGE] & CHALLENGE_1_SQUARE) {
+        // This upgrade does nothing in challenge 1.
+        return REASON_NOT_AVAILABLE;
+      }
+      let newSize = BASE_SUPER_SQUARE_SIZE + upgradeLevel + 1;
+      if (newSize > state.gameSettings.superBoardSettings.numRows) {
+        return REASON_SQUARE_SIZE;
+      }
+      break;
+    }
+
+    case UPGRADE_TYPE.UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE: {
+      let reasons = [];
+      let newSize = BASE_SUPER_BOARD_SIZE + upgradeLevel + 1;
+      if ( newSize > state.gameSettings.boardSettings.numRows ) {
+        reasons.push(`board size must be at least ${newSize} by ${newSize}`);
+      }
+      if ( newSize * newSize > state.gameSettings.boardCount ) {
+        let need = newSize * newSize - state.gameSettings.boardCount;
+        if (need === 1) {
+          reasons.push('need one more board')
+        } else {
+          reasons.push(`need ${need} more boards`);
+        }
+      }
+      if (reasons) {
+        return reasons.join(' and ');
+      }
+      break;
+    }
+    
+    case UPGRADE_TYPE.UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES: {
+      // TODO: Track this as a stat and display in stats.
+      let numChallengesCompleted = 0;
+      for (let unlock in INITIAL_CHALLENGE_UNLOCKS) {
+        if (state.unlocks[unlock]) {
+          numChallengesCompleted += 1;
+        }
+      }
+      // First level does not need challenge completion.
+      if (upgradeLevel-1 >= numChallengesCompleted) {
+        return REASON_NOT_ENOUGH_CHALLENGES;
+      }
+      break;
+    }
+
     default:
-      return true;
   }
+  return '';
 };
 
 // returns the new state after performing an upgrade
 export const performUpgrade = (upgradeType, upgradeLevel, state) => {
-  if (!canUpgrade(upgradeType, upgradeLevel, state)) {
-    return state;
-  }
   if (state.upgrades[upgradeType] !== upgradeLevel) {
     return state;
   }
   let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
   if (!canPurchase(state.coins, cost)) {
+    return state;
+  }
+  if (cannotUpgradeReason(upgradeType, upgradeLevel, state)) {
     return state;
   }
   let newState = {
@@ -490,10 +571,16 @@ export const checkAutoBuyers = (state) => {
       let autoBuyer = state.userSettings.autoBuyers[upgradeType];
       if (!autoBuyer.on || autoBuyer.lim > 100 || autoBuyer.lim <= 0 ) {
         continue;
-      }      
+      }
 
       let upgradeLevel = state.upgrades[upgradeType];
       let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
+      if (cost === null) {
+        continue;
+      }
+      if (cannotUpgradeReason(upgradeType, upgradeLevel, state)) {
+        continue;
+      }
       // adjust cost
       for (let costCoinType in cost) {
         cost[costCoinType] *= 100/autoBuyer.lim;

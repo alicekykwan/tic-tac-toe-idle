@@ -8,7 +8,6 @@ import { COIN_TYPE_O } from '../constants/coinTypes'
 import UpgradeTabPanel from './UpgradeTabPanel';
 import { getUpgradeName } from '../game/upgrades';
 import ShopGreeting from './ShopGreeting';
-import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
 import {UNLOCK_UPGRADE_SQUARE} from '../constants/challengeTypes';
@@ -48,9 +47,7 @@ export default function ShopO({tabState, unlocks}) {
                 <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
               ))}
             </Tabs>
-            <TabPanel>
-              <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_O} upgradeType={activeTab} />
-            </TabPanel>
+            <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_O} upgradeType={activeTab} />
           </Box>
         </Paper>
       </Box>

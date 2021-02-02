@@ -22,6 +22,7 @@ export const UPGRADE_SHOP_STAR_BOARD_COUNT = 'stbc';
 export const UPGRADE_SHOP_STAR_PICK_INITIAL_MOVES = 'stpim';
 export const UPGRADE_SHOP_STAR_AUTO_BUY = 'stab';
 export const UPGRADE_SHOP_STAR_UNLOCK_CHALLENGES = 'stuc';
+export const UPGRADE_SHOP_STAR_START_BONUS_MULTI = 'stsbm';
 export const CURRENT_CHALLENGE = 'cc';
 
 export const AUTOMATABLE_UPGRADES = {
@@ -53,12 +54,9 @@ export const AUTOMATABLE_UPGRADES = {
 
 export const UPGRADE_WARNING = {
   [UPGRADE_SHOP_O_BOARD_SIZE]: 'This will increase the board size of all newly created boards.',
+  [UPGRADE_SHOP_O_SQUARE_WIN]: 'This increases the required square size to win. The current size square will no longer win.', 
   [UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'This will increase the super-board size and the number of boards required per super-board.',
-};
-
-export const UPGRADE_CONFIRMATION = {
-  [UPGRADE_SHOP_O_BOARD_SIZE]: 'confirmBoardSize',
-  [UPGRADE_SHOP_SUPER_O_SUPER_BOARD_SIZE]: 'confirmSuperBoardSize',
+  [UPGRADE_SHOP_SUPER_O_SQUARE_WIN]: 'This increases the required square size to win. The current size square will no longer win.',
 };
 
 const NEW_SETTINGS_ON_RESET = <i>New settings apply on board resets.</i>;
