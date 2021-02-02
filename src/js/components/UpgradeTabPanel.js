@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES, UPGRADE_WARNING, UPGRADE_CONFIRMATION, UPGRADE_EXPLANATION } from '../constants/upgradeTypes';
+import { UPGRADE_SHOP_O_PICK_INITIAL_MOVES, UPGRADE_WARNING, UPGRADE_EXPLANATION, UPGRADE_SHOP_O_SQUARE_WIN, UPGRADE_SHOP_SUPER_O_SQUARE_WIN } from '../constants/upgradeTypes';
 import { changeUserSettingsAction, purchaseUpgradeAction } from '../actions/index';
 import { connect } from 'react-redux';
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, MenuItem, Select, Switch, Typography } from '@material-ui/core';
-import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost } from '../game/upgrades';
+import { canPurchase, getUpgradeName, getUpgradeDescription, getNextUpgradeCost, cannotUpgradeReason } from '../game/upgrades';
 import SelectionGrid from './SelectionGrid';
 import WarningIcon from '@material-ui/icons/Warning';
 import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
 import { renderAmount, renderCoin } from '../constants/coins';
+import LockIcon from '@material-ui/icons/Lock';
 
 function mapStateToProps(state) {
   return {
@@ -15,6 +16,7 @@ function mapStateToProps(state) {
     upgrades: state.upgrades,
     userSettings: state.userSettings,
     canAutomate: state.gameSettings.canAutomate,
+    state: state,
   };
 };
 
@@ -25,7 +27,7 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
-function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purchaseUpgrade, userSettings, setAutoBuyers, canAutomate }) {
+function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purchaseUpgrade, userSettings, setAutoBuyers, canAutomate, state }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentDesc, setCurrentDesc] = useState('');
   const [upgradeDesc, setUpgradeDesc] = useState('');
@@ -52,10 +54,13 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
 
   let cost = getNextUpgradeCost(upgradeType, upgradeLevel);
   let warning = UPGRADE_WARNING[upgradeType];
-  let confirm = UPGRADE_CONFIRMATION[upgradeType];
+  if ((upgradeType === UPGRADE_SHOP_O_SQUARE_WIN || upgradeType === UPGRADE_SHOP_SUPER_O_SQUARE_WIN )&& upgradeLevel < 1) {
+    warning = null;
+  }
 
+  const { autoBuyers, confirmUpgrade } = userSettings;
   const handlePrompt = () => {
-    if (warning && userSettings[confirm]) {
+    if (warning && confirmUpgrade[upgradeType]) {
       setDialogOpen(true);
     } else {
       purchaseUpgrade({upgradeType, upgradeLevel});
@@ -71,7 +76,6 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
     purchaseUpgrade({upgradeType, upgradeLevel});
   };
 
-  const { autoBuyers } = userSettings;
   const autoBuyer = autoBuyers[upgradeType];
 
   const setAutoBuyOn = (on) => {
@@ -82,16 +86,23 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
     setAutoBuyers({ ...autoBuyers, [upgradeType]: {...autoBuyer, lim}});
   };
 
-  let upgradeButton = null;
-
-  if (cost === null) {
-    upgradeButton = (
-      <Button variant='contained' color='primary' disabled>
-        Cannot Upgrade (MAX)
-      </Button>
-    );
-  } else {
-    upgradeButton = (
+  const getUpgradeButton = () => {
+    if (cost === null) {
+      return (
+        <Button variant='contained' color='primary' disabled>
+          Cannot Upgrade (MAX)
+        </Button>
+      );
+    }
+    let reason = cannotUpgradeReason(upgradeType, upgradeLevel, state);
+    if (reason) {
+      return (
+        <Button variant='contained' color='primary' startIcon={<LockIcon/>} disabled>
+          Cannot Upgrade ({reason})
+        </Button>
+      );
+    } 
+    return (
       <Button
         disabled={ !canPurchase(coins, cost) }
         variant='contained' color='primary'
@@ -100,7 +111,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
         Upgrade (cost: {renderAmount(cost[coinType])}&nbsp;{renderCoin(coinType)})
       </Button>
     );
-  }
+  };
 
   return (
     <Box m={1}>
@@ -128,7 +139,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
               ? <ArrowDownwardIcon visibility='hidden' />
               : <ArrowDownwardIcon /> }
           </Box>
-          {upgradeButton}
+          {getUpgradeButton()}
         </Box>
 
         {/* BOX 3  UPGRADED*/}

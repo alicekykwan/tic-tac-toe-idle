@@ -8,7 +8,6 @@ import { COIN_TYPE_SUPER_X } from '../constants/coinTypes';
 import UpgradeTabPanel from './UpgradeTabPanel';
 import { getUpgradeName } from '../game/upgrades';
 import ShopGreeting from './ShopGreeting';
-import TabPanel from './TabPanel';
 import { useShopTabStyles } from './styles';
 
 export default function ShopSuperX({tabState}) {
@@ -41,9 +40,7 @@ export default function ShopSuperX({tabState}) {
                 <Tab key={upgradeType} value={upgradeType} label={getUpgradeName(upgradeType)} />
               ))}
             </Tabs>
-            <TabPanel>
-              <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_SUPER_X} upgradeType={activeTab} />
-            </TabPanel>
+            <UpgradeTabPanel key={activeTab} coinType={COIN_TYPE_SUPER_X} upgradeType={activeTab} />
           </Box>
         </Paper>
       </Box>
