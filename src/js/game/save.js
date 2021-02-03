@@ -15,6 +15,7 @@ const initialCoins = {
   [COIN_TYPE.COIN_TYPE_SUPER_X]: 100000000,
   [COIN_TYPE.COIN_TYPE_SUPER_O]: 100000000,
   [COIN_TYPE.COIN_TYPE_STAR]: 0,
+  [COIN_TYPE.COIN_TYPE_T]: 0,
 };
 
 const initialSpent = {
@@ -23,6 +24,7 @@ const initialSpent = {
   [COIN_TYPE.COIN_TYPE_SUPER_X]: 0,
   [COIN_TYPE.COIN_TYPE_SUPER_O]: 0,
   [COIN_TYPE.COIN_TYPE_STAR]: 0,
+  [COIN_TYPE.COIN_TYPE_T]: 0,
 };
 
 const initialUnlocks = {
@@ -32,7 +34,8 @@ const initialUnlocks = {
   // 0             | hidden      | hidden    | hidden     | hidden
   // 1             | shown       | hidden    | hidden     | hidden
   // 2             | shown       | shown     | hidden     | hidden
-  // 3             | shown       | shown     | shown      | shown
+  // 3             | shown       | shown     | shown      | hidden
+  // 4             | shown       | shown     | shown      | shown
   progressLevel: 0,
 };
 

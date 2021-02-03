@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { renderCoin, renderAmount, COIN_X, COIN_O, COIN_SUPER_X, COIN_SUPER_O } from '../constants/coins';
-import { COIN_TYPE_X, COIN_TYPE_O, COIN_TYPE_SUPER_X, COIN_TYPE_SUPER_O } from '../constants/coinTypes';
+import { renderCoin, renderAmount, COIN_X, COIN_O, COIN_T, COIN_SUPER_X, COIN_SUPER_O } from '../constants/coins';
+import { COIN_TYPE_X, COIN_TYPE_O, COIN_TYPE_T, COIN_TYPE_SUPER_X, COIN_TYPE_SUPER_O } from '../constants/coinTypes';
 
 const getShopDescription = (coinType) => {
   switch (coinType) {
@@ -18,18 +18,24 @@ const getShopDescription = (coinType) => {
           Earn&nbsp;{COIN_O}&nbsp;whenever&nbsp;{COIN_O}&nbsp;wins on a board.
         </Typography>
       );
+    case COIN_TYPE_T:
+      return (
+        <Typography>
+          Earn&nbsp;{COIN_T}&nbsp;whenever&nbsp;{COIN_T}&nbsp;wins on a board or super-board.
+        </Typography>
+      );
     case COIN_TYPE_SUPER_X:
       return (
         <Typography>
           Earn&nbsp;{COIN_SUPER_X}&nbsp;whenever&nbsp;{COIN_X}&nbsp;wins on a super-board.
         </Typography>
       );
-      case COIN_TYPE_SUPER_O:
-        return (
-          <Typography>
-            Earn&nbsp;{COIN_SUPER_O}&nbsp;whenever&nbsp;{COIN_O}&nbsp;wins on a super-board.
-          </Typography>
-        );
+    case COIN_TYPE_SUPER_O:
+      return (
+        <Typography>
+          Earn&nbsp;{COIN_SUPER_O}&nbsp;whenever&nbsp;{COIN_O}&nbsp;wins on a super-board.
+        </Typography>
+      );
     default:
       return '';
   }

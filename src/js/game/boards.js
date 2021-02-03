@@ -262,6 +262,9 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
       case 1:
         coins[COIN_TYPE.COIN_TYPE_O] += coinsWon;
         break;
+      case 2:
+        coins[COIN_TYPE.COIN_TYPE_T] += coinsWon;
+        break;
       default:
     }
   }
@@ -271,7 +274,7 @@ const computeNextBoard = (board, superBoardWon, gameSettings, coins) => {
 const updateSuperBoards = (newState) => {
   let { boards, gameSettings, appliedSBSettings, coins } = newState;
   let { superBoardSettings, superBoardMaxCount, superCoinsPerWin, largerSuperWinMult, criticalSuperWinMult } = gameSettings;
-  let { numRows, numCols, requireFull, numPlayers } = superBoardSettings;
+  let { numRows, numCols, requireFull } = superBoardSettings;
 
   // On resize we must reset all super-boards.
   let superBoards = [];
@@ -305,7 +308,7 @@ const updateSuperBoards = (newState) => {
       }
     }
 
-    let reward = new Array(numPlayers).fill(0);
+    let reward = new Array(3).fill(0);
     let numWinningGroups = 0;
 
     // Compute current state of the super board.
@@ -342,6 +345,7 @@ const updateSuperBoards = (newState) => {
       let critMulti = (numWinningGroups > 1) ? criticalSuperWinMult : 1;
       coins[COIN_TYPE.COIN_TYPE_SUPER_X] += reward[0] * critMulti;
       coins[COIN_TYPE.COIN_TYPE_SUPER_O] += reward[1] * critMulti;
+      coins[COIN_TYPE.COIN_TYPE_T] += reward[2] * critMulti * 100;
     }
 
     if (winningGroups.length > 0) {

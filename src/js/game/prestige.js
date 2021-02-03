@@ -1,4 +1,4 @@
-import { COIN_TYPE_O, COIN_TYPE_STAR, COIN_TYPE_SUPER_O, COIN_TYPE_SUPER_X, COIN_TYPE_X } from '../constants/coinTypes';
+import { COIN_TYPE_O, COIN_TYPE_STAR, COIN_TYPE_SUPER_O, COIN_TYPE_SUPER_X, COIN_TYPE_X, COIN_TYPE_T } from '../constants/coinTypes';
 import { createNewBoard } from './boards';
 import { IS_UPGRADE_PERMANENT, updateGameSettings } from './upgrades';
 import _ from 'lodash';
@@ -9,14 +9,17 @@ export const PRESTIGE_COIN_TYPES = [
   COIN_TYPE_X,
   COIN_TYPE_O,
   COIN_TYPE_SUPER_X,
-  COIN_TYPE_SUPER_O
+  COIN_TYPE_SUPER_O,
+  COIN_TYPE_T,
 ];
+
 
 const SHIFT = {
   [COIN_TYPE_X]: 1000,
   [COIN_TYPE_O]: 1000,
   [COIN_TYPE_SUPER_X]: 1000,
   [COIN_TYPE_SUPER_O]: 1000,
+  [COIN_TYPE_T]: 1,
 };
 
 const SCALE = {
@@ -24,6 +27,7 @@ const SCALE = {
   [COIN_TYPE_O]: 10,
   [COIN_TYPE_SUPER_X]: 4,
   [COIN_TYPE_SUPER_O]: 4,
+  [COIN_TYPE_T]: 2,
 };
 
 export const convertCoinsToStars = (coinType, amt) => {

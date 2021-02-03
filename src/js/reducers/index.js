@@ -65,11 +65,14 @@ function rootReducer(state, action) {
     case ACTION_TYPE.ACTION_PURCHASE_UPGRADE: {
       let {upgradeType, upgradeLevel} = action.payload;
       let newState = performUpgrade(upgradeType, upgradeLevel, state);
-      if (newState.unlocks.progressLevel === 1 && newState.gameSettings.canPrestige) {
+      if (newState.unlocks.progressLevel < 2 && newState.gameSettings.canPrestige) {
         newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 2}};
       }
-      if (newState.unlocks.progressLevel === 2 && newState.gameSettings.maxChallengeSelect > 0) {
+      if (newState.unlocks.progressLevel < 3 && newState.gameSettings.maxChallengeSelect > 0) {
         newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 3}};
+      }
+      if (newState.unlocks.progressLevel < 4 && newState.gameSettings.boardSettings.numPlayers > 2) {
+        newState = {...newState, unlocks: {...newState.unlocks, progressLevel: 4}};
       }
       return newState;
     }

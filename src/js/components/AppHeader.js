@@ -127,6 +127,21 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
             menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu}
             coinType={COIN_TYPE.COIN_TYPE_SUPER_O} />
       </Box>);
+
+    if (progressLevel === 3) {
+    items.push(
+      <Box key='locked' mx={1}>
+        <LockedButton message='???' />
+      </Box>);
+    }
+    if (progressLevel > 3) {
+    items.push(
+      <Box key='tri' mx={1}>
+        <ShopButton menuType='tri'
+            menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} coinType={COIN_TYPE.COIN_TYPE_T}/>
+      </Box>);
+    }
+    
     if (progressLevel === 1) {
       items.push(
         <Box key='locked' mx={1}>
