@@ -154,7 +154,7 @@ function ConnectedUpgradeTabPanel({ upgradeType, coinType, coins, upgrades, purc
         )}
 
         {/* BOX 4  AUTOPURCHASE*/}
-        {cost !== null && canAutomate[coinType] && (
+        {cost !== null && canAutomate[coinType] && autoBuyer && (
           <Box display='flex' flexDirection='row' alignItems='center' m={1} >
             <Switch
               checked={autoBuyer.on}
