@@ -1,6 +1,6 @@
 
 import { createMuiTheme } from '@material-ui/core/styles';
-import { COLOR_X, COLOR_O, COLOR_STAR } from '../constants/colors';
+import { COLOR_X, COLOR_O, COLOR_STAR, COLOR_T } from '../constants/colors';
 
 export const THEME_TYPE = {
   NORMAL: 'normal',
@@ -14,6 +14,7 @@ export const THEME_ELEMENT = {
   BOARD: 'board',
   SETTINGS: 'settings',
   CHALLENGE: 'challenge',
+  SHOP_T: 'shopt',
 };
 
 const GLOBAL_FONT = {
@@ -96,6 +97,23 @@ const THEMES_BY_TYPE_THEN_ELEMENT = {
         },
         primary: {
           main: COLOR_O,
+          contrastText: '#000000',
+        },
+      },
+      typography: GLOBAL_FONT,
+    }),
+    [THEME_ELEMENT.SHOP_T]: createMuiTheme({
+      palette: {
+        text: {
+          primary: '#000000',
+          secondary: '#333333',
+        },
+        background: {
+          default: '#ca56cb',
+          paper: '#ffbbff',
+        },
+        primary: {
+          main: COLOR_T,
           contrastText: '#000000',
         },
       },

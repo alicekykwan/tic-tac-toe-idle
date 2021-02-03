@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Box, Button, ButtonGroup, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import WarningIcon from '@material-ui/icons/Warning';
 import { PRESTIGE_COIN_TYPES, convertCoinsToStars, bonusCoinsOnPrestige } from '../game/prestige';
-import { COIN_X, COIN_O, COIN_SUPER_X, COIN_SUPER_O, COIN_STAR, renderCoin, renderAmount } from '../constants/coins';
+import { COIN_X, COIN_O, COIN_T, COIN_SUPER_X, COIN_SUPER_O, COIN_STAR, renderCoin, renderAmount } from '../constants/coins';
 import { COIN_TYPE_X, COIN_TYPE_O, COIN_TYPE_SUPER_O } from '../constants/coinTypes';
 import { UPGRADE_SHOP_SUPER_O_UNLOCK_PRESTIGE } from '../constants/upgradeTypes';
 import { canPurchase, getNextUpgradeCost } from '../game/upgrades';
@@ -17,6 +17,7 @@ const mapStateToProps = state => {
     prestigeCount: state.stats.prestigeCount,
     startBonusMulti: state.gameSettings.startBonusMulti,
     confirmPrestige: state.userSettings.confirmPrestige,
+    unlockedTri: state.unlocks.progressLevel > 3,
   };
 };
 
@@ -30,7 +31,7 @@ function mapDispatchToProps(dispatch) {
   };
 };
 
-function ConnectedPrestigeButton({ coins, spent, canPrestige, prestigeCount, startBonusMulti, confirmPrestige, prestige, purchasePrestige, displayedPrestigeCount }) {
+function ConnectedPrestigeButton({ coins, spent, canPrestige, prestigeCount, startBonusMulti, confirmPrestige, unlockedTri, prestige, purchasePrestige, displayedPrestigeCount }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
 
@@ -56,6 +57,9 @@ function ConnectedPrestigeButton({ coins, spent, canPrestige, prestigeCount, sta
   if (canPrestige) {
     for (let coinType of PRESTIGE_COIN_TYPES) {
       let amt = spent[coinType] + coins[coinType];
+      if (amt === 0) {
+        continue;
+      }
       let stars = convertCoinsToStars(coinType, amt);
       totalStars += stars;
       tableRows.push(
@@ -104,6 +108,13 @@ function ConnectedPrestigeButton({ coins, spent, canPrestige, prestigeCount, sta
     );
   }
 
+  let displayedCoins = (
+    unlockedTri
+    ? <span>{COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O},&nbsp;{COIN_T}&nbsp;</span>
+    : <span>{COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O}&nbsp;</span>
+  );
+
+
   return (
     <Box key='prestige' m={1}>
       {buttons}
@@ -111,7 +122,7 @@ function ConnectedPrestigeButton({ coins, spent, canPrestige, prestigeCount, sta
         <DialogTitle>Confirm Prestige</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This will reset all {COIN_X},&nbsp;{COIN_O},&nbsp;{COIN_SUPER_X},&nbsp;{COIN_SUPER_O},
+            This will reset all {displayedCoins}
             and all their upgrades in exchange for {totalStars}&nbsp;{COIN_STAR}.
           </DialogContentText>
           <DialogContentText>

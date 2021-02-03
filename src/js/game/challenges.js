@@ -5,6 +5,7 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ArrowRightRoundedIcon from '@material-ui/icons/ArrowRightRounded';
 import DoneIcon from '@material-ui/icons/Done';
+import { COIN_X, COIN_O, COIN_SUPER_O } from '../constants/coins';
 
 const bullet = <ArrowRightRoundedIcon />;
 const done = <DoneIcon />;
@@ -115,11 +116,11 @@ const getRewardDescription = (reward) => {
   // TODO format coins
   switch (reward) {
     case UNLOCK_UPGRADE_SQUARE:
-      return 'Unlock upgrades that allows winning and super-winning by forming squares (in addition to lines).';
+      return <span>Unlock&nbsp;{COIN_O}&nbsp;and&nbsp;{COIN_SUPER_O}&nbsp;shop upgrades that allows winning and super-winning by forming squares (in addition to lines).</span>;
     case UNLOCK_UPGRADE_FULL:
-      return 'Unlock an X shop upgrade that increases rewards for each extra move taken.';
+      return <span>Unlock an&nbsp;{COIN_X}&nbsp;shop upgrade that increases rewards for each extra move taken.</span>;
     case UNLOCK_UPGRADE_3P:
-      return 'Unlock a super-O shop upgrade to add a third player.';
+      return <span>Unlock a&nbsp;{COIN_SUPER_O}&nbsp;shop upgrade to add a third player.</span>;
     default:
       return `Unknown challenge reward: ${reward}.`;
   }

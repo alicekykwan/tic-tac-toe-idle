@@ -21,7 +21,7 @@ const RENDER_COIN = {
 const REGULAR_COINS2 = <span>{COIN_X}&nbsp;or&nbsp;{COIN_O}</span>;
 const REGULAR_COINS3 = <span>{COIN_X},&nbsp;{COIN_O}, or&nbsp;{COIN_T}</span>;
 const SUPER_COINS2 = <span>{COIN_SUPER_X}&nbsp;or&nbsp;{COIN_SUPER_O}</span>;
-const SUPER_COINS3 = <span>{COIN_SUPER_X},&nbsp;{COIN_SUPER_O}, or&nbsp;{COIN_SUPER_T}</span>;
+const SUPER_COINS3 = <span>{COIN_SUPER_X},&nbsp;{COIN_SUPER_O}, or&nbsp;{COIN_T}</span>;
 
 export const renderCoin = (coinType) => {
   return RENDER_COIN[coinType] || '?';

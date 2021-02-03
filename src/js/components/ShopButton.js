@@ -12,6 +12,7 @@ import { THEME_TYPE, THEME_ELEMENT, getTheme } from '../themes/themes';
 import { ThemeProvider } from '@material-ui/core/styles';
 import ShopX from './ShopX';
 import ShopO from './ShopO';
+import ShopT from './ShopT';
 import ShopSuperX from './ShopSuperX';
 import ShopSuperO from './ShopSuperO';
 import ShopStar from './ShopStar';
@@ -40,6 +41,8 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
         return <ShopSuperO key={coinType} tabState={tabState} unlocks={unlocks}/>;
       case COIN_TYPE.COIN_TYPE_STAR:
         return <ShopStar key={coinType} tabState={tabState} />;
+      case COIN_TYPE.COIN_TYPE_T:
+        return <ShopT key={coinType} tabState={tabState} />;
       default:
     }
   };
@@ -58,6 +61,8 @@ function ConnectedShopButton({ menuType, menuOpened, anchorEl, toggleMenu, coins
         return THEME_ELEMENT.SHOP_O;
       case COIN_TYPE.COIN_TYPE_STAR:
         return THEME_ELEMENT.SHOP_STAR;
+      case COIN_TYPE.COIN_TYPE_T:
+        return THEME_ELEMENT.SHOP_T;
       default:
     }
   }
