@@ -175,7 +175,7 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
 
   return (
     <ThemeProvider theme={getTheme(THEME_TYPE.NORMAL, THEME_ELEMENT.HEADER)}>
-      <AppBar position='sticky' style={{overflow:'scroll'}}>
+      <AppBar position='sticky' style={{overflow:'auto'}}>
         <Box key='app-header' bgcolor='background.default' color='text.primary' width='100%'
             display='flex' flexDirection='row' justifyContent='space-between' p={1} pt={2}>
           <Box display='flex' flexDirection='row'>
