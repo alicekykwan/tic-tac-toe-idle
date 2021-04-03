@@ -40,7 +40,7 @@ function ConnectedChallengeButton({ menuType, menuOpened, anchorEl, toggleMenu, 
       { challenge ? renderChallenge(challenge) : 'Select Challenge' }
     </Button>
     <Popper open={open} anchorEl={anchorEl} placement='bottom' style={{zIndex:1100}}>
-      <Box bgcolor='background.default' maxHeight='85vh' overflow='scroll'>
+      <Box bgcolor='background.default' maxHeight='85vh' overflow='auto'>
         <ChallengeMenu displayedChallengeState={displayedChallengeState} toggledState={toggledState} />
       </Box>
     </Popper>
