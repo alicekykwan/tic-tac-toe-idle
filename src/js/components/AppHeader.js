@@ -74,9 +74,10 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
     if (key === 'Escape') {
       setMenuOpened(null);
       setAnchorEl(null);
-    } else if (key === 'h') {
-      setAdminDialogOpen(true)
-    }
+    } 
+    //   else if (key === 'h') {
+    //   setAdminDialogOpen(true)
+    // }
   }, []);
   useEffect(() => {
     window.addEventListener('keydown', onKeyDown, true);
@@ -195,16 +196,16 @@ function ConnectedAppHeader({ paused, progressLevel, setPaused, lastTickTime }) 
                     onClick={ () => setPaused(!paused)} />
                 </Box>
               </Tooltip>
-              <Box key='stats' mx={1}>
+              {/* <Box key='stats' mx={1}>
                 <IconButton size='medium' color='primary' children={<TimelineIcon />}/>
-              </Box>
+              </Box> */}
               <Box key='settings' mx={1}>
                 <SettingsButton menuType='settings'
                     menuOpened={menuOpened} anchorEl={anchorEl} toggleMenu={toggleMenu} />
               </Box>
-              <Box key='help' mx={1}>
+              {/* <Box key='help' mx={1}>
                 <IconButton size='medium' color='primary' children={<HelpOutlineIcon />}/>
-              </Box>
+              </Box> */}
             </Box>
           </ThemeProvider>
         </Box>
