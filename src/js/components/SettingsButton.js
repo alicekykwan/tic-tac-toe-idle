@@ -13,7 +13,7 @@ function SettingsButton({ menuType, menuOpened, anchorEl, toggleMenu }) {
       <Popper open={open} anchorEl={anchorEl} placement='bottom' style={{zIndex:1100}} transition>
         {({ TransitionProps }) => (
           <Fade {...TransitionProps} timeout={300}>
-            <Box bgcolor='background.default' maxHeight='85vh' overflow='scroll'>
+            <Box bgcolor='background.default' maxHeight='85vh' overflow='auto'>
               <SettingsMenu />
             </Box>
           </Fade>
